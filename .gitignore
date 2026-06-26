@@ -1,0 +1,78 @@
+# Dependencies
+# ==================================
+
+client/node_modules/
+server/node_modules/
+
+# ===================================
+# Enviorment Variables
+# ===================================
+
+server/.env
+client/.env
+
+# =================================
+# Personal Documentations and/or files
+# ==================================
+
+/client/my_doc_client_plans.md
+/server/my_doc_server_plans.md
+
+# =============================
+# Logs
+# =============================
+
+*.log
+
+# =============================
+# OS Files
+# =============================
+
+.DS_Store
+Thumbs.db
+
+# =============================
+# Editor Settings
+# =============================
+
+.vscode/
+.idea/
+
+
+# ===================================
+# Other Non imp files
+# ===================================
+
+/server/dummy_data.js
+
+
+# ===================================
+# ===================================
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+
+
