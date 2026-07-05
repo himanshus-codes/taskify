@@ -5,7 +5,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const userRouter = require('./routes/user.js');
-const todoRouter = require('./routes/todo.js');
+const taskRouter = require('./routes/task.js');
 
 const app = express();
 const port = process.env.PORT;
@@ -23,7 +23,7 @@ app.use((req,res,next)=>{
 app.get("/", (req, res)=> res.send("I am Healthy"));
 
 app.use('/', userRouter);
-app.use('/', todoRouter);
+app.use('/', taskRouter);
 
 
 mongoose.connect(process.env.MONGO_URL) 

@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken')
 
 
-const {User} = require('../database/index.js');
+const {User} = require('../models/User.js');
 const { Collection } = require('mongoose');
 
 let JWT_SECRET_USER = process.env.JWT_SECRET_USER

@@ -1,7 +1,7 @@
 // services/user.service.js
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { User, Todo } = require("../database/index");
+const { User, Task } = require("../models/User");
 
 const JWT_SECRET = process.env.JWT_SECRET_USER;
 
