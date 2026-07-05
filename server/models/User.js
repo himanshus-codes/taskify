@@ -36,48 +36,9 @@ const UserSchema = new mongoose.Schema({
 });
 
 
-const TodoSchema = new mongoose.Schema({
-    title: {
-        type: String,
-        required: [true, "  Todo Title is required"]
-    },
-    description: {
-        type: String,
-        required: [true, " description is required"]
-    },
-    priority: {
-        type: String,
-        enum: ["low", "medium", "high"],
-        required: true
-    },
-
-    status: {
-        type: String,
-        enum: ["pending", "in-progress", "completed", "under-review"],
-        default: "pending"
-    },
-
-     userId: {
-        // type: String,
-        type:  mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        required: true,
-        index: true
-        
-    }},
-    
-    {
-    timestamps : true,
-
-    }
-
-   
-);
 
 const User = mongoose.model('User', UserSchema);
-const Todo = mongoose.model('Todo', TodoSchema);
 
 module.exports = {
-    User,
-    Todo
+    User
 }
