@@ -6,6 +6,8 @@ dotenv.config();
 
 const userRouter = require('./routes/user.js');
 const taskRouter = require('./routes/task.js');
+const boardRouter = require('./routes/board.js')
+const columnRouter = require('./routes/column.js')
 
 const app = express();
 const port = process.env.PORT;
@@ -19,11 +21,17 @@ app.use((req,res,next)=>{
   next();
 });
 
-
 app.get("/", (req, res)=> res.send("I am Healthy"));
 
 app.use('/', userRouter);
 app.use('/', taskRouter);
+app.use('/', boardRouter);
+app.use('/', columnRouter);
+
+// better (standard express pattern)
+// app.use("/users", userRouter);
+// app.use("/tasks", taskRouter);
+// app.use("/boards", boardRouter);
 
 
 mongoose.connect(process.env.MONGO_URL) 

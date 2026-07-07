@@ -8,6 +8,10 @@ let JWT_SECRET_USER = process.env.JWT_SECRET_USER
 
 
 async function userMiddleware(req, res, next) {
+
+    console.log("user Auth Middleware called",req.method, req.url)
+
+
     // Implement user auth logic
 
 try{
@@ -77,7 +81,8 @@ try{
 
 
 function isAdmin(req, res, next){
-    console.log("admin verification middleware")
+
+    // console.log("admin verification middleware", req.method, req.url)
 
      if (req.userData.role !== "admin") {
         return res.status(403).json({ message: "Admins only" });

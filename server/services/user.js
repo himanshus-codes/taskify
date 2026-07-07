@@ -1,7 +1,8 @@
 // services/user.service.js
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { User, Task } = require("../models/User");
+const { User } = require("../models/User");
+const {Task} = require("../models/Task")
 
 const JWT_SECRET = process.env.JWT_SECRET_USER;
 
@@ -37,7 +38,7 @@ exports.login = async ({ email, password }) => {
 exports.updateMe = async (id, updates) => {
   return await User.findByIdAndUpdate(
     id,
-    { $set: updates }, // ⚠️ FIXED BUG (you had wrong structure)
+    { $set: updates }, 
     { new: true }
   );
 };
@@ -55,5 +56,5 @@ exports.updatePassword = async (userData, { currentPassword, newPassword }) => {
 
 exports.deleteMe = async (id) => {
   await User.findByIdAndDelete(id);
-  await Todo.deleteMany({ userId: id }); 
+  await Task.deleteMany({ userId: id }); 
 };

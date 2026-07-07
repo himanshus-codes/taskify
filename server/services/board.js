@@ -1,6 +1,4 @@
-const { id } = require('zod/v4/locales')
 const {Board} = require('../models/Board')
-const { jwt } = require('zod')
 const mongoose = require('mongoose');
 
 exports.createBoard = async (userId, data) => {
