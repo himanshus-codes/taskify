@@ -1,10 +1,12 @@
 const mongoose = require("mongoose");
+const { columnSchema } = require("../validations/column");
 
 
 const ColumnSchema = new mongoose.Schema({
         title:{
             type: String,
-            required: true
+            required: true,
+            unique: true
         },
 
         order: {
@@ -12,7 +14,7 @@ const ColumnSchema = new mongoose.Schema({
             required: true
         },
 
-        boardId={
+        boardId: {
             type: mongoose.Schema.Types.ObjectId,
             required:true,
             ref: "Board",
@@ -23,3 +25,7 @@ const ColumnSchema = new mongoose.Schema({
         }
     
 )
+
+
+const Column = mongoose.model("column", ColumnSchema);
+module.exports = {Column};

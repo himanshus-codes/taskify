@@ -3,10 +3,9 @@ const mongoose = require('mongoose');
 // Connect to MongoDB
 // mongoose.connect('mongodb://localhost:27017/week4/hard/taskify');
 
-// Define schemas
+// Defining schema
 
 const UserSchema = new mongoose.Schema({
-    // Schema definition here
 
     firstName: {
         type: String,
