@@ -31,7 +31,7 @@ exports.signup = async (req, res) => {
     //   })
     // }
     res.json({ message: "Signup successful" });
-  } catch (e) {
+  } catch (err) {
     console.log("Result",result)
     console.log("Error",e)
       

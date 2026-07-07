@@ -4,11 +4,15 @@ const {Task} = require('../models/Task')
 const mongoose = require('mongoose');
 
 
-exports.dashboardBuilder = (boardId) =>{
+exports.dashboardBuilder = async (boardId) =>{
     const board = await Board.findById(boardId)
     if(!board){
         throw new Error("Board_Not_Found");
     }
+    console.log("------------------------------------------------------------------------------------------------")
+    console.log("------------------------------------------------------------------------------------------------")
+    console.log("------------------------------------------------------------------------------------------------")
+    console.log("board",board)
 
     const columns = await Column.find({boardId});
     // if(columns.length == 0){
@@ -18,7 +22,7 @@ exports.dashboardBuilder = (boardId) =>{
     // }
 
     const columnIds = columns.map((column)=> column._id);
-
+    console.log("columnIds",columnIds)
     const tasks = await Task.find({
         columnId:{
             $in: columnIds
@@ -28,12 +32,12 @@ exports.dashboardBuilder = (boardId) =>{
     // if(!tasks){
     //     throw new Error("Tasks_Not_Found");
     // }
-    
+    console.log("Tasks ",tasks)
 
-    const columnWithTasks = columns.map(column => {
+    const columnsWithTasks = columns.map(column => {
 
         const columnTasks = tasks.filter(task => {
-            task.columnId.toString() == column._id.toString()
+            return task.columnId.toString() === column._id.toString()
         })
 
         return {
@@ -42,7 +46,7 @@ exports.dashboardBuilder = (boardId) =>{
         }
     })
 
-
+    console.log("columns with tasks",columnsWithTasks)
     return {
         board,
         columns: columnsWithTasks
@@ -67,7 +71,8 @@ exports.fetchBoards = async (userId) => {
 
 
     const res = await Board.find({userId: userId})
-
+    console.log("---------------------------------------------")
+    console.log(res)
     if(res){
         return res
     }

@@ -16,6 +16,8 @@ exports.createTask = async (columnId, data)=>{
     let newTask = await taskData.save()
     console.log(newTask)
 
+    console.log(newTask)
+
     return newTask
 }
 

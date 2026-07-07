@@ -44,7 +44,17 @@ exports.createColumn = async (req, res) => {
             data: column
         });
 
-    } catch (e) {
+    } catch (err) {
+
+        if (err.code === 11000) {
+            return res.status(409).json({
+                success: false,
+                // message: "A column with this title already exists.",
+                message: `A column with this ${Object.keys(err.keyPattern)[0]} already exists.`,
+                field: Object.keys(err.keyPattern)[0], 
+                value: Object.values(err.keyValue)[0], 
+            });
+        }
 
         return res.status(500).json({
             error: "Internal_Server_Error",
@@ -188,7 +198,16 @@ exports.updateColumn = async (req, res) => {
             data: column
         });
 
-    } catch (e) {
+    } catch (err) {
+
+        if (err.code === 11000) {
+            return res.status(409).json({
+                success: false,
+                message: `A column with this ${Object.keys(err.keyPattern)[0]} already exists.`,
+                field: Object.keys(err.keyPattern)[0], // "task"
+                value: Object.values(err.keyValue)[0], // "task title"
+            });
+        }
 
         return res.status(500).json({
             error: "Internal_Server_Error"

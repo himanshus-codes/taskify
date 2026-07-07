@@ -11,12 +11,12 @@ const taskController = require("../controllers/task.js")
 //  Task CRUD Routes
 
 // create task by user
-router.get('/column/:id/tasks', userMiddleware, taskController.getAllTasks)
-router.delete('/column/:id/tasks', userMiddleware, taskController.deleteAllTasks)
+router.get('/columns/:id/tasks', userMiddleware, taskController.getAllTasks)
+router.delete('/columns/:id/tasks', userMiddleware, taskController.deleteAllTasks)
 
-// router.post('/column/:id/tasks', userMiddleware, taskController.createColumns)
+// router.post('/columns/:id/tasks', userMiddleware, taskController.createColumns)
 
-router.post('/column/:id/task', userMiddleware, taskController.createTask)
+router.post('/columns/:id/task', userMiddleware, taskController.createTask)
 
 router.get('/tasks/:id', userMiddleware, taskController.getTaskDetails)
 router.patch('/tasks/:id', userMiddleware, taskController.updateTask)

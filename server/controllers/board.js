@@ -25,7 +25,8 @@ exports.getDashboard = async (req, res) => {
     }catch (e){
         return res.status(500).json({
             error:"Internal_Server_Error",
-            message:"Could_Not_Load_Dashboard"
+            message:"Could_Not_Load_Dashboard",
+            errorCode:e
         })
     }
 }
@@ -51,19 +52,20 @@ exports.createBoard = async (req, res)=>{
         
         return res.status(200).json({
             success:"Board_Saved_Successfully",
-            data:mongoSaveRes
+            data:mongoRes
         })
     
 
     } catch(err){
-        // console.log(err)
+        console.log(err)
         // console.log(err.code)
         // console.log(err.code === 11000)
 
         if (err.code === 11000) {
             return res.status(409).json({
                 success: false,
-                message: "A board with this title already exists.",
+                // message: "A board with this title already exists.",
+                message: `A board with this ${Object.keys(err.keyPattern)[0]} already exists.`,
                 field: Object.keys(err.keyPattern)[0], // "title"
                 value: Object.values(err.keyValue)[0], // "Test Board 1"
             });
@@ -83,11 +85,11 @@ exports.getBoards = async (req, res)=>{
 
 
     try{
-        const data = await boardService.fetchBoards(userId)
-
+        const boards = await boardService.fetchBoards(userId)
+        console.log(boards)
         res.status(200).json({
             success:"Boards_Data_Fetched",
-            data: data
+            data: {boards}
         })
     }catch(e){
         
@@ -158,11 +160,22 @@ exports.updateBoard = async (req, res)=>{
         })
     
        
-    }catch(e){
-        if(e.message == "Incorrect_Board_Id"){
+    }catch(err){
+
+        if (err.code === 11000) {
+            return res.status(409).json({
+                success: false,
+                // message: "A board with this title already exists.",
+                message: `A board with this ${Object.keys(err.keyPattern)[0]} already exists.`,
+                field: Object.keys(err.keyPattern)[0], // "title"
+                value: Object.values(err.keyValue)[0], // "Test Board 1"
+            });
+        }
+
+        if(err.message == "Incorrect_Board_Id"){
             // return res.status(422).json({
             return res.status(400).json({
-                error:e.message
+                error:err.message
             })
         }
 
