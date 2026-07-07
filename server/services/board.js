@@ -1,5 +1,55 @@
 const {Board} = require('../models/Board')
+const {Column} = require('../models/Column')
+const {Task} = require('../models/Task')
 const mongoose = require('mongoose');
+
+
+exports.dashboardBuilder = (boardId) =>{
+    const board = await Board.findById(boardId)
+    if(!board){
+        throw new Error("Board_Not_Found");
+    }
+
+    const columns = await Column.find({boardId});
+    // if(columns.length == 0){
+    //     return {
+    //         columns:null
+    //     };
+    // }
+
+    const columnIds = columns.map((column)=> column._id);
+
+    const tasks = await Task.find({
+        columnId:{
+            $in: columnIds
+        }
+    });
+
+    // if(!tasks){
+    //     throw new Error("Tasks_Not_Found");
+    // }
+    
+
+    const columnWithTasks = columns.map(column => {
+
+        const columnTasks = tasks.filter(task => {
+            task.columnId.toString() == column._id.toString()
+        })
+
+        return {
+            ...column.toObject(),
+            tasks: columnTasks
+        }
+    })
+
+
+    return {
+        board,
+        columns: columnsWithTasks
+    };
+
+}
+
 
 exports.createBoard = async (userId, data) => {
 

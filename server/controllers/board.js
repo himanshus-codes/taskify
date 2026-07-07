@@ -2,15 +2,33 @@ const {createBoardSchema, updateBoardSchema } = require("../validations/board.js
 const boardService = require("../services/board.js")
 const { success } = require("zod")
 
-// {
-//     "email" : "shimanshu1327@gmail.com",
-//     "password" : "hs123456"
-// }
 
-// {
-//     "title":"Test Board 1",
-//     "description":"Hi It's First Test Board"
-// }
+//kanbadn Dashboard
+
+exports.getDashboard = async (req, res) => {
+    const boardId = req.params.id;
+
+    try{
+        const dasboard = await boardService.dashboardBuilder(boardId)
+
+        if(!dasboard){
+            return res.status(404).json(404).json({
+                error: "Board_Not_Found"
+            });
+        }
+
+        res.json({
+            success:"Dashboard_Loaded",
+            data:dasboard
+        })
+
+    }catch (e){
+        return res.status(500).json({
+            error:"Internal_Server_Error",
+            message:"Could_Not_Load_Dashboard"
+        })
+    }
+}
 
 exports.createBoard = async (req, res)=>{
     console.log("req boardController", req.url)
