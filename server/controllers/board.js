@@ -95,7 +95,8 @@ exports.getBoards = async (req, res)=>{
         
         if(e.message == "No_Boards_Found"){
             return res.status(404).json({
-                error:e.message
+                message:"Failed_To_Get_Board_Details",
+                error:"No_Boards_Found"
             })
         }
 
