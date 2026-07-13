@@ -1,67 +1,76 @@
-const { json } = require("zod")
 const {Workspace} = require("../models/Workspace")
 
-exports.createWorkspace = async (ownerId, data)=>{
-    const res = await Workspace.create({
+
+exports.createWorkspace = async (ownerId, data) => {
+
+    const workspace = await Workspace.create({
         title: data.title,
         description: data.description,
-        ownerId: ownerId
+        ownerId
     })
 
-    return res
-
+    return workspace
 }
+
 
 exports.getWorkspaces = async(ownerId)=>{
-    const res = await Workspace.find(ownerId);
-    return res
-}   
 
-exports.getWorkspaceDetails = async(workspaceId)=>{
-    const res = await Workspace.findbyId(workspaceid);
-        if(!res){
-        throw new Error("No_Workspace_Found")
-    }
+    return await Workspace.find({
+        ownerId
+    })
 
-    return res
 }
 
 
+exports.getWorkspaceDetails = async (workspaceId) => {
 
-exports.updateWorkspace = async(workspaceId, updates)=>{
+    const workspace = await Workspace.findById(workspaceId)
 
-    
-    const res = await Workspace.findByIdAndUpdate(workspaceId, {$set: updates}, {new : true});
-
-    if(!res){
-        throw new Error("No_Workspace_Found")
+    if (!workspace) {
+        throw new Error("NOT_FOUND")
     }
 
-    return res
+    return workspace
 }
 
 
-exports.deleteWorkspace = async(workspaceId, updates)=>{
+exports.updateWorkspace = async (workspaceId, updates) => {
 
-    
-    const res = await Workspace.findByIdAndDelete(workspaceId);
+    const workspace = await Workspace.findByIdAndUpdate(
+        workspaceId,
+        { $set: updates },
+        { new: true }
+    )
 
-    if(!res){
-        throw new Error("No_Workspace_Found")
+    if (!workspace) {
+        throw new Error("NOT_FOUND")
     }
 
-    return res
-}
-exports.deleteWorkspaces = async(ownerId)=>{
-
-    
-    const res = await Workspace.deleteMany(ownerId);
-
-    if(!res){
-        throw new Error("No_Workspaces_Found")
-    }
-
-    return res
+    return workspace
 }
 
 
+exports.deleteWorkspace = async (workspaceId) => {
+
+    const workspace = await Workspace.findByIdAndDelete(workspaceId)
+
+    if (!workspace) {
+        throw new Error("NOT_FOUND")
+    }
+
+    return workspace
+}
+
+
+exports.deleteWorkspaces = async (ownerId) => {
+
+    const result = await Workspace.deleteMany({
+        ownerId
+    })
+
+    // if (result.deletedCount === 0) {
+    //     throw new Error("NO_WORKSPACES_FOUND")
+    // }
+
+    return result
+}

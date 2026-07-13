@@ -2,59 +2,130 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { User } = require("../models/User");
-const {Task} = require("../models/Task")
+const { Task } = require("../models/Task");
 
 const JWT_SECRET = process.env.JWT_SECRET_USER;
 
+
 exports.signup = async ({ firstName, lastName, email, password }) => {
-  const existing = await User.findOne({ email });
-  if (existing) throw new Error("Email_Already_Exists");
-  // if (existing) {
-  //     return existing
-  // }
 
-  const hashed = await bcrypt.hash(password, 5);
+    const existingUser = await User.findOne({
+        email
+    });
 
-  await User.create({
-    firstName,
-    lastName,
-    email,
-    password: hashed,
-  });
+    if (existingUser) {
+        throw new Error("EMAIL_ALREADY_EXISTS");
+    }
+
+    // if (existing) {
+    //     return existing
+    // }
+
+    const hashedPassword = await bcrypt.hash(password, 5);
+
+    const user = await User.create({
+        firstName,
+        lastName,
+        email,
+        password: hashedPassword
+    });
+
+    return user;
 };
+
 
 exports.login = async ({ email, password }) => {
-  const user = await User.findOne({ email });
-  // if (!user) throw  "Invalid_Email";
-  if (!user) throw new Error("Invalid_Email");
 
-  const match = await bcrypt.compare(password, user.password);
-  // if (!match) throw "Wrong_Password";
-  if (!match) throw new Error("Invalid_Password");
+    const user = await User.findOne({
+        email
+    });
 
-  return jwt.sign(user._id.toString(), JWT_SECRET);
+    // if (!user) throw  "Invalid_Email";
+
+    if (!user) {
+        throw new Error("UNAUTHORIZED");
+    }
+
+    const passwordMatched = await bcrypt.compare(
+        password,
+        user.password
+    );
+
+    // if (!match) throw "Wrong_Password";
+
+    if (!passwordMatched) {
+        throw new Error("UNAUTHORIZED");
+    }
+
+    const token = jwt.sign(
+        user._id.toString(),
+        JWT_SECRET
+    );
+
+    return token;
 };
 
-exports.updateMe = async (id, updates) => {
-  return await User.findByIdAndUpdate(
-    id,
-    { $set: updates }, 
-    { new: true }
-  );
+
+exports.updateMe = async (userId, updates) => {
+
+    const user = await User.findByIdAndUpdate(
+        userId,
+        { $set: updates },
+        { new: true }
+    );
+
+    if (!user) {
+        throw new Error("NOT_FOUND");
+    }
+
+    return user;
 };
 
-exports.updatePassword = async (userData, { currentPassword, newPassword }) => {
-  const match = await bcrypt.compare(currentPassword, userData.password);
-  if (!match) throw "Incorrect current password";
 
-  const hashed = await bcrypt.hash(newPassword, 5);
+exports.updatePassword = async (
+    userData,
+    { currentPassword, newPassword }
+) => {
 
-  const user = await User.findById(userData._id);
-  user.password = hashed;
-  await user.save();
+    const passwordMatched = await bcrypt.compare(
+        currentPassword,
+        userData.password
+    );
+
+    if (!passwordMatched) {
+        throw new Error("UNAUTHORIZED");
+    }
+
+    const hashedPassword = await bcrypt.hash(
+        newPassword,
+        5
+    );
+
+    const user = await User.findById(userData._id);
+
+    if (!user) {
+        throw new Error("NOT_FOUND");
+    }
+
+    user.password = hashedPassword;
+
+    await user.save();
+
+    return user;
 };
 
-exports.deleteMe = async (id) => {
-  await User.findByIdAndDelete(id);
-  await Task.deleteMany({ userId: id }); 
+
+exports.deleteMe = async (userId) => {
+
+    const user = await User.findByIdAndDelete(userId);
+
+    if (!user) {
+        throw new Error("NOT_FOUND");
+    }
+
+    await Task.deleteMany({
+        userId
+    });
+
+    return user;
 };

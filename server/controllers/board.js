@@ -1,237 +1,323 @@
-const {createBoardSchema, updateBoardSchema } = require("../validations/board.js")
-const boardService = require("../services/board.js")
-const { success } = require("zod")
+const { createBoardSchema, updateBoardSchema } = require("../validations/board.js");
+const boardService = require("../services/board.js");
 
-
-//kanbadn Dashboard
-
+// Kanban Dashboard
 exports.getDashboard = async (req, res) => {
+
     const boardId = req.params.id;
 
-    try{
-        const dasboard = await boardService.dashboardBuilder(boardId)
+    try {
 
-        if(!dasboard){
-            return res.status(404).json(404).json({
-                error: "Board_Not_Found"
+        const dashboard = await boardService.dashboardBuilder(boardId);
+
+        return res.status(200).json({
+            success: true,
+            code: "FETCHED",
+            message: "Board dashboard fetched successfully.",
+            data: dashboard
+        });
+
+    } catch (err) {
+
+        if (err.message === "NOT_FOUND") {
+            return res.status(404).json({
+                success: false,
+                code: "NOT_FOUND",
+                message: "Board not found."
             });
         }
 
-        res.json({
-            success:"Dashboard_Loaded",
-            data:dasboard
-        })
-
-    }catch (e){
         return res.status(500).json({
-            error:"Internal_Server_Error",
-            message:"Could_Not_Load_Dashboard",
-            errorCode:e
-        })
+            success: false,
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to fetch Board dashboard."
+        });
     }
-}
+};
 
-exports.createBoard = async (req, res)=>{
-    console.log("req boardController", req.url)
 
-    let result = createBoardSchema.safeParse(req.body)
+// Create Board
+exports.createBoard = async (req, res) => {
 
-    if(!result.success) {
+    console.log("req boardController", req.url);
+
+    const result = createBoardSchema.safeParse(req.body);
+
+    if (!result.success) {
+
         return res.status(400).json({
-            error: "INVALID_DATA_FORMAT",
-            errorData: result.error.issues
-        })
+            success: false,
+            code: "VALIDATION_FAILED",
+            message: "Invalid Board data provided.",
+            issues: result.error.issues
+        });
     }
 
-    let userId = req.userData._id
+    const userId = req.userData._id;
 
-    try{
+    try {
 
-        const mongoRes = await boardService.createBoard(userId, result.data )
-        console.log(mongoRes)
-        
-        return res.status(200).json({
-            success:"Board_Saved_Successfully",
-            data:mongoRes
-        })
-    
+        const board = await boardService.createBoard(userId, result.data);
 
-    } catch(err){
-        console.log(err)
-        // console.log(err.code)
-        // console.log(err.code === 11000)
+        console.log(board);
+
+        return res.status(201).json({
+            success: true,
+            code: "CREATED",
+            message: "Board successfully created.",
+            data: board
+        });
+
+    } catch (err) {
+
+        console.log(err);
 
         if (err.code === 11000) {
+
+            const field = Object.keys(err.keyPattern)[0];
+            const value = Object.values(err.keyValue)[0];
+
             return res.status(409).json({
                 success: false,
-                // message: "A board with this title already exists.",
-                message: `A board with this ${Object.keys(err.keyPattern)[0]} already exists.`,
-                field: Object.keys(err.keyPattern)[0], // "title"
-                value: Object.values(err.keyValue)[0], // "Test Board 1"
+                code: "DUPLICATE_ENTITY",
+                message: `A Board with this ${field} already exists.`,
+                issues: [
+                    {
+                        field,
+                        value
+                    }
+                ]
             });
         }
 
         return res.status(500).json({
-            error:"Interval_Server_Error",
-            message:"Failed_To_Save_Board"
-        })
+            success: false,
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to create Board."
+        });
     }
-
-}
-
-exports.getBoards = async (req, res)=>{
-    console.log("req received GetBoards")
-    let userId = req.userData._id
+};
 
 
-    try{
-        const boards = await boardService.fetchBoards(userId)
-        console.log(boards)
-        res.status(200).json({
-            success:"Boards_Data_Fetched",
-            data: {boards}
-        })
-    }catch(e){
-        
-        if(e.message == "No_Boards_Found"){
-            return res.status(404).json({
-                message:"Failed_To_Get_Board_Details",
-                error:"No_Boards_Found"
-            })
-        }
+// Get Boards
+exports.getBoards = async (req, res) => {
 
-        return res.status(500).json({
-            error:"Internal_Server_Error",
-            message:"Failed_To_Fetch_Boards"
-        })
-    }
-    
-}
+    console.log("req received GetBoards");
 
+    const userId = req.userData._id;
 
+    try {
 
+        const boards = await boardService.getBoards(userId);
 
-// redundtant 
-exports.getBoard = async (req, res)=>{
-    console.log("req received GetBoards")
-    let boardId = req.params.id
-    console.log(typeof(req.params.id))
+        console.log(boards);
 
-    try{
-        const data = await boardService.fetchBoardDetails(boardId)
-
-        res.status(200).json({
-            success:"Board_Data_Fetched",
-            data: data
-        })
-    }catch(e){
-        
-        if(e.message == "No_Board_Found"){
-            return res.status(404).json({
-                error:e.message
-            })
-        }
-
-        return res.status(500).json({
-            error:"Internal_Server_Error",
-            message:"Failed_To_Fetch_Board"
-        })
-    }
-    
-}
-
-exports.updateBoard = async (req, res)=>{
-
-    const result = updateBoardSchema.safeParse(req.body)
-    let boardId = req.params.id
-
-    if(!result.success){
-        return res.status(400).json({
-            error:"Invalid_Data_Format",
-            validationFailureResponse:result.error.issues
-        })
-    }
-
-    try{
-        const data = await boardService.updateBoard(boardId, result.data );
-        
         return res.status(200).json({
-            success:"Board_Updated_Successfully",
-            data:data
-        })
-    
-       
-    }catch(err){
+            success: true,
+            code: "FETCHED",
+            message: "Boards fetched successfully.",
+            data: {
+                boards
+            }
+        });
+
+    } catch (err) {
+
+        if (err.message === "NO_BOARDS_FOUND") {
+
+            return res.status(404).json({
+                success: false,
+                code: "NOT_FOUND",
+                message: "No boards found."
+            });
+        }
+
+        return res.status(500).json({
+            success: false,
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to fetch Boards."
+        });
+    }
+};
+
+
+// Redundant
+exports.getBoard = async (req, res) => {
+
+    console.log("req received GetBoards");
+
+    const boardId = req.params.id;
+
+    console.log(typeof (req.params.id));
+
+    try {
+
+        const board = await boardService.getBoardDetails(boardId);
+
+        return res.status(200).json({
+            success: true,
+            code: "FETCHED",
+            message: "Board details fetched successfully.",
+            data: board
+        });
+
+    } catch (err) {
+
+        if (err.message === "NOT_FOUND") {
+
+            return res.status(404).json({
+                success: false,
+                code: "NOT_FOUND",
+                message: "Board not found."
+            });
+        }
+
+        return res.status(500).json({
+            success: false,
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to fetch Board."
+        });
+    }
+};
+
+
+// Update Board
+exports.updateBoard = async (req, res) => {
+
+    const result = updateBoardSchema.safeParse(req.body);
+
+    const boardId = req.params.id;
+
+    if (!result.success) {
+
+        return res.status(400).json({
+            success: false,
+            code: "VALIDATION_FAILED",
+            message: "Invalid Board update data.",
+            issues: result.error.issues
+        });
+    }
+
+    try {
+
+        const board = await boardService.updateBoard(
+            boardId,
+            result.data
+        );
+
+        return res.status(200).json({
+            success: true,
+            code: "UPDATED",
+            message: "Board updated successfully.",
+            data: board
+        });
+
+    } catch (err) {
 
         if (err.code === 11000) {
+
+            const field = Object.keys(err.keyPattern)[0];
+            const value = Object.values(err.keyValue)[0];
+
             return res.status(409).json({
                 success: false,
-                // message: "A board with this title already exists.",
-                message: `A board with this ${Object.keys(err.keyPattern)[0]} already exists.`,
-                field: Object.keys(err.keyPattern)[0], // "title"
-                value: Object.values(err.keyValue)[0], // "Test Board 1"
+                code: "DUPLICATE_ENTITY",
+                message: `A Board with this ${field} already exists.`,
+                issues: [
+                    {
+                        field,
+                        value
+                    }
+                ]
             });
         }
 
-        if(err.message == "Incorrect_Board_Id"){
-            // return res.status(422).json({
-            return res.status(400).json({
-                error:err.message
-            })
+        if (err.message === "NOT_FOUND") {
+
+            return res.status(404).json({
+                success: false,
+                code: "NOT_FOUND",
+                message: "Board not found."
+            });
         }
 
         return res.status(500).json({
-            error:"Internal_Server_Error",
-            message:"Failed_To_Update_Board"
-        })
+            success: false,
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to update Board."
+        });
     }
-}
+};
 
-exports.deleteBoard = async (req, res)=>{
-    let boardId = req.params.id
 
-    try{
-        let data = boardService.deleteBoard(boardId);
+// Delete Board
+exports.deleteBoard = async (req, res) => {
 
-        return res.json({
-            success:"Board_Successfully_Deleted",
-        })
-    } catch(e){
+    const boardId = req.params.id;
 
-        if(e.message == "Incorrect_Board_Id"){
-            return res.json({
-                error:"Incorrect_Board_Id",
-                message:"Failed_To_Delete_Board"
-            })
+    try {
+
+        await boardService.deleteBoard(boardId);
+
+        return res.status(200).json({
+            success: true,
+            code: "DELETED",
+            message: "Board deleted successfully."
+        });
+
+    } catch (err) {
+
+        if (err.message === "NOT_FOUND") {
+
+            return res.status(404).json({
+                success: false,
+                code: "NOT_FOUND",
+                message: "Board not found."
+            });
         }
 
         return res.status(500).json({
-            error:"Internal_Server_Error",
-            message:"Failed_To_Delete_Board"
-        })
+            success: false,
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to delete Board."
+        });
     }
-}
+};
 
-exports.deleteBoards = (req, res)=>{
-    let userId = req.userData._id;
 
-    try{
-        let data = boardService.deleteBoards(userId);
+// Delete All Boards
+exports.deleteBoards = async (req, res) => {
 
-        return res.json({
-            success:"Boards_Successfully_Deleted"
-        })
-    } catch(e){
-        if(e.message == "No_Boards_Found"){
-            return res.json({
-                error:"No_Boards_Found",
-                message:"Failed_To_Delete_Boards"
-            })
-        }
+    const userId = req.userData._id;
+
+    try {
+
+        const result = await boardService.deleteBoards(userId);
+
+        return res.status(200).json({
+            success: true,
+            code: "DELETED",
+            message: "All Boards deleted successfully.",
+            data: {
+                deletedCount: result.deletedCount
+            }
+        });
+
+    } catch (err) {
+
+        // if (err.message === "NO_BOARDS_FOUND") {
+
+        //     return res.status(404).json({
+        //         success: false,
+        //         code: "NOT_FOUND",
+        //         message: "No boards available to delete."
+        //     });
+        // }
 
         return res.status(500).json({
-            error:"Internal_Server_Error",
-            message:"Failed_To_Delete_Boards"
-        })
+            success: false,
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to delete Boards."
+        });
     }
-}
+};

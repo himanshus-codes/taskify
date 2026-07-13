@@ -1,49 +1,88 @@
-const {Task} = require('../models/Task.js')
-const mongoose = require('mongoose')
+const { Task } = require("../models/Task");
+const mongoose = require("mongoose");
 
 
-exports.createTask = async (columnId, data)=>{
+exports.createTask = async (columnId, data) => {
 
-
-
-    let taskData = new Task({
+    const taskData = new Task({
         title: data.title,
         description: data.description,
         priority: data.priority,
         columnId
-    })
+    });
 
-    let newTask = await taskData.save()
-    console.log(newTask)
+    const newTask = await taskData.save();
 
-    console.log(newTask)
+    console.log(newTask);
 
-    return newTask
-}
+    console.log(newTask);
 
-exports.fetchAllTasks = async (columnId) => {
-    return await Task.find({ columnId });
+    return newTask;
 };
+
+
+exports.getAllTasks = async (columnId) => {
+
+    const tasks = await Task.find({
+        columnId
+    });
+
+    return tasks;
+};
+
 
 exports.deleteAllTasks = async (columnId) => {
-    return await Task.deleteMany({ columnId });
+
+    const result = await Task.deleteMany({
+        columnId
+    });
+
+    return result;
 };
+
 
 exports.getTaskDetails = async (taskId) => {
-    return await Task.findById(taskId);
+
+    // if (!mongoose.isValidObjectId(taskId)) {
+    //     throw new Error("NOT_FOUND");
+    // }
+
+    const task = await Task.findById(taskId);
+
+    if (!task) {
+        throw new Error("NOT_FOUND");
+    }
+
+    return task;
 };
 
+
 exports.updateTask = async (taskId, updates) => {
-    return await Task.findByIdAndUpdate(
+
+    const task = await Task.findByIdAndUpdate(
         taskId,
-        updates,
+        { $set: updates },
         {
             new: true,
             runValidators: true
         }
     );
+
+    if (!task) {
+        throw new Error("NOT_FOUND");
+    }
+
+    return task;
 };
 
+
 exports.deleteTask = async (taskId) => {
-    return await Task.findByIdAndDelete(taskId);
+
+    const task = await Task.findByIdAndDelete(taskId);
+
+    if (!task) {
+        throw new Error("NOT_FOUND");
+    }
+
+    return task;
 };

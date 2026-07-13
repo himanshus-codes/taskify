@@ -13,193 +13,268 @@ exports.createWorkspace = async (req, res) =>  {
 
     if(!result.success){
         return res.status(400).json({
-            error: "INVALID_DATA_FORMAT",
-            errorData: result.error.issues
+            success:false,
+            // code: "INVALID_DATA_FORMAT",
+            code: "VALIDATION_FAILED",
+            // message:"Failed to create new Workspace.",
+            message:"Invalid Workspace data provided.",
+            issues: result.error.issues
         })
     }
     
     try{
-        let mongoRes = workspaceService.createWorkspace(userId, result.data)
+        const workspace = await workspaceService.createWorkspace(userId, result.data)
 
-        res.json({
-            success:"Workspace_Successfully_Created",
-            data: mongoRes
+        res.status(201).json({
+            success:true,
+            code:"CREATED",
+            message:`Workspace successfully created.`,
+            data: {
+                id: workspace._id,
+                title: workspace.title
+            }
         })
 
     }catch(err){
 
+
         if (err.code === 11000) {
+
+            const field = Object.keys(err.keyPattern)[0]
+            const value = Object.values(err.keyValue)[0]
+
             return res.status(409).json({
                 success: false,
-                message: `A workspace with this ${Object.keys(err.keyPattern)[0]} already exists.`,
-                field: Object.keys(err.keyPattern)[0], // "title"
-                value: Object.values(err.keyValue)[0], // "Test Board 1"
+                // code:"DUPLICATE_KEY",
+                // code:"CONFLICT",
+                code:"DUPLICATE_ENTITY",
+                message: `A Workspace with this ${field} already exists.`,
+                issues: [{
+                    field,
+                    value
+                }]
             });
         }
 
         return res.status(500).json({
-            error:"Interval_Server_Error",
-            message:"Failed_To_Save_Workspace"
+            success: false,
+            code:"INTERNAL_SERVER_ERROR",
+            message:"Failed to create Workspace."
+        })
+    }
+}
+
+exports.getWorkspaces = async (req, res) => {
+
+    const ownerId = req.userData._id
+
+    try {
+
+        const workspaces = await workspaceService.getWorkspaces(ownerId)
+
+        return res.status(200).json({
+            success:true,
+            code:"FETCHED",
+            message:"Workspaces fetched successfully.",
+            data:{
+                workspaces
+            }
+        })
+
+    } catch(err) {
+
+        return res.status(500).json({
+            success:false,
+            code:"INTERNAL_SERVER_ERROR",
+            message:"Failed to fetch Workspaces."
         })
     }
 }
 
 
-exports.getWorkspaces = async (req, res)=>{
-    console.log("req received Get Workspaces")
+exports.getWorkspaceDetails = async(req,res)=>{
 
-    let userId = req.userData._id
+    const workspaceId = req.params.id
 
+    try {
 
-    try{
-        const workspaces = await workspaceService.getWorkspaces(userId)
-        console.log(workspaces)
-        res.status(200).json({
-            success:"Workspaces_Data_Fetched",
-            data: {workspaces}
+        const workspace = await workspaceService.getWorkspaceDetails(workspaceId)
+
+        return res.status(200).json({
+            success:true,
+            code:"FETCHED",
+            message:"Workspace details fetched successfully.",
+            data:workspace
         })
 
+
     }catch(e){
-        
-        if(e.message == "No_Workspace(s)_Found"){
+
+        if(e.message === "NOT_FOUND"){
             return res.status(404).json({
-                error:e.message
+                success:false,
+                code:"NOT_FOUND",
+                message:"Workspace not found."
             })
         }
 
         return res.status(500).json({
-            error:"Internal_Server_Error",
-            message:"Failed_To_Fetch_Workspaces"
+            success:false,
+            code:"INTERNAL_SERVER_ERROR",
+            message:"Failed to fetch Workspace."
         })
     }
-    
 }
 
-
-
-
-// redundtant 
-exports.getWorkspaceDetails = async (req, res)=>{
-    console.log("req received GetBoards")
-    let workspaceId = req.params.id
-    console.log(typeof(req.params.id))
-
-    try{
-        const data = await workspaceService.getWorkspaceDetails(workspaceId)
-
-        res.status(200).json({
-            success:"Workspace_Data_Fetched",
-            data: data
-        })
-    }catch(e){
-        
-        if(e.message == "No_Workspace_Found"){
-            return res.status(404).json({
-                message:"Failed_To_Fetch_Workspace_Details",
-                error:"No_Workspace_Found"
-            })
-        }
-
-        return res.status(500).json({
-            error:"Internal_Server_Error",
-            message:"Failed_To_Fetch_Workspace"
-        })
-    }
-    
-}
-
-exports.updateWorkspace = async (req, res)=>{
+exports.updateWorkspace = async(req,res)=>{
 
     const result = dataValidations.updateValidifier.safeParse(req.body)
-    let workspaceId = req.params.id
+
+    const workspaceId = req.params.id
+
 
     if(!result.success){
+
         return res.status(400).json({
-            error:"Invalid_Data_Format",
-            validationFailureResponse:result.error.issues
+            success:false,
+            code:"VALIDATION_FAILED",
+            message:"Invalid Workspace update data.",
+            issues:result.error.issues
         })
     }
 
+
     try{
-        const data = await boardService.updateBoard(workspaceId, result.data );
-        
+
+        const workspace = await workspaceService.updateWorkspace(
+            workspaceId,
+            result.data
+        )
+
+
         return res.status(200).json({
-            success:"Workspace_Updated_Successfully",
-            data:data
+            success:true,
+            code:"UPDATED",
+            message:"Workspace updated successfully.",
+            data:workspace
         })
-    
-       
+
+
     }catch(err){
 
-        if (err.code === 11000) {
+
+        if(err.code === 11000){
+
+            const field = Object.keys(err.keyPattern)[0]
+            const value = Object.values(err.keyValue)[0]
+
+
             return res.status(409).json({
-                success: false,
-                message: `A Workspace with this ${Object.keys(err.keyPattern)[0]} already exists.`,
-                field: Object.keys(err.keyPattern)[0], 
-                value: Object.values(err.keyValue)[0], 
-            });
-        }
-
-        if(err.message == "No_Workspace_Found"){
-            // return res.status(422).json({
-            return res.status(400).json({
-                message:"Failed_To_Update_Workspace",
-                error:"No_Workspace_Found"
+                success:false,
+                code:"DUPLICATE_ENTITY",
+                message:`A Workspace with this ${field} already exists.`,
+                issues:[
+                    {
+                        field,
+                        value
+                    }
+                ]
             })
         }
 
+
+        if(err.message === "NOT_FOUND"){
+
+            return res.status(404).json({
+                success:false,
+                code:"NOT_FOUND",
+                message:"Workspace not found."
+            })
+        }
+
+
         return res.status(500).json({
-            error:"Internal_Server_Error",
-            message:"Failed_To_Update_Workspace"
+            success:false,
+            code:"INTERNAL_SERVER_ERROR",
+            message:"Failed to update Workspace."
         })
     }
 }
 
-exports.deleteWorkspace = async (req, res)=>{
-    let workspaceId = req.params.id
+exports.deleteWorkspace = async(req,res)=>{
+
+    const workspaceId = req.params.id
 
     try{
-        let data = boardService.deleteWorkspace(workspaceId);
 
-        return res.json({
-            success:"Workspace_Successfully_Deleted",
+        await workspaceService.deleteWorkspace(workspaceId)
+
+
+        return res.status(200).json({
+            success:true,
+            code:"DELETED",
+            message:"Workspace deleted successfully."
         })
-    } catch(e){
 
-       if(e.message == "No_Workspace_Found"){
-            return res.json({
-                error:"No_Workspace_Found",
-                message:"Failed_To_Delete_Workspace"
+
+    }catch(e){
+
+
+        if(e.message === "NOT_FOUND"){
+
+            return res.status(404).json({
+                success:false,
+                code:"NOT_FOUND",
+                message:"Workspace not found."
             })
         }
 
+
         return res.status(500).json({
-            error:"Internal_Server_Error",
-            message:"Failed_To_Delete_Workspace"
+            success:false,
+            code:"INTERNAL_SERVER_ERROR",
+            message:"Failed to delete Workspace."
         })
     }
 }
 
-exports.deleteWorkspaces = (req, res)=>{
-    let userId = req.userData._id;
+
+exports.deleteWorkspaces = async(req,res)=>{
+
+    const ownerId = req.userData._id
 
     try{
-        let data = boardService.deleteWorkspaces(userId);
 
-        return res.json({
-            success:"Workspaces_Successfully_Deleted"
+       let result = await workspaceService.deleteWorkspaces(ownerId)
+
+
+        return res.status(200).json({
+            success:true,
+            code:"DELETED",
+            message:"All Workspaces deleted successfully.",
+            data:{
+                deletedCount: result.deletedCount
+            }
         })
-    } catch(e){
-        if(e.message == "No_Workspaces_Found"){
-            return res.json({
-                error:"No_Workspaces_Found",
-                message:"Failed_To_Delete_Workspaces"
-            })
-        }
+
+
+    }catch(e){
+
+
+        // if(e.message === "NO_WORKSPACES_FOUND"){
+
+        //     return res.status(404).json({
+        //         success:false,
+        //         code:"NOT_FOUND",
+        //         message:"No workspaces available to delete."
+        //     })
+        // }
+
 
         return res.status(500).json({
-            error:"Internal_Server_Error",
-            message:"Failed_To_Delete_Workspaces"
+            success:false,
+            code:"INTERNAL_SERVER_ERROR",
+            message:"Failed to delete Workspaces."
         })
     }
 }

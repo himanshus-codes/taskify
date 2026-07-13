@@ -1,19 +1,21 @@
-const {createTaskSchema, updateTaskSchema} = require("../validations/task")
-const taskService = require("../services/task")
+const { createTaskSchema, updateTaskSchema } = require("../validations/task");
+const taskService = require("../services/task");
 
-//  Task CRUD Routes
+// Task CRUD Routes
 
-// create task by user
+// Create Task
 exports.createTask = async (req, res) => {
 
     const columnId = req.params.id;
 
-    const validationResult = createTaskSchema.safeParse(req.body);
+    const result = createTaskSchema.safeParse(req.body);
 
-    if (!validationResult.success) {
+    if (!result.success) {
         return res.status(400).json({
-            error: "Validation_Error",
-            issues: validationResult.error.issues
+            success: false,
+            code: "VALIDATION_FAILED",
+            message: "Invalid Task data provided.",
+            issues: result.error.issues
         });
     }
 
@@ -21,62 +23,75 @@ exports.createTask = async (req, res) => {
 
         const task = await taskService.createTask(
             columnId,
-            validationResult.data
+            result.data
         );
 
         return res.status(201).json({
-            success: "Task_Created",
+            success: true,
+            code: "CREATED",
+            message: "Task successfully created.",
             data: task
         });
 
     } catch (err) {
 
         if (err.code === 11000) {
+
+            const field = Object.keys(err.keyPattern)[0];
+            const value = Object.values(err.keyValue)[0];
+
             return res.status(409).json({
                 success: false,
-                // message: "A task with this title already exists.",
-                message: `A task with this ${Object.keys(err.keyPattern)[0]} already exists.`,
-                field: Object.keys(err.keyPattern)[0], // "task"
-                value: Object.values(err.keyValue)[0], // "task title"
+                code: "DUPLICATE_ENTITY",
+                message: `A Task with this ${field} already exists.`,
+                issues: [
+                    {
+                        field,
+                        value
+                    }
+                ]
             });
         }
 
         return res.status(500).json({
-            error: "Internal_Server_Error",
-            message: "Could_Not_Create_Task"
+            success: false,
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to create Task."
         });
-
     }
-
 };
 
-// fetch all tasks by user
+
+// Get All Tasks
 exports.getAllTasks = async (req, res) => {
 
     const columnId = req.params.id;
 
     try {
 
-        const tasks = await taskService.fetchAllTasks(columnId);
+        const tasks = await taskService.getAllTasks(columnId);
 
-        return res.json({
-            success: "Tasks_Fetched",
-            data: tasks
+        return res.status(200).json({
+            success: true,
+            code: "FETCHED",
+            message: "Tasks fetched successfully.",
+            data: {
+                tasks
+            }
         });
 
-    } catch (e) {
+    } catch (err) {
 
         return res.status(500).json({
-            error: "Internal_Server_Error",
-            message: "Could_Not_Fetch_Tasks"
+            success: false,
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to fetch Tasks."
         });
-
     }
-
 };
 
 
-// fetch speciffic task
+// Get Task Details
 exports.getTaskDetails = async (req, res) => {
 
     const taskId = req.params.id;
@@ -85,39 +100,47 @@ exports.getTaskDetails = async (req, res) => {
 
         const task = await taskService.getTaskDetails(taskId);
 
-        if (!task) {
-            return res.status(404).json({
-                error: "Task_Not_Found"
-            });
-        }
-
-        return res.json({
-            success: "Task_Fetched",
+        return res.status(200).json({
+            success: true,
+            code: "FETCHED",
+            message: "Task details fetched successfully.",
             data: task
         });
 
-    } catch (e) {
+    } catch (err) {
+
+        if (err.message === "NOT_FOUND") {
+
+            return res.status(404).json({
+                success: false,
+                code: "NOT_FOUND",
+                message: "Task not found."
+            });
+        }
 
         return res.status(500).json({
-            error: "Internal_Server_Error",
-            message: "Could_Not_Fetch_Task"
+            success: false,
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to fetch Task."
         });
-
     }
-
 };
 
-// update a task by user: status title description priority etc
+
+// Update Task
 exports.updateTask = async (req, res) => {
 
     const taskId = req.params.id;
 
-    const validationResult = updateTaskSchema.safeParse(req.body);
+    const result = updateTaskSchema.safeParse(req.body);
 
-    if (!validationResult.success) {
+    if (!result.success) {
+
         return res.status(400).json({
-            error: "Validation_Error",
-            issues: validationResult.error.issues
+            success: false,
+            code: "VALIDATION_FAILED",
+            message: "Invalid Task update data.",
+            issues: result.error.issues
         });
     }
 
@@ -125,69 +148,90 @@ exports.updateTask = async (req, res) => {
 
         const task = await taskService.updateTask(
             taskId,
-            validationResult.data
+            result.data
         );
 
-        if (!task) {
-            return res.status(404).json({
-                error: "Task_Not_Found"
-            });
-        }
-
-        return res.json({
-            success: "Task_Updated",
+        return res.status(200).json({
+            success: true,
+            code: "UPDATED",
+            message: "Task updated successfully.",
             data: task
         });
 
     } catch (err) {
 
         if (err.code === 11000) {
+
+            const field = Object.keys(err.keyPattern)[0];
+            const value = Object.values(err.keyValue)[0];
+
             return res.status(409).json({
                 success: false,
-                // message: "A task with this title already exists.",
-                message: `A task with this ${Object.keys(err.keyPattern)[0]} already exists.`,
-                field: Object.keys(err.keyPattern)[0], // "task"
-                value: Object.values(err.keyValue)[0], // "task title"
+                code: "DUPLICATE_ENTITY",
+                message: `A Task with this ${field} already exists.`,
+                issues: [
+                    {
+                        field,
+                        value
+                    }
+                ]
+            });
+        }
+
+        if (err.message === "NOT_FOUND") {
+
+            return res.status(404).json({
+                success: false,
+                code: "NOT_FOUND",
+                message: "Task not found."
             });
         }
 
         return res.status(500).json({
-            error: "Internal_Server_Error",
-            message: "Could_Not_Update_Task"
+            success: false,
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to update Task."
         });
-
     }
-
 };
+
+
+// Delete Task
 exports.deleteTask = async (req, res) => {
 
     const taskId = req.params.id;
 
     try {
 
-        const task = await taskService.deleteTask(taskId);
+        await taskService.deleteTask(taskId);
 
-        if (!task) {
+        return res.status(200).json({
+            success: true,
+            code: "DELETED",
+            message: "Task deleted successfully."
+        });
+
+    } catch (err) {
+
+        if (err.message === "NOT_FOUND") {
+
             return res.status(404).json({
-                error: "Task_Not_Found"
+                success: false,
+                code: "NOT_FOUND",
+                message: "Task not found."
             });
         }
 
-        return res.json({
-            success: "Task_Deleted",
-            data: task
-        });
-
-    } catch (e) {
-
         return res.status(500).json({
-            error: "Internal_Server_Error",
-            message: "Could_Not_Delete_Task"
+            success: false,
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to delete Task."
         });
-
     }
-
 };
+
+
+// Delete All Tasks
 exports.deleteAllTasks = async (req, res) => {
 
     const columnId = req.params.id;
@@ -196,62 +240,21 @@ exports.deleteAllTasks = async (req, res) => {
 
         const result = await taskService.deleteAllTasks(columnId);
 
-        return res.json({
-            success: "Tasks_Deleted",
-            deletedCount: result.deletedCount
+        return res.status(200).json({
+            success: true,
+            code: "DELETED",
+            message: "All Tasks deleted successfully.",
+            data: {
+                deletedCount: result.deletedCount
+            }
         });
 
-    } catch (e) {
+    } catch (err) {
 
         return res.status(500).json({
-            error: "Internal_Server_Error",
-            message: "Could_Not_Delete_Tasks"
+            success: false,
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to delete Tasks."
         });
-
     }
-
 };
-
-
-
-// taskRouter.put('/', isAdmin, (req, res) => {
-//     // Implement update task  logic
-// });
-
-// taskRouter.delete('/', isAdmin, (req, res) => {
-//     // Implement delete all tasks logic
-// });
-
-// taskRouter.delete('/:id', isAdmin, (req, res) => {
-//     // Implement delete task by id logic
-// });
-
-
-// taskRouter.get('/', isAdmin, (req, res) => {
-//     // Implement fetching all task logic
-// });
-
-// taskRouter.get('/:id', isAdmin, (req, res) => {
-//     // Implement fetching task by id logic
-// });
-
-
-
-
-
-// {
-//   "title": "Finish backend revision",
-//   "description": "Revise Zod and Mongoose schemas and build small API",
-//   "priority": "high",
-//   "status": "in-progress",
-//   "userId": "user_123"
-// }
-
-
-// {
-//   "title": "Go for a walk",
-//   "description": "30 minutes evening walk for refreshment",
-//   "priority": "low",
-//   "status": "pending",
-//   "userId": "user_456"
-// }

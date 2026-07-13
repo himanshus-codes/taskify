@@ -1,34 +1,55 @@
-const {columnSchema, columnUpdateSchema} = require("../validations/column");
-const columnService = require('../services/column');
-const { success } = require("zod");
+const { columnSchema, columnUpdateSchema } = require("../validations/column");
+const columnService = require("../services/column");
 
-exports.getColumns = async (req, res)=>{
+exports.getColumns = async (req, res) => {
+
     const boardId = req.params.id;
 
-    try{
-        const data = await columnService.fetchColumns(boardId)
+    try {
 
-        return res.json({
-            success:"All_Columns_Fetched",
-            data: data
-        })
-    }catch(e){
-        res.status(500).json({
-            error:"Internal_Server_Error",
-            message:"Could_Not_Fetch_Columns"
-        })
+        const columns = await columnService.getColumns(boardId);
+
+        return res.status(200).json({
+            success: true,
+            code: "FETCHED",
+            message: "Columns fetched successfully.",
+            data: {
+                columns
+            }
+        });
+
+    } catch (err) {
+
+        // if (err.message === "NO_COLUMNS_FOUND") {
+        //     return res.status(404).json({
+        //         success: false,
+        //         code: "NOT_FOUND",
+        //         message: "No columns found."
+        //     });
+        // }
+
+        return res.status(500).json({
+            success: false,
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to fetch Columns."
+        });
     }
-}
+};
+
+
 exports.createColumn = async (req, res) => {
 
     const boardId = req.params.id;
 
-    const validationResult = columnSchema.safeParse(req.body);
+    const result = columnSchema.safeParse(req.body);
 
-    if (!validationResult.success) {
+    if (!result.success) {
+
         return res.status(400).json({
-            error: "Validation_Error",
-            issues: validationResult.error.issues
+            success: false,
+            code: "VALIDATION_FAILED",
+            message: "Invalid Column data provided.",
+            issues: result.error.issues
         });
     }
 
@@ -36,83 +57,240 @@ exports.createColumn = async (req, res) => {
 
         const column = await columnService.createColumn(
             boardId,
-            validationResult.data
+            result.data
         );
 
         return res.status(201).json({
-            success: "Column_Created",
+            success: true,
+            code: "CREATED",
+            message: "Column successfully created.",
             data: column
         });
 
     } catch (err) {
 
         if (err.code === 11000) {
+
+            const field = Object.keys(err.keyPattern)[0];
+            const value = Object.values(err.keyValue)[0];
+
             return res.status(409).json({
                 success: false,
-                // message: "A column with this title already exists.",
-                message: `A column with this ${Object.keys(err.keyPattern)[0]} already exists.`,
-                field: Object.keys(err.keyPattern)[0], 
-                value: Object.values(err.keyValue)[0], 
+                code: "DUPLICATE_ENTITY",
+                message: `A Column with this ${field} already exists.`,
+                issues: [
+                    {
+                        field,
+                        value
+                    }
+                ]
             });
         }
 
         return res.status(500).json({
-            error: "Internal_Server_Error",
-            message: "Could_Not_Create_Column"
+            success: false,
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to create Column."
         });
-
     }
-
 };
+
+
 exports.createColumns = async (req, res) => {
 
     const boardId = req.params.id;
 
     if (!Array.isArray(req.body)) {
+
         return res.status(400).json({
-            error: "Validation_Error",
-            message: "Body should be an array."
+            success: false,
+            code: "VALIDATION_FAILED",
+            message: "Invalid Columns data provided."
         });
     }
 
-    const parsed = [];
+    const columns = [];
 
-    for (const col of req.body) {
+    for (const column of req.body) {
 
-        const result = columnSchema.safeParse(col);
+        const result = columnSchema.safeParse(column);
 
         if (!result.success) {
+
             return res.status(400).json({
-                error: "Validation_Error",
+                success: false,
+                code: "VALIDATION_FAILED",
+                message: "Invalid Columns data provided.",
                 issues: result.error.issues
             });
         }
 
-        parsed.push(result.data);
+        columns.push(result.data);
     }
 
     try {
 
-        const columns = await columnService.createColumns(
+        const createdColumns = await columnService.createColumns(
             boardId,
-            parsed
+            columns
         );
 
         return res.status(201).json({
-            success: "Columns_Created",
-            data: columns
+            success: true,
+            code: "CREATED",
+            message: "Columns successfully created.",
+            data: {
+                columns: createdColumns
+            }
         });
 
-    } catch (e) {
+    } catch (err) {
 
         return res.status(500).json({
-            error: "Internal_Server_Error",
-            message: "Could_Not_Create_Columns"
+            success: false,
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to create Columns."
+        });
+    }
+};
+
+
+exports.getColumnDetails = async (req, res) => {
+
+    const columnId = req.params.id;
+
+    try {
+
+        const column = await columnService.getColumnDetails(columnId);
+
+        return res.status(200).json({
+            success: true,
+            code: "FETCHED",
+            message: "Column details fetched successfully.",
+            data: column
         });
 
+    } catch (err) {
+
+        if (err.message === "NOT_FOUND") {
+
+            return res.status(404).json({
+                success: false,
+                code: "NOT_FOUND",
+                message: "Column not found."
+            });
+        }
+
+        return res.status(500).json({
+            success: false,
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to fetch Column."
+        });
+    }
+};
+
+
+exports.updateColumn = async (req, res) => {
+
+    const columnId = req.params.id;
+
+    const result = columnUpdateSchema.safeParse(req.body);
+
+    if (!result.success) {
+
+        return res.status(400).json({
+            success: false,
+            code: "VALIDATION_FAILED",
+            message: "Invalid Column update data.",
+            issues: result.error.issues
+        });
     }
 
+    try {
+
+        const column = await columnService.updateColumn(
+            columnId,
+            result.data
+        );
+
+        return res.status(200).json({
+            success: true,
+            code: "UPDATED",
+            message: "Column updated successfully.",
+            data: column
+        });
+
+    } catch (err) {
+
+        if (err.code === 11000) {
+
+            const field = Object.keys(err.keyPattern)[0];
+            const value = Object.values(err.keyValue)[0];
+
+            return res.status(409).json({
+                success: false,
+                code: "DUPLICATE_ENTITY",
+                message: `A Column with this ${field} already exists.`,
+                issues: [
+                    {
+                        field,
+                        value
+                    }
+                ]
+            });
+        }
+
+        if (err.message === "NOT_FOUND") {
+
+            return res.status(404).json({
+                success: false,
+                code: "NOT_FOUND",
+                message: "Column not found."
+            });
+        }
+
+        return res.status(500).json({
+            success: false,
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to update Column."
+        });
+    }
 };
+
+
+exports.deleteColumn = async (req, res) => {
+
+    const columnId = req.params.id;
+
+    try {
+
+        await columnService.deleteColumn(columnId);
+
+        return res.status(200).json({
+            success: true,
+            code: "DELETED",
+            message: "Column deleted successfully."
+        });
+
+    } catch (err) {
+
+        if (err.message === "NOT_FOUND") {
+
+            return res.status(404).json({
+                success: false,
+                code: "NOT_FOUND",
+                message: "Column not found."
+            });
+        }
+
+        return res.status(500).json({
+            success: false,
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to delete Column."
+        });
+    }
+};
+
 
 
 exports.deleteColumns = async (req, res) => {
@@ -123,124 +301,30 @@ exports.deleteColumns = async (req, res) => {
 
         const result = await columnService.deleteColumns(boardId);
 
-        return res.json({
-            success: "Columns_Deleted",
-            deletedCount: result.deletedCount
-        });
-
-    } catch (e) {
-
-        return res.status(500).json({
-            error: "Internal_Server_Error",
-            message: "Could_Not_Delete_Columns"
-        });
-
-    }
-
-};
-
-exports.getColumnDetails = async (req, res) => {
-
-    const columnId = req.params.id;
-
-    try {
-
-        const column = await columnService.getColumnDetails(columnId);
-
-        if (!column) {
-            return res.status(404).json({
-                error: "Not_Found"
-            });
-        }
-
-        return res.json({
-            success: "Column_Details_Fetched",
-            data: column
-        });
-
-    } catch (e) {
-
-        return res.status(500).json({
-            error: "Internal_Server_Error"
-        });
-
-    }
-
-};
-exports.updateColumn = async (req, res) => {
-
-    const columnId = req.params.id;
-
-    const validationResult = columnUpdateSchema.safeParse(req.body);
-
-    if (!validationResult.success) {
-        return res.status(400).json({
-            error: "Validation_Error",
-            issues: validationResult.error.issues
-        });
-    }
-
-    try {
-
-        const column = await columnService.updateColumn(
-            columnId,
-            validationResult.data
-        );
-
-        if (!column) {
-            return res.status(404).json({
-                error: "Not_Found"
-            });
-        }
-
-        return res.json({
-            success: "Column_Updated",
-            data: column
+        return res.status(200).json({
+            success: true,
+            code: "DELETED",
+            message: "All Columns deleted successfully.",
+            data: {
+                deletedCount: result.deletedCount
+            }
         });
 
     } catch (err) {
 
-        if (err.code === 11000) {
-            return res.status(409).json({
-                success: false,
-                message: `A column with this ${Object.keys(err.keyPattern)[0]} already exists.`,
-                field: Object.keys(err.keyPattern)[0], // "task"
-                value: Object.values(err.keyValue)[0], // "task title"
-            });
-        }
+        if (err.message === "NO_COLUMNS_FOUND") {
 
-        return res.status(500).json({
-            error: "Internal_Server_Error"
-        });
-
-    }
-
-};
-exports.deleteColumn = async (req, res) => {
-
-    const columnId = req.params.id;
-
-    try {
-
-        const column = await columnService.deleteColumn(columnId);
-
-        if (!column) {
             return res.status(404).json({
-                error: "Not_Found"
+                success: false,
+                code: "NOT_FOUND",
+                message: "No columns available to delete."
             });
         }
 
-        return res.json({
-            success: "Column_Deleted",
-            data: column
-        });
-
-    } catch (e) {
-
         return res.status(500).json({
-            error: "Internal_Server_Error"
+            success: false,
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to delete Columns."
         });
-
     }
-
 };
