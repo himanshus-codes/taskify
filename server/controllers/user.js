@@ -1,6 +1,6 @@
 // controllers/user.controller.js
 const userService = require("../services/user.js");
-const { signupSchema, updateSchema, passwordSchema } = require("../validations/user");
+const { signupSchema, updateSchema, passwordUpdateSchema } = require("../validations/user");
 
 
 exports.signup = async (req, res) => {
@@ -35,8 +35,9 @@ exports.signup = async (req, res) => {
 
         return res.status(201).json({
             success: true,
-            code: "CREATED",
-            message: "User successfully registered."
+            // code: "CREATED",
+            code: "USER_REGISTERED",
+            message: "Account successfully created."
         });
 
     } catch (err) {
@@ -73,12 +74,14 @@ exports.signup = async (req, res) => {
 exports.login = async (req, res) => {
 
     try {
+        console.log("login req rec")
 
         const token = await userService.login(req.body);
 
         return res.status(200).json({
             success: true,
-            code: "FETCHED",
+            // code: "FETCHED",
+            code: "USER_AUTHENTICATED",
             message: "User signed in successfully.",
             data: {
                 token
@@ -87,18 +90,27 @@ exports.login = async (req, res) => {
 
     } catch (err) {
 
-        console.log(err);
+        // console.log(err);
 
         // res.status(403).json({ message: "Sign_In_Failed",error: e });
         // res.status(403).json({ message: "Sign_In_Failed",error: e.message });
 
         // res.status(403).json({ message: "Sign_In_Failed",error: "Invalid_Credentials" });
 
-        return res.status(401).json({
+        if(err.message == "UNAUTHORIZED"){
+            return res.status(401).json({
+                success: false,
+                code: "UNAUTHORIZED",
+                message: "Invalid credentials."
+            });
+        }
+
+        return res.status(500).json({
             success: false,
-            code: "UNAUTHORIZED",
-            message: "Invalid credentials."
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to Login User."
         });
+        
     }
 };
 
@@ -164,7 +176,7 @@ exports.updateMe = async (req, res) => {
 
 exports.updatePassword = async (req, res) => {
 
-    const result = passwordSchema.safeParse(req.body);
+    const result = passwordUpdateSchema.safeParse(req.body);
 
     if (!result.success) {
 

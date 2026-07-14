@@ -6,6 +6,8 @@ exports.signupSchema = z.object({
   password: z.string().min(8).max(128),
   firstName: z.string().min(3).max(30),
   lastName: z.string().min(2).max(30),
+  password: z.string().min(8).max(128)
+
 })
 
 exports.updateSchema = z
@@ -18,7 +20,8 @@ exports.updateSchema = z
     message: "At least one field required",
   });
 
-exports.passwordSchema = z.object({
+
+exports.passwordUpdateSchema = z.object({
   currentPassword: z.string().min(8).max(128),
   newPassword: z.string().min(8).max(128),
 });
