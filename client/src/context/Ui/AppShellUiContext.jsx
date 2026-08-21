@@ -7,9 +7,10 @@ function AppShellUiProvider({children}){
 
     //App level Ui State
     const [isSidebarOpen, setSidebarState ] = useState(true)
+    
     const [isWorkspaceOptnsTabOpen, setWorkspaceOptnsTabState] = useState(false)
     const [isProfileOptnsTabOpen, setProfileOptnsTabState] = useState(false)
-
+    const [isSearchOpen, setSearchOpen] = useState(false)
 
     const closeWorkspaceOtpnsTab = () => {
         if(!isWorkspaceOptnsTabOpen){
@@ -37,8 +38,11 @@ return <AppShellUiStateContext.Provider value={{
     isProfileOptnsTabOpen : isProfileOptnsTabOpen,
     setProfileOptnsTabState : setProfileOptnsTabState,
 
+    isSearchOpen,
+    setSearchOpen,
+
     closeProfileOtpnsTab,
-    closeWorkspaceOtpnsTab 
+    closeWorkspaceOtpnsTab,
     
  }}>{children}</AppShellUiStateContext.Provider>
 }

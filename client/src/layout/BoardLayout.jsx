@@ -57,3 +57,4 @@ export default BoardLayout
 // custom card views (due, created, member, label, desc, priority, notifs, alert(ovedue) (something like notion))
 // current selection state and higlighting of current selection, for example, filter selected, sort selected, change view menu opened so (highlight on change view button)
 // implementation of trash
+// ticket id cocept per card
