@@ -10,8 +10,10 @@ function AuthProvider({children}){
         token:null
     })
 
-    // This runs once when AuthProvider mounts.
-    // useful in case of page refreshes for reattaining auth taken in state and getting back user
+    // console.log(auth)
+
+    //  runs once when AuthProvider mounts.
+    // useful in case of page refreshes for reattaining auth token in state and getting back user
     useEffect(() => {
         async function getCurrentUser() {
             const token = localStorage.getItem("token");
@@ -19,16 +21,17 @@ function AuthProvider({children}){
             if (!token) return;
     
             try{
-                let data = await getUser(token)
-            console.log("getCurrentUser", data)
+                let res = await getUser(token)
+                console.log("getCurrentUser", res)
+                
                 setAuth({
                     token,
-                    user: data
+                    user: res.data
                 });
 
             }catch(err){
-                localStorage.removeItem("token");
-                setAuth({ token: null, user: null });
+                // localStorage.removeItem("token");
+                // setAuth({ token: null, user: null });
 
             }
         }
@@ -36,6 +39,8 @@ function AuthProvider({children}){
         getCurrentUser();
           
     }, []);
+
+    // console.log(auth.user)
 
     const setloginContext = async (token) => {
         localStorage.setItem("token", token);
@@ -45,11 +50,11 @@ function AuthProvider({children}){
         // insure error handling block (signin parent already has)
 
 
-        let data = await getUser(token)
-        console.log(data)
+        let res = await getUser(token)
+        // console.log(res)
         setAuth({
             token,
-            user:data.data
+            user:res.data
         });
 
         

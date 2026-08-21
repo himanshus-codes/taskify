@@ -1,4 +1,5 @@
 const {Workspace} = require("../models/Workspace")
+const{Board} = require("../models/Board")
 
 
 exports.createWorkspace = async (ownerId, data) => {
@@ -32,6 +33,25 @@ exports.getWorkspaceDetails = async (workspaceId) => {
 
     return workspace
 }
+
+exports.getBoards = async (workspaceId) => {
+
+   
+
+    const boards = await Board.find({
+        workspaceId
+    });
+
+    console.log(boards)
+
+    // console.log(boards);
+
+    // if (boards.length === 0) {
+    //     throw new Error("NO_BOARDS_FOUND");
+    // }
+
+    return boards;
+};
 
 
 exports.updateWorkspace = async (workspaceId, updates) => {

@@ -4,6 +4,8 @@
 client/node_modules/
 server/node_modules/
 
+client/src/components/old/
+
 # ===================================
 # Enviorment Variables
 # ===================================

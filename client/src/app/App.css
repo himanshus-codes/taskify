@@ -1,0 +1,39 @@
+:root {
+  /* --text: #6b6375; */
+
+
+  @media (max-width: 1024px) {
+    font-size: 16px;
+    /* background-color: rgb(60, 59, 59); */
+
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+  
+    --text-h: #f3f4f6;    
+  
+  }
+
+  #social .button-icon {
+    filter: invert(1) brightness(2);
+  }
+}
+
+body {
+  /* margin: 0px; */
+  background:#f5f7fb;
+  font-family: Arial, sans-serif;
+}
+
+#root {
+  
+  /* margin: 0px ; */
+  /* background-color: rgb(60, 59, 59); */
+  
+  /* display: flex; */
+  /* flex-direction: column;
+  box-sizing: border-box; */
+  font-size: 12px;
+}

@@ -39,6 +39,8 @@ exports.getDashboard = async (req, res) => {
 // Create Board
 exports.createBoard = async (req, res) => {
 
+
+    console.log("hiiiiiiiiiiiiiii")
     console.log("req boardController", req.url);
 
     const result = createBoardSchema.safeParse(req.body);
@@ -52,12 +54,12 @@ exports.createBoard = async (req, res) => {
             issues: result.error.issues
         });
     }
-
+    const workspaceId = req.params.id
     const userId = req.userData._id;
 
     try {
 
-        const board = await boardService.createBoard(userId, result.data);
+        const board = await boardService.createBoard(userId, workspaceId, result.data);
 
         console.log(board);
 

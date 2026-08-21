@@ -52,12 +52,13 @@ exports.dashboardBuilder = async (boardId) => {
 };
 
 
-exports.createBoard = async (userId, data) => {
+exports.createBoard = async (userId, workspaceId, data) => {
 
     const board = await Board.create({
         title: data.title,
         description: data.description,
-        userId
+        userId,
+        workspaceId
     });
 
     console.log(board);
@@ -75,9 +76,9 @@ exports.getBoards = async (userId) => {
     console.log("---------------------------------------------");
     console.log(boards);
 
-    if (boards.length === 0) {
-        throw new Error("NO_BOARDS_FOUND");
-    }
+    // if (boards.length === 0) {
+    //     throw new Error("NO_BOARDS_FOUND");
+    // }
 
     return boards;
 };

@@ -4,10 +4,12 @@ const router = Router()
 const boardController = require('../controllers/board')
 const { userMiddleware } = require("../middleware/user")
 
+router.post("/workspace/:id/board", userMiddleware, boardController.createBoard)
+
+
 // kanban dasboard route
 router.get('/boards/:id/dashboard', userMiddleware, boardController.getDashboard)
 
-router.post("/boards/board", userMiddleware, boardController.createBoard)
 
 router.get("/boards",userMiddleware, boardController.getBoards)
 

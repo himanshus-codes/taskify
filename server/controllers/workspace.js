@@ -1,4 +1,5 @@
 const  dataValidations = require("../validations/workspace")
+const  {createValidifier, updateValidifier} = require("../validations/workspace")
 const workspaceService = require("../services/workspace");
 const { success } = require("zod");
 const { mongo } = require("mongoose");
@@ -9,7 +10,7 @@ exports.createWorkspace = async (req, res) =>  {
 
     const userId =  req.userData._id;
 
-    const result = dataValidations.createValidifier(req.body)
+    const result = dataValidations.createValidifier.safeParse(req.body)
 
     if(!result.success){
         return res.status(400).json({
@@ -90,6 +91,49 @@ exports.getWorkspaces = async (req, res) => {
         })
     }
 }
+
+
+exports.getBoards = async (req, res) => {
+
+    console.log("req received GetBoards");
+
+    // const userId = req.userData._id;
+    const workspaceId = req.params.id;
+    console.log(workspaceId)
+
+    try {
+
+        const boards = await workspaceService.getBoards(workspaceId);
+
+        // console.log(boards);
+
+        return res.status(200).json({
+            success: true,
+            code: "FETCHED",
+            message: "Boards fetched successfully.",
+            data: {
+                boards
+            }
+        });
+
+    } catch (err) {
+
+        if (err.message === "NO_BOARDS_FOUND") {
+
+            return res.status(404).json({
+                success: false,
+                code: "NOT_FOUND",
+                message: "No boards found."
+            });
+        }
+
+        return res.status(500).json({
+            success: false,
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to fetch Boards."
+        });
+    }
+};
 
 
 exports.getWorkspaceDetails = async(req,res)=>{

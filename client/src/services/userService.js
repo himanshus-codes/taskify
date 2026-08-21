@@ -1,5 +1,5 @@
 export async function getUser(token){
-    console.log("get user request")
+    // console.log("get user request")
   
 
         const res = await fetch("http://localhost:3000/me",{
@@ -10,7 +10,7 @@ export async function getUser(token){
         })
 
         const data = await res.json()
-        console.log(data)
+        // console.log(data)
         // return data
          if(res.ok){
                 return data
