@@ -1,16 +1,11 @@
 // import "./App.css"
-
-import { useState } from 'react'
 import {BrowserRouter, Routes, Route, Link, useNavigate, Outlet} from "react-router-dom"
-
-import { useContext,  } from 'react';
-
 
 import Login from "../pages/public/Login";
 import Register from "../pages/public/Register";
 import Home from "../pages/public/Home";
 
-import AppLayout from "../layout/AppLayout";
+import AppLayout from "../components/AppShell/AppLayout";
 
 import AuthProvider from '../context/AuthContext';
 import ProtectedRoute from './ProtectedRoute';
@@ -18,16 +13,13 @@ import AppContextProvider from '../context/AppContext';
 import AppShellUiContext from '../context/Ui/AppShellUiContext';
 
 import Boards from '../pages/workspace/Boards'
-import BoardLayout from '../layout/BoardLayout';
 import Templates from '../pages/workspace/Templates'
 import Stats from '../pages/workspace/Stats'
 import Settings from '../pages/workspace/Settings'
-import MainContentArea from '../components/AppShell/MainContentArea';
+import MainPageLayout from '../components/AppShell/MainPageLayout';
 
 import BoardPage from '../pages/workspace/BoardPage';
 // import Boards from '../pages/workspace/Boards'
-
-import BoardProvider from '../context/BoardContext';
 
 function App() {
 
@@ -56,7 +48,7 @@ function App() {
 
               {/* workspaces/ element=resolver component, where it should direct users to */}
               {/* Normal content shell */}
-            <Route element={<MainContentArea />}>
+            <Route element={<MainPageLayout />}>
 
               <Route
                   path="/workspaces"

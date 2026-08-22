@@ -1,5 +1,5 @@
-import Sidebar from "../components/AppShell/Sidebar"
-import MainContentArea from "../components/AppShell/MainContentArea"
+import Sidebar from "./Sidebar"
+import MainContentArea from "./MainPageLayout"
 import { Outlet } from "react-router-dom"
 import { useState } from "react"
 

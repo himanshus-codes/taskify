@@ -1,7 +1,7 @@
 // bg-[#181717]
 // bg-[#1e1d1d]
 
-function Kanban() {
+export default function Kanban() {
     return (
         <div className="
         mr-5
@@ -86,5 +86,4 @@ function Kanban() {
     );
 }
 
-export default Kanban;
 

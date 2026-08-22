@@ -1,11 +1,12 @@
 
 import { Outlet } from "react-router-dom";
-import { useAppShellUiContext } from "../hooks/useAppShellUiContext";
-import { useBoardContext } from "../hooks/useBoardContext";
-import Header from "../components/BoardLayout/shared/Header";
-import Kanban from "../components/BoardLayout/Views/Kanban";
+import { useAppShellUiContext } from "../../hooks/useAppShellUiContext";
+import { useBoardContext } from "../../hooks/useBoardContext";
+import Header from "../BoardViewLayout/shared/Header";
+import Kanban from "../BoardViewLayout/Views/Kanban";
+import BoardViewSelector from "../BoardViewLayout/BoardViewSelector";
 
-function BoardLayout() {
+function BoardViewLayout() {
     const {
         closeProfileOtpnsTab,
         closeWorkspaceOtpnsTab
@@ -44,12 +45,12 @@ function BoardLayout() {
                 border-[#2b2b2c]
             " />
 
-            {viewType === "kanban" && <Kanban />}
+            <BoardViewSelector/>
         </div>
     );
 }
 
-export default BoardLayout
+export default BoardViewLayout
 
 
 

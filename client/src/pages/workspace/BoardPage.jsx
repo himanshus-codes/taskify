@@ -1,10 +1,10 @@
-import BoardLayout from "../../layout/BoardLayout";
+import BoardViewLayout from "../../components/AppShell/BoardViewLayout";
 import BoardProvider from "../../context/BoardContext";
 
 export default function BoardPage() {
     return (
         <BoardProvider>
-            <BoardLayout />
+            <BoardViewLayout />
         </BoardProvider>
     );
 }
