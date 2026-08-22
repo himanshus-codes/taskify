@@ -23,6 +23,8 @@ import Templates from '../pages/workspace/Templates'
 import Stats from '../pages/workspace/Stats'
 import Settings from '../pages/workspace/Settings'
 import MainContentArea from '../components/AppShell/MainContentArea';
+
+import BoardPage from '../pages/workspace/BoardPage';
 // import Boards from '../pages/workspace/Boards'
 
 import BoardProvider from '../context/BoardContext';
@@ -86,7 +88,7 @@ function App() {
             {/* Board-specific shell */}
             <Route
               path="/workspaces/:workspaceId/boards/:boardId"
-            element={<BoardProvider><BoardLayout /></BoardProvider>}
+              element={<BoardPage />}
             />
             </Route>
 
