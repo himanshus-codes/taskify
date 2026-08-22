@@ -5,7 +5,8 @@ import NormalSidebar from "./Sidebar/NormalSidebar"
 
 export default function Sidebar() {
 
-    const { isSidebarOpen} = useAppShellUiContext()
+    const { isSidebarOpen, closeProfileOtpnsTab, closeWorkspaceOtpnsTab} = useAppShellUiContext()
+
 
     return <div className={`
                      ${isSidebarOpen? 
