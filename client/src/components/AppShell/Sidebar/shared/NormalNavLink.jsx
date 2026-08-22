@@ -11,7 +11,7 @@ export default function NormalNavLink ({pageTitle,pageAddressName, children}){
             to={`/workspaces/${currentWorkspaceId}/${pageAddressName}`}
             className={({ isActive }) =>
                 `
-                flex flex-row items-center gap-2 py-1 px-2  hover:rounded-sm hover:text-amber-50 md:text-sm text-xs text-left
+                flex flex-row items-center gap-2 py-1 px-2 rounded-sm hover:text-amber-50 md:text-sm text-xs text-left
                 
                 ${isActive
                     ? "bg-[#242323] text-amber-50"
