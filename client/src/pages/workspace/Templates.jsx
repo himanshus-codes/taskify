@@ -44,15 +44,7 @@ export default function Templates(){
                     <div className="w-full grow text-base bg-[#ada0a0] text-center">desc</div>
                 </div>
 
-                <div className="w-full h-30 bg-[#42515d] rounded-xl flex flex-col items-center p-3">
-                    <div className="w-full h-10 text-base bg-[#281f1f]  text-center">title</div>
-                    <div className="w-full grow text-base bg-[#ada0a0] text-center">desc</div>
-                </div>
-
-                <div className="w-full h-30 bg-[#42515d] rounded-xl flex flex-col items-center p-3">
-                    <div className="w-full h-10 text-base bg-[#281f1f]  text-center">title</div>
-                    <div className="w-full grow text-base bg-[#ada0a0] text-center">desc</div>
-                </div>
+          
 
             </div>
     </div>

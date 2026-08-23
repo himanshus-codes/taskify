@@ -4,16 +4,16 @@
 export default function Kanban() {
     return (
         <div className="
-        mr-5
             pt-7
             pl-7
-            pr-5
+            pr-7
             kanban-scrollbar
             flex-1
             min-h-0
             min-w-0
             overflow-x-auto
             overflow-y-hidden
+
         ">
 
             <div className="
@@ -23,6 +23,7 @@ export default function Kanban() {
                 auto-cols-75
                 gap-6
                 h-full
+                w-fit
                 "
             >
                 <div className="flex flex-col bg-[#1c1b1b]  rounded-md border-[0.1px] border-[#2f2d2d] p-2 h-full min-h-0 ">
@@ -79,7 +80,7 @@ export default function Kanban() {
                         
                     </div>
                 </div>          
-               
+                               
             </div>
 
         </div>

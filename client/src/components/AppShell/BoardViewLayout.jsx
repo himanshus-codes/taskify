@@ -1,9 +1,6 @@
 
-import { Outlet } from "react-router-dom";
 import { useAppShellUiContext } from "../../hooks/useAppShellUiContext";
-import { useBoardContext } from "../../hooks/useBoardContext";
 import Header from "../BoardViewLayout/shared/Header";
-import Kanban from "../BoardViewLayout/Views/Kanban";
 import BoardViewSelector from "../BoardViewLayout/BoardViewSelector";
 
 function BoardViewLayout() {
@@ -12,7 +9,6 @@ function BoardViewLayout() {
         closeWorkspaceOtpnsTab
     } = useAppShellUiContext();
 
-    const { viewType } = useBoardContext();
 
     return (
         <div
