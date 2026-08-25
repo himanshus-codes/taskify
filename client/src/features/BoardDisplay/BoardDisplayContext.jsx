@@ -1,15 +1,15 @@
 import { createContext, useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
-export const BoardContext = createContext()
+export const BoardDisplayContext = createContext()
 
-function BoardProvider({ children }) {
+function BoardDisplayProvider({ children }) {
 
     // -------------------------
     // Board data
 
 
-    const [board, setBoard] = useState(null);
+    const [boardData, setBoardData] = useState(null);
     // const [lists, setLists] = useState([]);
     // const [cards, setCards] = useState([]);
 
@@ -22,11 +22,15 @@ function BoardProvider({ children }) {
     // const [filter, setFilter] = useState(null);
 
 
+    const [openMenu, setOpenMenu] = useState(null); // view, sort, filter, more, accessibility, newList, share
+    
+
+
     return (
-        <BoardContext.Provider
+        <BoardDisplayContext.Provider
             value={{
-                board,
-                setBoard,
+                boardData,
+                setBoardData,
 
                 // lists,
                 // setLists,
@@ -37,6 +41,9 @@ function BoardProvider({ children }) {
                 viewType,
                 setViewType,
 
+               openMenu, 
+               setOpenMenu
+
                 // searchQuery,
                 // setSearchQuery,
 
@@ -45,8 +52,8 @@ function BoardProvider({ children }) {
             }}
         >
             {children}
-        </BoardContext.Provider>
+        </BoardDisplayContext.Provider>
     );
 }
 
-export default BoardProvider
+export default BoardDisplayProvider

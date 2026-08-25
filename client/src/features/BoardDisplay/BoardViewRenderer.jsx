@@ -1,9 +1,9 @@
-import { useBoardContext } from "../../hooks/useBoardContext";
-import Kanban from "./Views/Kanban"
+import { useBoardDisplayContext } from "./hooks/useBoardDisplayContext";
+import Kanban from "./components/views/Kanban"
 
 
 export default function BoardViewSelector() {
-    const { viewType } = useBoardContext();
+    const { viewType } = useBoardDisplayContext();
 
     switch (viewType) {
         case "kanban":

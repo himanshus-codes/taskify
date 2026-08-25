@@ -1,7 +1,7 @@
 
 import { useAppShellUiContext } from "../../hooks/useAppShellUiContext";
-import Header from "../BoardViewLayout/shared/Header";
-import BoardViewSelector from "../BoardViewLayout/BoardViewSelector";
+import BoardHeader from "./components/header/BoardHeader";
+import BoardViewSelector from "./BoardViewRenderer";
 
 function BoardViewLayout() {
     const {
@@ -30,7 +30,7 @@ function BoardViewLayout() {
                 closeWorkspaceOtpnsTab();
             }}
         >
-            <Header />
+            <BoardHeader />
 
             <hr className="
                 mr-7
