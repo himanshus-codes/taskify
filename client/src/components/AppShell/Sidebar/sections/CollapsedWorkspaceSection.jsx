@@ -1,6 +1,8 @@
 import { useAppData } from "../../../../hooks/useAppData"
 import { useAppShellUiContext } from "../../../../hooks/useAppShellUiContext"
 import CollapsedNavLink from "../shared/CollapsedNavLink"
+import WorkspaceSelectionMenu from "../menus/WorkspaceMenu"
+import SidebarTooltip from "../shared/SidebarTooltip"
 
 export default function CollapsedWorkspaceSection(){
     
@@ -12,16 +14,49 @@ export default function CollapsedWorkspaceSection(){
     // console.log(currentWorkspaceId)
 
     return <>
-         <div className="flex flex-row gap-2 py-2 px-2.5   hover:bg-[#292828]  hover:rounded-md hover:text-amber-50  text-white md:text-sm text-xs text-left cursor-pointer"
-            onClick={() => { setWorkspaceOptnsTabState(curr => !curr); console.log(isWorkspaceOptnsTabOpen) }
-        }>
+         <div className="relative group">
 
-            <div className="bg-amber-300 rounded-sm md:w-5  w-4 text-center text-xs cursor-pointer ">
-                <div className=" text-black md:text-sm text-xs">{(currentWorkspaceGetter(currentWorkspaceId))?.title[0]}</div>
+            <div
+                className="
+                    flex
+                    flex-row
+                    gap-2
+                    py-2
+                    px-2.5
+                    hover:bg-[#292828]
+                    rounded-md
+                    text-white
+                    cursor-pointer
+                "
+                onClick={() => {
+                    setWorkspaceOptnsTabState(curr => !curr);
+                }}
+            >
+                <div className="bg-amber-300 rounded-sm w-5 text-center">
+                    <div className="text-black text-sm">
+                        {(currentWorkspaceGetter(currentWorkspaceId))?.title[0]}
+                    </div>
+                </div>
             </div>
-            {/* <div className="  font-bold ">
-                    {(currentWorkspaceGetter(currentWorkspaceId))?.title}
-                </div> */}
+
+            {/* Tooltip */}
+            {!isWorkspaceOptnsTabOpen && 
+
+                <div className="hidden group-hover:block">
+                    <SidebarTooltip>
+                        {(currentWorkspaceGetter(currentWorkspaceId))?.title}
+                    </SidebarTooltip>
+                </div>
+
+            }
+
+            {/* Workspace menu */}
+            {isWorkspaceOptnsTabOpen && (
+                <div className="absolute top-10 left-0 z-50 w-40">
+                    <WorkspaceSelectionMenu />
+                </div>
+            )}
+
         </div>
     
         <CollapsedNavLink page="boards">

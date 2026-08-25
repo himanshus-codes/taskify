@@ -7,6 +7,7 @@ import WorkspaceSelectionMenu from "./menus/WorkspaceMenu"
 
 import WorkspaceSection from "./sections/WorkspaceSection"
 import ProfileAndFeedbackSection from "./sections/Profile&Feedback"
+import SidebarTooltip from "./shared/SidebarTooltip"
 
 export default function NormalSidebar(){
     const {  isWorkspaceOptnsTabOpen, isProfileOptnsTabOpen} = useAppShellUiContext()
@@ -14,14 +15,24 @@ export default function NormalSidebar(){
         <div className="
             flex justify-between box-border items-center py-1">
 
-                <div className="
-                    flex justify-between box-border 
-                    font-bold tracking-wide md:text-base text-sm   text-amber-50 cursor-default"
-                >  
-                    Taskify 
-                </div>
+            <div className="
+                flex justify-between box-border 
+                font-bold tracking-wide md:text-base text-sm   text-amber-50 cursor-default"
+            >  
+                Taskify 
+            </div>
 
-                <ToggleSideBar></ToggleSideBar>
+            <div className="relative group">
+                    
+                <div>
+                    <ToggleSideBar></ToggleSideBar>
+                </div>
+                    
+                <div className="hidden group-hover:block">
+                    <SidebarTooltip>{"Collapse"}</SidebarTooltip>
+                </div>
+                       
+            </div>
 
 
             {/* <div>   {'<T>'} </div> */}
