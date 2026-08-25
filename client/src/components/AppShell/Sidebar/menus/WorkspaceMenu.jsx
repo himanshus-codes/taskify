@@ -3,7 +3,7 @@ import { useAppShellUiContext } from "../../../../hooks/useAppShellUiContext"
 import { Link } from "react-router-dom"
 export default function WorkspaceSelectionMenu(){
 
-    const {workspacesArray, currentWorkspaceId, currentWorkspaceIdSetter} = useAppData()
+    const {workspacesArray, currentWorkspaceId, currentWorkspaceIdSetter, currentWorkspaceSetter} = useAppData()
     const {  isWorkspaceOptnsTabOpen, setWorkspaceOptnsTabState } = useAppShellUiContext()
 
 
@@ -28,7 +28,7 @@ export default function WorkspaceSelectionMenu(){
 
                     <div  className="flex flex-row  text-white  grow py-1   md:px-2 px-1  hover:rounded-md hover:bg-[#3b3939]  hover:text-amber-50 md:text-sm text-xs items-center ">
                             
-                        <div className="flex flex-row grow md:gap-2 gap-1.5 items-center" onClick={()=>{currentWorkspaceIdSetter(workspace._id)}}>
+                        <div className="flex flex-row grow md:gap-2 gap-1.5 items-center" onClick={()=>{currentWorkspaceIdSetter(workspace._id); currentWorkspaceSetter(workspace._id)}}>
                             <div className="md:w-5 w-4  bg-amber-300 rounded-sm text-xs text-center">
                                 <div className=" text-black md:text-sm text-xs text-center">{workspace.title[0]}</div>
                             </div>

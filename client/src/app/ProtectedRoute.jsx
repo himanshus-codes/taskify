@@ -1,8 +1,7 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Outlet } from "react-router-dom";
-import AppContextProvider from '../context/AppContext';
-import AppShellUiContext from '../context/Ui/AppShellUiContext';
+
 
 // function ProtectedRoute({children}){
 function ProtectedRoute(){

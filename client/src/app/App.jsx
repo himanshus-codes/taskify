@@ -18,7 +18,7 @@ import Stats from '../pages/workspace/Stats'
 import Settings from '../pages/workspace/Settings'
 import MainPageLayout from '../components/AppShell/MainPageLayout';
 
-import BoardPage from '../pages/workspace/BoardPage';
+import BoardDisplayPage from '../pages/workspace/BoardDisplayPage';
 // import Boards from '../pages/workspace/Boards'
 
 function App() {
@@ -36,52 +36,52 @@ function App() {
           {/* Protected Routes */}
          
 
-         <Route element={<ProtectedRoute />}>
+          <Route element={<ProtectedRoute />}>
             <Route element={
-                <AppContextProvider>
-                  <AppShellUiContext>
-                    <AppLayout />
-                  </AppShellUiContext>
-                </AppContextProvider>
-              }
+                  <AppContextProvider>
+                    <AppShellUiContext>
+                      <AppLayout />
+                    </AppShellUiContext>
+                  </AppContextProvider>
+                }
             >
 
               {/* workspaces/ element=resolver component, where it should direct users to */}
               {/* Normal content shell */}
-            <Route element={<MainPageLayout />}>
+              <Route element={<MainPageLayout />}>
 
+                <Route
+                    path="/workspaces"
+                    element={<Boards />}
+                />
+
+                <Route
+                    path="/workspaces/:workspaceId/boards"
+                    element={<Boards />}
+                />
+
+                <Route
+                    path="/workspaces/:workspaceId/stats"
+                    element={<Stats />}
+                />
+
+                <Route
+                    path="/workspaces/:workspaceId/templates"
+                    element={<Templates />}
+                />
+
+                <Route
+                    path="/workspaces/:workspaceId/settings"
+                    element={<Settings />}
+                />
+              </Route>
+
+
+              {/* Board-specific shell */}
               <Route
-                  path="/workspaces"
-                  element={<Boards />}
+                path="/workspaces/:workspaceId/boards/:boardId"
+                element={<BoardDisplayPage />}
               />
-
-              <Route
-                  path="/workspaces/:workspaceId/boards"
-                  element={<Boards />}
-              />
-
-              <Route
-                  path="/workspaces/:workspaceId/stats"
-                  element={<Stats />}
-              />
-
-              <Route
-                  path="/workspaces/:workspaceId/templates"
-                  element={<Templates />}
-              />
-
-              <Route
-                  path="/workspaces/:workspaceId/settings"
-                  element={<Settings />}
-              />
-            </Route>
-
-
-            {/* Board-specific shell */}
-            <Route
-              path="/workspaces/:workspaceId/boards/:boardId"
-              element={<BoardPage />}
-            />
             </Route>
 
           </Route>    

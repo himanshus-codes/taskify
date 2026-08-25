@@ -1,6 +1,6 @@
 export default function Templates(){
 
-    return <div className="   ">
+    return <div className="  pt-10 ">
             <div className="flex justify-between ">
                 <div><h1 className="text-lg font-medium items-center mb-10 text-[#f1eeee]">Templates</h1></div>
                 <div className="text-base bg-white h-fit rounded-sm px-2"> + New</div>
