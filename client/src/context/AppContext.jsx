@@ -32,6 +32,7 @@ function AppContextProvider({children}){
     //App level Data State
     const[workspacesArray, setWorkspacesArray] = useState(null)
     const[currentWorkspaceId, setCurrentWorkspaceId] = useState(null)
+    const[currentWorkspace, setCurrentWorkspace] = useState(null)
 
 
     useEffect( ()=>{
@@ -61,6 +62,8 @@ function AppContextProvider({children}){
         if(!lastUsedWorkspaceId){
             localStorage.setItem(`lastUsedWorkspaceId${(user._id).toString()}`, (workspacesArray[0]._id))
             setCurrentWorkspaceId(workspacesArray[0]._id)
+            currentWorkspaceSetter(workspacesArray[0]._id)
+
         } else{
 
             let stillExists = workspacesArray.find((w) => w._id == lastUsedWorkspaceId);
@@ -71,11 +74,19 @@ function AppContextProvider({children}){
 
             }
 
+
             setCurrentWorkspaceId(lastUsedWorkspaceId)
+            currentWorkspaceSetter(lastUsedWorkspaceId)
         }
 
     }, [workspacesArray])
 
+    const currentWorkspaceSetter = (workspaceId) => {
+        let currWorkspace = workspacesArray.find((w)=> w._id == workspaceId)
+        console.log(currWorkspace)
+            
+        setCurrentWorkspace(currWorkspace)
+    }
 
     const currentWorkspaceIdSetter = (workspaceId) => {
         localStorage.setItem(`lastUsedWorkspaceId${(user._id).toString()}`, workspaceId);
@@ -84,10 +95,10 @@ function AppContextProvider({children}){
     
     const currentWorkspaceGetter = (workspaceId) => {
 
-        console.log("setter CWSPACE")
+        // console.log("setter CWSPACE")
 
         if(!workspacesArray || workspacesArray.length === 0){
-        console.log("setter CWSPACE 1")
+        // console.log("setter CWSPACE 1")
 
             return null
         }
@@ -109,8 +120,8 @@ function AppContextProvider({children}){
         
     }
 
-    console.log(workspacesArray)
-    console.log(currentWorkspaceId)
+    // console.log(workspacesArray)
+    // console.log(currentWorkspaceId)
 
     // console.log(currentWorkspaceGetter("6a7cc8049d2c064833c1b07e"))
 
@@ -120,6 +131,9 @@ function AppContextProvider({children}){
         currentWorkspaceId: currentWorkspaceId, 
         currentWorkspaceIdSetter:currentWorkspaceIdSetter, 
         currentWorkspaceGetter,
+
+        currentWorkspace,
+        currentWorkspaceSetter
     }} >{children}</AppDataContext.Provider>
 }
 
