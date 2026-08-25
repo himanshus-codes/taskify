@@ -10,6 +10,8 @@ function AuthProvider({children}){
         token:null
     })
 
+    const [isAuthLoading, setIsAuthLoading] = useState(true);
+
     // console.log(auth)
 
     //  runs once when AuthProvider mounts.
@@ -18,9 +20,12 @@ function AuthProvider({children}){
         async function getCurrentUser() {
             const token = localStorage.getItem("token");
             // console.log("getCurrentUser", token)
-            if (!token) return;
+            if (!token) {
+                setIsAuthLoading(false);
+                return;
+            }
     
-            try{
+            try {
                 let res = await getUser(token)
                 console.log("getCurrentUser", res)
                 
@@ -29,9 +34,13 @@ function AuthProvider({children}){
                     user: res.data
                 });
 
-            }catch(err){
-                // localStorage.removeItem("token");
-                // setAuth({ token: null, user: null });
+            } catch(err){
+                localStorage.removeItem("token");
+                setAuth({ token: null, user: null });
+
+            } finally {
+
+                setIsAuthLoading(false);
 
             }
         }
@@ -70,7 +79,7 @@ function AuthProvider({children}){
     };
 
 
-  return <AuthContext.Provider value={{token: auth.token, user:auth.user, setloginContext, setlogoutContext}}>
+  return <AuthContext.Provider value={{token: auth.token, user:auth.user, setloginContext, setlogoutContext,  isAuthLoading}}>
       {children}
   </AuthContext.Provider>
 }

@@ -6,12 +6,16 @@ import { Outlet } from "react-router-dom";
 // function ProtectedRoute({children}){
 function ProtectedRoute(){
 
-    const {token} = useAuth()
+    const {token,  isAuthLoading,} = useAuth()
     
     // if(!token){
     //     return <Navigate to="/signin" replace={true}></Navigate>
     // }
     // return children
+
+    if (isAuthLoading) {
+        return null;
+    }
 
     return token
         ? <Outlet />                        // ? <AppContextProvider><AppShellUiContext><Outlet /></AppShellUiContext></AppContextProvider>
@@ -20,5 +24,5 @@ function ProtectedRoute(){
 
 export default ProtectedRoute;
 
-// Outlet Syntax
+
 
