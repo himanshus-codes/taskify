@@ -39,7 +39,6 @@ exports.getDashboard = async (req, res) => {
 // Create Board
 exports.createBoard = async (req, res) => {
 
-
     console.log("hiiiiiiiiiiiiiii")
     console.log("req boardController", req.url);
 
