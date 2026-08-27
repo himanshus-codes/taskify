@@ -285,7 +285,9 @@ function NewBoardForm({ toggleMenu, onBoardCreated }) {
                 z-70
                 pointer-events-none
                 rounded-lg
-                 top-20  h-full       bg-blue-500/2 
+                top-20  
+                h-full       
+                bg-blue-500/2 
             "
         >
             <div
