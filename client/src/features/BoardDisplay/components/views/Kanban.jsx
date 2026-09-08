@@ -1,7 +1,12 @@
 // bg-[#181717]
 // bg-[#1e1d1d]
 
-export default function Kanban() {
+// import { useBoardDisplayContext } from "../../hooks/useBoardDisplayContext";
+
+export  function Kasnban() {
+
+    const { dashboardData, setDashboardData}=useBoardDisplayContext()
+
     return (
         <div className="
             pt-7
@@ -24,28 +29,32 @@ export default function Kanban() {
                 gap-6
                 h-full
                 w-fit
+
                 "
             >
-                <div className="flex flex-col bg-[#1c1b1b]  rounded-md border-[0.1px] border-[#2f2d2d] p-2 h-full min-h-0 ">
+                <div className="flex flex-col bg-[#1c1b1b]  rounded-md border-[0.1px] border-[#2f2d2d] p-2 pt-3 h-full min-h-0 shadow-[#161414]  shadow-xl">
                     <div className="flex mx-2 mb-5">
-                        <div className="grow">Title</div>
-                        <div className="flex items-center gap-3"> 
+                        <div className="grow text-sm" >Title</div>
+                        <div className="flex items-center gap-1"> 
+                            
                             <div className="hover:bg-[#222121] rounded-sm p-0.5">
                                 <svg width="16px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" color="#ffffff"><path d="M6 12H12M18 12H12M12 12V6M12 12V18" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-
                             </div>
+
                             <div className="hover:bg-[#222121] rounded-sm p-0.5">
-                                <svg width="17px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" color="#ffffff"><path d="M20 12.5C20.2761 12.5 20.5 12.2761 20.5 12C20.5 11.7239 20.2761 11.5 20 11.5C19.7239 11.5 19.5 11.7239 19.5 12C19.5 12.2761 19.7239 12.5 20 12.5Z" fill="#ffffff" stroke="#ffffff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path><path d="M12 12.5C12.2761 12.5 12.5 12.2761 12.5 12C12.5 11.7239 12.2761 11.5 12 11.5C11.7239 11.5 11.5 11.7239 11.5 12C11.5 12.2761 11.7239 12.5 12 12.5Z" fill="#ffffff" stroke="#ffffff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path><path d="M4 12.5C4.27614 12.5 4.5 12.2761 4.5 12C4.5 11.7239 4.27614 11.5 4 11.5C3.72386 11.5 3.5 11.7239 3.5 12C3.5 12.2761 3.72386 12.5 4 12.5Z" fill="#ffffff" stroke="#ffffff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-
+                                <svg width="18px" height="18px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" color="#ffffff"><path d="M20 12.5C20.2761 12.5 20.5 12.2761 20.5 12C20.5 11.7239 20.2761 11.5 20 11.5C19.7239 11.5 19.5 11.7239 19.5 12C19.5 12.2761 19.7239 12.5 20 12.5Z" fill="#ffffff" stroke="#ffffff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path><path d="M12 12.5C12.2761 12.5 12.5 12.2761 12.5 12C12.5 11.7239 12.2761 11.5 12 11.5C11.7239 11.5 11.5 11.7239 11.5 12C11.5 12.2761 11.7239 12.5 12 12.5Z" fill="#ffffff" stroke="#ffffff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path><path d="M4 12.5C4.27614 12.5 4.5 12.2761 4.5 12C4.5 11.7239 4.27614 11.5 4 11.5C3.72386 11.5 3.5 11.7239 3.5 12C3.5 12.2761 3.72386 12.5 4 12.5Z" fill="#ffffff" stroke="#ffffff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
                             </div>
+
                         </div>
                     </div>
 
-                    <div className=" flex flex-col pr-1 overflow-y-auto gap-2 rounded-md kanban-scrollbar-col  ">
-                        
-                        <div className="bg-[#242323] rounded-md min-h-24 flex flex-col p-3 text-sm gap-1 hover:bg-[#2a2929]">
-                                 <div className="flex">
-                                    <div className="grow">Title</div>
+                    <div className=" flex flex-col pr-1 overflow-y-auto gap-2.5 rounded-md kanban-scrollbar-col  text-white/70">
+                   
+                        <div className="bg-[#242323] rounded-md min-h-24 flex flex-col p-3 text-sm gap-1 hover:bg-[#2a2929] hover:shadow-2xl hover:shadow-[#1a1919]">
+                                <div className="flex">
+                                    <div className="grow">
+                                        Title
+                                    </div>
                                     <div className="flex gap-2 items-center "> 
                                         <div>#Label</div>
                                         <div className="hover:bg-[#222121] rounded-sm p-0.5">
@@ -65,9 +74,15 @@ export default function Kanban() {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="text-sm">hi this is it</div>
+
+                                <div className="text-sm">
+                                    hi this is it
+                                </div>
+                                
                                 <div className="flex">
-                                    <div className="grow">Title</div>
+                                    <div className="grow">
+                                        Title
+                                    </div>
                                     <div className="flex gap-3"> 
                                         <div>Due</div>
                                         <div>Low</div>
@@ -75,8 +90,6 @@ export default function Kanban() {
                                     </div>
                                 </div>
                         </div>
-                       
-                 
                         
                     </div>
                 </div>          
@@ -88,3 +101,51 @@ export default function Kanban() {
 }
 
 
+import { useBoardDisplayContext } from "../../hooks/useBoardDisplayContext";
+import Column from "./Kanban/Column";
+
+export default function Kanban() {
+
+    const { dashboardData } = useBoardDisplayContext();
+
+    const columns = dashboardData?.columns ?? [];
+
+    return (
+        <div
+            className="
+                pt-7
+                pl-7
+                pr-7
+                kanban-scrollbar
+                flex-1
+                min-h-0
+                min-w-0
+                overflow-x-auto
+                overflow-y-hidden
+            "
+        >
+
+            <div
+                className="
+                    pb-5
+                    grid
+                    grid-flow-col
+                    auto-cols-75
+                    gap-6
+                    h-full
+                    w-fit
+                "
+            >
+
+                {columns.map((column) => (
+                    <Column
+                        key={column._id}
+                        column={column}
+                    />
+                ))}
+
+            </div>
+
+        </div>
+    );
+}
