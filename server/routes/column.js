@@ -6,7 +6,7 @@ const columnController = require('../controllers/column')
 
 
 router.get('/boards/:id/columns', userMiddleware, columnController.getColumns)
-router.post('/boards/:id/columns', userMiddleware, columnController.createColumns)
+// router.post('/boards/:id/column', userMiddleware, columnController.createColumns)
 router.delete('/boards/:id/columns', userMiddleware, columnController.deleteColumns)
 
 router.post('/boards/:id/column', userMiddleware, columnController.createColumn)
