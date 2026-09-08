@@ -1,141 +1,11 @@
-export const getWorkspaceBoards = async (token, workspaceId) => {
-    
-    let res;
-
-    try {
-        res = await fetch(`http://localhost:3000/workspaces/${workspaceId}/boards`,{
-            method:"GET",
-
-            headers:{
-                token
-            }
-        })
-
-    } catch(e){
-        const err = new Error("Unable to connect to server.");
-        err.code = "NETWORK_ERROR";
-        throw err;
-    }
-
-    const data = await res.json();
-
-    if (!res.ok) {
-        const err = new Error(data.message);
-        err.code = data.code;
-        throw err;
-    }
-    // console.log(data)
-
-    return data;
-}
-
-export const createBoard = async (token, workspaceId, boardData) => {
-    
-    let res;
-
-    try {
-        res = await fetch(`http://localhost:3000/workspaces/${workspaceId}/board`,{
-            method:"POST",
-
-            headers:{
-                token,
-                "Content-Type":"application/json"
-            },
-
-            body:JSON.stringify({
-                title: boardData.title,
-                description: boardData.description
-            })
-        })
-
-    } catch(e){
-        const err = new Error("Unable to connect to server.");
-        err.code = "NETWORK_ERROR";
-        throw err;
-    }
-
-    const data = await res.json();
-
-    if (!res.ok) {
-        const err = new Error(data.message);
-        err.code = data.code;
-        throw err;
-    }
-    // console.log(data)
-
-    return data;
-}
-
-export const getBoard = async (token, boardId) => {
-    
-    let res;
-
-    try {
-        res = await fetch(`http://localhost:3000/boards/${boardId}`,{
-            method:"GET",
-
-            headers:{
-                token
-            }
-        })
-
-    } catch(e){
-        const err = new Error("Unable to connect to server.");
-        err.code = "NETWORK_ERROR";
-        throw err;
-    }
-
-    const data = await res.json();
-
-    if (!res.ok) {
-        const err = new Error(data.message);
-        err.code = data.code;
-        throw err;
-    }
-    // console.log(data)
-
-    return data;
-}
-export const getFullDashboardBoard = async (token, boardId) => {
-    
-    let res;
-
-    try {
-        res = await fetch(`http://localhost:3000/boards/${boardId}/dashboard/`,{
-            method:"GET",
-
-            headers:{
-                token
-            }
-        })
-
-    } catch(e){
-        const err = new Error("Unable to connect to server.");
-        err.code = "NETWORK_ERROR";
-        throw err;
-    }
-
-    const data = await res.json();
-
-    if (!res.ok) {
-        const err = new Error(data.message);
-        err.code = data.code;
-        throw err;
-    }
-    // console.log(data)
-
-    return data;
-}
-
-
-// GET /boards
-export const getAllUserBoards = async (token) => {
+// GET /boards/:id/columns
+export const getColumns = async (token, boardId) => {
     
     let res;
 
     try {
         res = await fetch(
-            "http://localhost:3000/boards",
+            `http://localhost:3000/boards/${boardId}/columns`,
             {
                 method: "GET",
 
@@ -163,16 +33,16 @@ export const getAllUserBoards = async (token) => {
 };
 
 
-// PATCH /boards/:id
-export const updateBoard = async (token, boardId, boardData) => {
+// POST /boards/:id/column
+export const createColumn = async (token, boardId, columnData) => {
     
     let res;
 
     try {
         res = await fetch(
-            `http://localhost:3000/boards/${boardId}`,
+            `http://localhost:3000/boards/${boardId}/column`,
             {
-                method: "PATCH",
+                method: "POST",
 
                 headers: {
                     token,
@@ -180,8 +50,8 @@ export const updateBoard = async (token, boardId, boardData) => {
                 },
 
                 body: JSON.stringify({
-                    title: boardData.title,
-                    description: boardData.description
+                    title: columnData.title,
+                    order:columnData.order
                 })
             }
         );
@@ -204,14 +74,90 @@ export const updateBoard = async (token, boardId, boardData) => {
 };
 
 
-// DELETE /boards
-export const deleteBoards = async (token) => {
+// GET /columns/:id
+export const getColumnDetails = async (token, columnId) => {
     
     let res;
 
     try {
         res = await fetch(
-            "http://localhost:3000/boards",
+            `http://localhost:3000/columns/${columnId}`,
+            {
+                method: "GET",
+
+                headers: {
+                    token
+                }
+            }
+        );
+
+    } catch (e) {
+        const err = new Error("Unable to connect to server.");
+        err.code = data.code;
+        throw err;
+    }
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        const err = new Error(data.message);
+        err.code = data.code;
+        throw err;
+    }
+
+    return data;
+};
+
+
+// PATCH /columns/:id
+export const updateColumn = async (token, columnId, columnData) => {
+    
+    let res;
+
+    try {
+        res = await fetch(
+            `http://localhost:3000/columns/${columnId}`,
+            {
+                method: "PATCH",
+
+                headers: {
+                    token,
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    title: columnData.title,
+                    order:columnData.order
+                })
+            }
+        );
+
+    } catch (e) {
+        const err = new Error("Unable to connect to server.");
+        err.code = "NETWORK_ERROR";
+        throw err;
+    }
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        const err = new Error(data.message);
+        err.code = data.code;
+        throw err;
+    }
+
+    return data;
+};
+
+
+// DELETE /boards/:id/columns
+export const deleteColumns = async (token, boardId) => {
+    
+    let res;
+
+    try {
+        res = await fetch(
+            `http://localhost:3000/boards/${boardId}/columns`,
             {
                 method: "DELETE",
 
@@ -239,14 +185,14 @@ export const deleteBoards = async (token) => {
 };
 
 
-// DELETE /boards/:id
-export const deleteBoard = async (token, boardId) => {
+// DELETE /columns/:id
+export const deleteColumn = async (token, columnId) => {
     
     let res;
 
     try {
         res = await fetch(
-            `http://localhost:3000/boards/${boardId}`,
+            `http://localhost:3000/columns/${columnId}`,
             {
                 method: "DELETE",
 
