@@ -51,7 +51,7 @@ function BoardDisplayProvider({ children }) {
                 const res = await getFullDashboardBoard(token, boardId)
 
                 console.log(res.data)
-                // setDashboardData(res.data)
+                setDashboardData(res.data)
             } catch (e){
                 console.log(e)
                 setError("Some issue occurred")
@@ -94,7 +94,10 @@ function BoardDisplayProvider({ children }) {
                 setViewType,
 
                openMenu, 
-               setOpenMenu
+               setOpenMenu,
+
+               dashboardData,
+               setDashboardData
 
                 // searchQuery,
                 // setSearchQuery,

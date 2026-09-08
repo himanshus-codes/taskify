@@ -35,10 +35,10 @@ function BoardViewLayout() {
             <hr className="
                 mr-7
                 ml-7
-                mt-2
+                mt-1
                 border-0
                 border-t
-                border-[#2b2b2c]
+                border-[#222222]
             " />
 
             <BoardViewSelector/>

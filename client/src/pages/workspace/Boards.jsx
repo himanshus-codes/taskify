@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react"
 import { useAuth } from "../../context/AuthContext"
 import { useAppData } from "../../hooks/useAppData"
-import { getBoards } from "../../services/boardService"
+import { getWorkspaceBoards } from "../../services/boardService"
 import { Link } from "react-router-dom"
 import { useParams } from "react-router-dom"
 
@@ -29,7 +29,7 @@ export default function Boards(){
 
         try {
 
-            const res = await getBoards(
+            const res = await getWorkspaceBoards(
                 token,
                 currentWorkspaceId
             );
@@ -393,7 +393,6 @@ function NewBoardForm({ toggleMenu, onBoardCreated }) {
                         />
                     </div>
 
-
                     {/* Description */}
                     <div className="flex flex-col gap-1.5">
                         
@@ -433,7 +432,6 @@ function NewBoardForm({ toggleMenu, onBoardCreated }) {
                             "
                         />
                     </div>
-
 
                     {/* Error */}
                     {error && (
