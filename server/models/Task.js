@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const TaskSchema = new mongoose.Schema({
     title: {
         type: String,
-        unique: true,
         required: [true, "  Task Title is required"]
     },
     description: {
@@ -14,6 +13,13 @@ const TaskSchema = new mongoose.Schema({
         type: String,
         enum: ["low", "medium", "high"],
         required: true
+    },
+
+    boardId: {
+        type:mongoose.Schema.Types.ObjectId,
+        ref: "Board",
+        required: true,
+        index: true
     },
 
     columnId:{
@@ -52,6 +58,11 @@ const TaskSchema = new mongoose.Schema({
     }
 
    
+);
+
+TaskSchema.index(
+    { boardId: 1, title: 1 },
+    { unique: true }
 );
 
 const Task = mongoose.model('Task', TaskSchema);

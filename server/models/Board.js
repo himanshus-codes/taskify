@@ -6,7 +6,6 @@ const BoardSchema = new mongoose.Schema({
     title:{
         type:String,
         required: true,
-        unique: true
     },
 
     description: {
@@ -35,6 +34,11 @@ const BoardSchema = new mongoose.Schema({
     }
 
 )
+
+BoardSchema.index(
+    { workspaceId: 1, title: 1 },
+    { unique: true }
+);
 
 
 const Board = mongoose.model('Board', BoardSchema);

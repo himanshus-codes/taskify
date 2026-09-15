@@ -1,32 +1,38 @@
 const mongoose = require("mongoose");
-const { columnSchema } = require("../validations/column");
 
+const mongoose = require("mongoose");
 
-const ColumnSchema = new mongoose.Schema({
-        title:{
+const ColumnSchema = new mongoose.Schema(
+    {
+        title: {
             type: String,
-            required: true,
-            unique: true
+            required: true
         },
 
-        order: {
-            type: Number,
-            required: true,
-            unique:true
-        },
+        // order: {
+        //     type: Number,
+        //     required: true,
+        //     unique:true
+        // },
+
 
         boardId: {
             type: mongoose.Schema.Types.ObjectId,
-            required:true,
+            required: true,
             ref: "Board",
-            index:true
-        }},
-        {
-            timestamps:true
+            index: true
         }
-    
-)
+    },
+    {
+        timestamps: true
+    }
+);
 
+ColumnSchema.index(
+    { boardId: 1, title: 1 },
+    { unique: true }
+);
 
 const Column = mongoose.model("column", ColumnSchema);
-module.exports = {Column};
+
+module.exports = { Column };
