@@ -1,8 +1,21 @@
 import Card from "./Card";
 
-export default function Column({ column }) {
+export default function Column({ column, tasks }) {
 
-    const tasks = column.tasks ?? [];
+    // const tasks = column.tasks ?? [];
+
+    console.log(tasks)
+    console.log(column)
+
+    const taskArray = tasks.filter((task) => {
+        console.log(task.columnId == column._id)
+        
+        if(task.columnId == column._id){
+            return task
+        }
+    })
+
+    console.log(taskArray)
 
     return (
         <div
@@ -15,22 +28,24 @@ export default function Column({ column }) {
                 border-[#2f2d2d]
                 p-2
                 pt-3
-                h-full
-                min-h-0
+                
+                min-h-20
                 shadow-[#161414]
                 shadow-xl
             "
         >
 
             {/* Column header */}
-            <div className="flex mx-2 mb-5">
+            <div className="flex mx-2 mb-5 ">
 
-                <div className="flex grow text-sm gap-2">
+                <div className="flex grow  items-center  text-sm font-medium gap-2">
                     <div>
                         {column.title}
                     </div>
-                    <div className="text-sm text-gray-500">
-                        {(2)}
+                    <div className="text-sm  text-gray-500 ">
+                        <span>
+                            ({taskArray?.length})
+                        </span>
                     </div>
                 </div>
                 
@@ -89,12 +104,14 @@ export default function Column({ column }) {
                 "
             >
 
-                {tasks.map((task) => (
-                    <Card
-                        key={task._id}
-                        task={task}
-                    />
-                ))}
+                {tasks.map((task) => {
+                    if(task.columnId == column._id){
+                        return (<Card
+                            key={task._id}
+                            task={task}
+                        />)
+                    }
+                })}
 
             </div>
 

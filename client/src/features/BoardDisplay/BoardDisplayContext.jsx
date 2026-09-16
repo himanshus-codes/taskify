@@ -2,7 +2,7 @@ import { createContext, useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { getBoard, getFullDashboardBoard, updateBoard } from "../../services/boardService";
-
+import { createColumn } from "../../services/listService";
 
 export const BoardDisplayContext = createContext()
 
@@ -41,7 +41,6 @@ function BoardDisplayProvider({ children }) {
                 const dashboardData = res.data;
 
                 // Board metadata
-
                 console.log(dashboardData.board)
                 setBoard(dashboardData.board);
 
@@ -84,7 +83,6 @@ function BoardDisplayProvider({ children }) {
     //     async function fetchBoard(){
     //         try{
     //             const res = await getBoard(token, boardId)
-
     //             console.log(res.data)
     //             setBoard(res.data)
     //         } catch (e){
@@ -92,11 +90,10 @@ function BoardDisplayProvider({ children }) {
     //             setError("Some issue occurred")
     //         }
     //     }
-
     //     fetchBoard()
     // },[boardId, token])
 
-
+    
     // -------------------------
     // Board UI state
 
@@ -108,54 +105,74 @@ function BoardDisplayProvider({ children }) {
 
     const [openMenu, setOpenMenu] = useState(null); // view, sort, filter, more, accessibility, newList, share
     
-    const resetFullDashboardBoard = async (token, boardId) => {
-            try{
-                const res = await getFullDashboardBoard(token, boardId)
+    // const resetFullDashboardBoard = async (token, boardId) => {
+    //     try{
+    //         const res = await getFullDashboardBoard(token, boardId)
 
-                console.log(res.data)
-                setDashboardData(res.data)
-            } catch (e){
-                console.log(e)
-                setError("Some issue occurred")
-            }
-        }
-    
-    // async function updateBoardTitle(newTitle) {
-        
-    //     const res = await updateBoard(token, boardId, {
-    //         title: newTitle
-    //     });
-
-    //     const updatedBoard = res.data;
-
-    //     setBoard(prev => ({
-    //         ...prev,
-    //         title: updatedBoard.title
-    //     }));
-
-    //     setDashboardData(prev => ({
-    //         ...prev,
-    //         board: {...prev.board, title:updatedBoard.title}
-    //     }));
-
-    //     console.log("updated board")
-    //     console.log(board)
-    //     console.log(dashboardData)
-
-    //     return updatedBoard;
+    //         console.log(res.data)
+    //         setDashboardData(res.data)
+    //     } catch (e){
+    //         console.log(e)
+    //         setError("Some issue occurred")
+    //     }
     // }
+    
+    async function updateBoardTitle(newTitle) {
+        
+        const res = await updateBoard(token, boardId, {
+            title: newTitle
+        });
+
+        const updatedBoard = res.data;
+
+        setBoard(prev => ({
+            ...prev,
+            title: updatedBoard.title
+        }));
+
+        // setDashboardData(prev => ({
+        //     ...prev,
+        //     board: {...prev.board, title:updatedBoard.title}
+        // }));
+
+        console.log("updated board")
+        console.log(board)
+        // console.log(dashboardData)
+
+        return updatedBoard;
+    }
+    
+    async function createNewColumn(data) {
+        
+        const res = await createColumn(
+                token,
+                boardId,
+                data
+            );
+
+        const newColumnData = res.data;
+            
+        console.log(newColumnData)
+
+        setColumns(prev => ([
+            ...prev,
+            newColumnData
+        ]));
+
+        return newColumnData;
+    }
 
     return (
         <BoardDisplayContext.Provider
             value={{
-                // board,
-                // setBoard,
+                board,
+                setBoard,
 
-                // lists,
-                // setLists,
+                columns,
+                setColumns,
 
-                // cards,
-                // setCards,
+                tasks,
+                setTasks,
 
                 viewType,
                 setViewType,
@@ -164,8 +181,9 @@ function BoardDisplayProvider({ children }) {
                setOpenMenu,
 
            
-                resetFullDashboardBoard,
-                updateBoardTitle
+                // resetFullDashboardBoard,
+                updateBoardTitle,
+                createNewColumn
 
                 // searchQuery,
                 // setSearchQuery,

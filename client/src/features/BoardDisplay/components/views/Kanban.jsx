@@ -1,121 +1,64 @@
 // bg-[#181717]
 // bg-[#1e1d1d]
 
-// import { useBoardDisplayContext } from "../../hooks/useBoardDisplayContext";
 
-export  function Kasnban() {
-
-    const { dashboardData, setDashboardData}=useBoardDisplayContext()
-
-    return (
-        <div className="
-            pt-7
-            pl-7
-            pr-7
-            kanban-scrollbar
-            flex-1
-            min-h-0
-            min-w-0
-            overflow-x-auto
-            overflow-y-hidden
-
-        ">
-
-            <div className="
-                pb-5
-                grid
-                grid-flow-col
-                auto-cols-75
-                gap-6
-                h-full
-                w-fit
-
-                "
-            >
-                <div className="flex flex-col bg-[#1c1b1b]  rounded-md border-[0.1px] border-[#2f2d2d] p-2 pt-3 h-full min-h-0 shadow-[#161414]  shadow-xl">
-                    <div className="flex mx-2 mb-5">
-                        <div className="grow text-sm" >Title</div>
-                        <div className="flex items-center gap-1"> 
-                            
-                            <div className="hover:bg-[#222121] rounded-sm p-0.5">
-                                <svg width="16px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" color="#ffffff"><path d="M6 12H12M18 12H12M12 12V6M12 12V18" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-                            </div>
-
-                            <div className="hover:bg-[#222121] rounded-sm p-0.5">
-                                <svg width="18px" height="18px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" color="#ffffff"><path d="M20 12.5C20.2761 12.5 20.5 12.2761 20.5 12C20.5 11.7239 20.2761 11.5 20 11.5C19.7239 11.5 19.5 11.7239 19.5 12C19.5 12.2761 19.7239 12.5 20 12.5Z" fill="#ffffff" stroke="#ffffff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path><path d="M12 12.5C12.2761 12.5 12.5 12.2761 12.5 12C12.5 11.7239 12.2761 11.5 12 11.5C11.7239 11.5 11.5 11.7239 11.5 12C11.5 12.2761 11.7239 12.5 12 12.5Z" fill="#ffffff" stroke="#ffffff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path><path d="M4 12.5C4.27614 12.5 4.5 12.2761 4.5 12C4.5 11.7239 4.27614 11.5 4 11.5C3.72386 11.5 3.5 11.7239 3.5 12C3.5 12.2761 3.72386 12.5 4 12.5Z" fill="#ffffff" stroke="#ffffff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-                            </div>
-
-                        </div>
-                    </div>
-
-                    <div className=" flex flex-col pr-1 overflow-y-auto gap-2.5 rounded-md kanban-scrollbar-col  text-white/70">
-                   
-                        <div className="bg-[#242323] rounded-md min-h-24 flex flex-col p-3 text-sm gap-1 hover:bg-[#2a2929] hover:shadow-2xl hover:shadow-[#1a1919]">
-                                <div className="flex">
-                                    <div className="grow">
-                                        Title
-                                    </div>
-                                    <div className="flex gap-2 items-center "> 
-                                        <div>#Label</div>
-                                        <div className="hover:bg-[#222121] rounded-sm p-0.5">
-                                            <svg width="14px" height="16px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" color="#e3e3e3"><path d="M20 9L18.005 20.3463C17.8369 21.3026 17.0062 22 16.0353 22H7.96474C6.99379 22 6.1631 21.3026 5.99496 20.3463L4 9" stroke="#e3e3e3" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M21 6L15.375 6M3 6L8.625 6M8.625 6V4C8.625 2.89543 9.52043 2 10.625 2H13.375C14.4796 2 15.375 2.89543 15.375 4V6M8.625 6L15.375 6" stroke="#e3e3e3" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-                                        </div>
-                                        
-                                        <div className="hover:bg-[#222121] rounded-sm p-0.5">
-                                            {/* <svg width="15px" height="16px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" color="#ebebeb"><path d="M22 5V19C22 20.1046 21.1046 21 20 21H4C2.89543 21 2 20.1046 2 19V5C2 3.89543 2.89543 3 4 3H20C21.1046 3 22 3.89543 22 5Z" stroke="#ebebeb" stroke-width="1.2"></path><path d="M2 12H6" stroke="#ebebeb" stroke-width="1.2"></path><path d="M6 3V21" stroke="#ebebeb" stroke-width="1.2"></path><path d="M15.5 11.5L12 14.5" stroke="#ebebeb" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M17 10.01L17.01 9.99889" stroke="#ebebeb" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path></svg> */}
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.2} stroke="currentColor" className="size-4">
-                                                <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-                                            </svg>
-
-                                            {/* <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-                                            </svg> */}
-
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="text-sm">
-                                    hi this is it
-                                </div>
-                                
-                                <div className="flex">
-                                    <div className="grow">
-                                        Title
-                                    </div>
-                                    <div className="flex gap-3"> 
-                                        <div>Due</div>
-                                        <div>Low</div>
-                                        <div>(C)</div>
-                                    </div>
-                                </div>
-                        </div>
-                        
-                    </div>
-                </div>          
-                               
-            </div>
-
-        </div>
-    );
-}
-
-
+import { useAuth } from "../../../../context/AuthContext";
+import { useAppData } from "../../../../hooks/useAppData";
+import { useState, useRef, useEffect } from "react";
 import { useBoardDisplayContext } from "../../hooks/useBoardDisplayContext";
 import Column from "./Kanban/Column";
 
+
 export default function Kanban() {
 
-    const { dashboardData } = useBoardDisplayContext();
+    const {viewType, setViewType, openMenu, setOpenMenu, board, tasks, columns, createNewColumn } = useBoardDisplayContext()
 
-    const columns = dashboardData?.columns ?? [];
+    // const columns = dashboardData?.columns ?? [];
+
+    const isOpen = openMenu === "newlistform"
+
+    function toggleMenu(){
+        setOpenMenu( isOpen ? null : "newlistform")
+    }
+
+    const kanbanScrollRef = useRef(null);
+    const shouldScrollToEnd = useRef(false);
+    
+    useEffect(() => {
+
+        if (!shouldScrollToEnd.current) {
+            return;
+        }
+
+        const container = kanbanScrollRef.current;
+
+        if (!container) {
+            return;
+        }
+
+        requestAnimationFrame(() => {
+
+            container.scrollTo({
+                left: container.scrollWidth + container.clientWidth, 
+                behavior: "smooth"
+            });
+
+            shouldScrollToEnd.current = false;
+        });
+
+    }, [columns]);
 
     return (
         <div
+            ref={kanbanScrollRef}
             className="
-                pt-7
-                pl-7
-                pr-7
+                relative
+                pt-7.5
+                pl-9
+                pr-9
+                
+                pb-7
+                
                 kanban-scrollbar
                 flex-1
                 min-h-0
@@ -124,16 +67,19 @@ export default function Kanban() {
                 overflow-y-hidden
             "
         >
+            { (openMenu === "newlistform") && <NewListForm  toggleMenu={toggleMenu} createNewColumn={createNewColumn} shouldScrollToEnd={shouldScrollToEnd}></NewListForm>}
+            {/* { openMenu==="newlistform" && <NewListForm  toggleMenu={toggleMenu} onListCreated={fetchBoardColumns}></NewListForm>} */}
 
             <div
                 className="
-                    pb-5
                     grid
                     grid-flow-col
-                    auto-cols-75
+                    auto-cols-73
                     gap-6
-                    h-full
-                    w-fit
+                    max-h-full
+                    items-start
+                    w-max
+                    
                 "
             >
 
@@ -141,11 +87,284 @@ export default function Kanban() {
                     <Column
                         key={column._id}
                         column={column}
+                        tasks={tasks}
                     />
                 ))}
 
             </div>
 
+        </div>
+    );
+}
+
+
+
+import { createColumn } from "../../../../services/listService"
+import { useParams } from "react-router-dom";
+
+// import { useState } from "react";
+// import { createColumn } from "../../services/boardService";
+// import { useAuth } from "../../context/AuthContext";
+// import { useAppData } from "../../hooks/useAppData";
+
+function NewListForm({ toggleMenu, createNewColumn, shouldScrollToEnd }) {
+    const { boardId } = useParams();
+    // console.log(boardId)
+    const { token } = useAuth();
+    const {board} = useBoardDisplayContext()
+
+    const [title, setTitle] = useState("");
+
+    const [isCreating, setIsCreating] = useState(false);
+    const [error, setError] = useState("");
+
+    async function handleCreateNewColumn(e) {
+        
+        shouldScrollToEnd.current = true;
+        e.preventDefault();
+
+        setError("");
+
+        const trimmedTitle = title.trim();
+
+        if (!trimmedTitle) {
+            setError("List title is required.");
+            return;
+        }
+
+        try {
+            setIsCreating(true);
+
+            await createNewColumn({
+                    title: trimmedTitle,
+                })
+
+            // Close the form
+            toggleMenu(null);
+
+        } catch (e) {
+            setError(e.message || "Unable to create list.");
+            shouldScrollToEnd.current = false;
+        } finally {
+            setIsCreating(false);
+        }
+    }
+
+    return (
+        <div
+            className="
+                absolute
+                inset-0
+                flex
+                
+                justify-center
+                z-70
+                pointer-events-none
+                rounded-lg
+                top-20  
+                h-full       
+                bg-blue-500/2 
+            "
+        >
+            <div
+                className="
+                    relative
+                    min-h-20
+                    top-15
+                    h-fit
+                    w-140
+                    rounded-lg
+                    flex
+                    flex-col
+                    gap-5
+                    p-6
+                    pointer-events-auto
+                    border
+                    border-[#3b3939]
+                    bg-[#292828]
+                    shadow-xl
+                    group 
+                "
+            >
+
+                {/* Close */}
+                <button
+                    type="button"
+                    aria-label="Close"
+                    className="
+                        absolute
+                        right-1
+                        top-1
+                        p-1
+                        rounded-sm
+                        hover:bg-white/5
+                        group-hover:block hidden
+                    "
+                    onClick={() => toggleMenu(null)}
+                >
+                    <svg
+                        width="20px"
+                        height="20px"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <path
+                            d="M6.75827 17.2426L12.0009 12M17.2435 6.75736L12.0009 12M12.0009 12L6.75827 6.75736M12.0009 12L17.2435 17.2426"
+                            stroke="#e3e3e3"
+                            strokeWidth="1.2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        />
+                    </svg>
+                </button>
+
+
+                {/* Heading */}
+                <div className="pr-8">
+                    <div className="text-[13px] text-[#969292]">
+                        {board?.title}
+                    </div>
+
+                    <h2 className="text-lg font-medium text-[#f1eeee]">
+                        Create New List
+                    </h2>
+                </div>
+
+
+                {/* Form */}
+                <form
+                    onSubmit={handleCreateNewColumn}
+                    className="flex flex-col gap-4"
+                >
+
+                    {/* Title */}
+                    <div className="flex flex-col gap-1.5">
+                        <label
+                            htmlFor="board-title"
+                            className="text-sm text-[#d2cbcb]"
+                        >
+                            Title
+                        </label>
+
+                        <input
+                            id="board-title"
+                            type="text"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            placeholder="Enter list title"
+                            autoFocus
+                            disabled={isCreating}
+                            className="
+                                w-full
+                                rounded-md
+                                border
+                                border-[#464343]
+                                bg-[#202020]
+                                px-3
+                                py-2
+                                text-sm
+                                text-[#eeeeee]
+                                outline-none
+                                placeholder:text-[#686464]
+                                focus:border-[#6662a8]
+                            "
+                        />
+                    </div>
+
+                    {/* Description */}
+                    {/* <div className="flex flex-col gap-1.5">
+                        
+                        <div className="flex items-center gap-2">
+                            <label
+                                htmlFor="board-description"
+                                className="text-sm text-[#d2cbcb]"
+                            >
+                            Description
+                            </label>
+                            <span className="text-xs text-[#8b8a8a] font-medium">
+                                (Optional)
+                            </span>
+                        </div>
+
+                        <textarea
+                            id="board-description"
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                            placeholder="Describe what this board is for"
+                            disabled={isCreating}
+                            rows={4}
+                            className="
+                                w-full
+                                resize-none
+                                rounded-md
+                                border
+                                border-[#464343]
+                                bg-[#202020]
+                                px-4
+                                py-3
+                                text-sm
+                                text-[#eeeeee]
+                                outline-none
+                                kanban-scrollbar
+                                placeholder:text-[#686464]
+                                focus:border-[#6662a8]
+                            "
+                        />
+                    </div> */}
+
+                    {/* Error */}
+                    {error && (
+                        <div className="text-sm text-red-400">
+                            {error}
+                        </div>
+                    )}
+
+
+                    {/* Actions */}
+                    <div className="flex justify-end gap-2 pt-2">
+
+                        <button
+                            type="button"
+                            disabled={isCreating}
+                            onClick={() => toggleMenu(null)}
+                            className="
+                                rounded-md
+                                px-4
+                                py-2
+                                text-sm
+                                text-[#d2cbcb]
+                                hover:bg-[#353333]
+                                hover:text-[#ede9e9]
+                                disabled:opacity-50
+                            "
+                        >
+                            Cancel
+                        </button>
+
+                        <button
+                            type="submit"
+                            disabled={isCreating || !title.trim()}
+                            className="
+                                rounded-md
+                                bg-[#243b78]
+                                px-4
+                                py-2
+                                text-sm
+                                text-white
+                                hover:bg-[#2d498f]
+                                disabled:cursor-not-allowed
+                                disabled:opacity-50
+                            "
+                        >
+                            {isCreating ? "Creating..." : "Create List"}
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
         </div>
     );
 }
