@@ -22,9 +22,20 @@ const WorkspaceSchema = new mongoose.Schema({
 }
 )
 
+// WorkspaceSchema.index(
+//     { ownerId: 1, title: 1 },
+//     { unique: true }
+// );
+
 WorkspaceSchema.index(
     { ownerId: 1, title: 1 },
-    { unique: true }
+    {
+        unique: true,
+        collation: {
+            locale: "en",
+            strength: 2
+        }
+    }
 );
 
 const Workspace = mongoose.model("Workspace", WorkspaceSchema);

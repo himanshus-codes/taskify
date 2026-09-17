@@ -1,11 +1,9 @@
-const {z} = require('zod')
-
-
+const {z} = require('zod');
 
 exports.createTaskSchema = z.object({
     title: z.string().min(3).max(150),
-    description: z.string().min(5).max(1500),
-    priority: z.enum(["low", "medium", "high"])
+    description: z.string().min(5).max(1500).optional(),
+    priority: z.enum(["low", "medium", "high","default"]).optional().default("normal")
 });
 
 exports.updateTaskSchema = z.object({

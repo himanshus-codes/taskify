@@ -5,10 +5,10 @@ export default function Card({ task }) {
             className="
                 bg-[#242323]
                 rounded-md
-                min-h-24
+                min-h-fit
                 flex
                 flex-col
-                p-3
+                p-2
                 text-sm
                 gap-1
                 hover:bg-[#2a2929]

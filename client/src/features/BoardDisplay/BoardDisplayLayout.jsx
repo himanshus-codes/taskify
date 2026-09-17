@@ -33,15 +33,15 @@ function BoardViewLayout() {
             <BoardHeader />
 
             <hr className="
-                mr-7
-                ml-7
+                mr-9
+                ml-9
                 mt-1
                 border-0
                 border-t
-                border-[#222222]
+                border-[#1c1b1b]
             " />
 
-            <BoardViewSelector/>
+        <BoardViewSelector/> {/* Throws in Kanban Component */}
         </div>
     );
 }

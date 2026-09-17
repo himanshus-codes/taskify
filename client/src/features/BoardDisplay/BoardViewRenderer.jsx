@@ -1,5 +1,5 @@
 import { useBoardDisplayContext } from "./hooks/useBoardDisplayContext";
-import Kanban from "./components/views/Kanban"
+import Kanban from "./components/views/Kanban/Kanban"
 
 
 export default function BoardViewSelector() {

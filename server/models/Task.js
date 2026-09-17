@@ -7,11 +7,10 @@ const TaskSchema = new mongoose.Schema({
     },
     description: {
         type: String,
-        required: [true, " description is required"]
     },
     priority: {
         type: String,
-        enum: ["low", "medium", "high"],
+        enum: ["low", "medium", "high", "normal"],
         required: true
     },
 
@@ -62,7 +61,13 @@ const TaskSchema = new mongoose.Schema({
 
 TaskSchema.index(
     { boardId: 1, title: 1 },
-    { unique: true }
+    {
+        unique: true,
+        collation: {
+            locale: "en",
+            strength: 2
+        }
+    }
 );
 
 const Task = mongoose.model('Task', TaskSchema);

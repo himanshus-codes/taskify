@@ -68,6 +68,7 @@ exports.createColumn = async (req, res) => {
         });
 
     } catch (err) {
+        console.log(err)
 
         if (err.code === 11000) {
 

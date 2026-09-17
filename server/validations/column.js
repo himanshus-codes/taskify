@@ -2,7 +2,7 @@ const {z} = require("zod");
 
 exports.columnSchema = z.object({
     title: z.string().min(1).max(150),
-    order:z.number().min(1)
+    // order:z.number().min(1)
 })
 
 exports.columnUpdateSchema = z.object({

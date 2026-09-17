@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { getBoard, getFullDashboardBoard, updateBoard } from "../../services/boardService";
 import { createColumn } from "../../services/listService";
-
+import { createTask } from "../../services/taskService";
 export const BoardDisplayContext = createContext()
 
 
@@ -162,17 +162,38 @@ function BoardDisplayProvider({ children }) {
         return newColumnData;
     }
 
+    async function createNewTask(columnId, data) {
+        
+        const res = await createTask(
+            token, 
+            boardId, 
+            columnId, 
+            data
+        );
+
+        console.log(res)
+
+        const newTaskData = res.data;
+            
+        console.log(newTaskData)
+
+        setTasks(prev => ([
+            ...prev,
+            newTaskData
+        ]));
+
+        return newTaskData;
+    }
+
+
+
+
     return (
         <BoardDisplayContext.Provider
             value={{
                 board,
-                setBoard,
-
                 columns,
-                setColumns,
-
                 tasks,
-                setTasks,
 
                 viewType,
                 setViewType,
@@ -183,7 +204,8 @@ function BoardDisplayProvider({ children }) {
            
                 // resetFullDashboardBoard,
                 updateBoardTitle,
-                createNewColumn
+                createNewColumn,
+                createNewTask
 
                 // searchQuery,
                 // setSearchQuery,

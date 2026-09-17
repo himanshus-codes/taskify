@@ -16,7 +16,7 @@ router.delete('/columns/:id/tasks', userMiddleware, taskController.deleteAllTask
 
 // router.post('/columns/:id/tasks', userMiddleware, taskController.createColumns)
 
-router.post('/columns/:id/task', userMiddleware, taskController.createTask)
+router.post('/boards/:boardId/columns/:columnId/task', userMiddleware, taskController.createTask)
 
 router.get('/tasks/:id', userMiddleware, taskController.getTaskDetails)
 router.patch('/tasks/:id', userMiddleware, taskController.updateTask)

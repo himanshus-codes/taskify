@@ -6,7 +6,12 @@ const taskService = require("../services/task");
 // Create Task
 exports.createTask = async (req, res) => {
 
-    const columnId = req.params.id;
+    console.log("hiiiiiiiii")
+    const columnId = req.params.columnId;
+    const boardId = req.params.boardId;
+
+    console.log(columnId)
+    console.log(boardId)
 
     const result = createTaskSchema.safeParse(req.body);
 
@@ -19,10 +24,13 @@ exports.createTask = async (req, res) => {
         });
     }
 
-    try {
+    console.log(result.success)
+  
 
+    try {
         const task = await taskService.createTask(
             columnId,
+            boardId,
             result.data
         );
 
@@ -34,7 +42,7 @@ exports.createTask = async (req, res) => {
         });
 
     } catch (err) {
-
+        console.log(err)
         if (err.code === 11000) {
 
             const field = Object.keys(err.keyPattern)[0];

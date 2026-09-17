@@ -6,23 +6,91 @@ import { AccessibilityMenu, AccessibilityMenuBtn} from "./menus/AccessibilityMen
 import { ShareMenu, ShareMenuBtn } from "./menus/ShareMenu";
 import { MoreMenu, MoreMenuBtn } from "./menus/MoreMenu";
 import Search from "./Search";
+import { useState } from "react";
 
 function BoardHeader(){
 
 
-    const {boardData, openMenu, setOpenMenu} = useBoardDisplayContext()
-    const { } = useBoardDisplayContext()
+    const {
+        board,
+        updateBoardTitle,
+        openMenu,
+        setOpenMenu
+    } = useBoardDisplayContext();
+
+    const [isEditing, setIsEditing] = useState(false);
+    const [draftBoardTitle, setDraftBoardTitle] = useState("");
+
+    function startEditing() {
+        setDraftBoardTitle(board?.title ?? "");
+        setIsEditing(true);
+    }
+    function closeEditing() {
+        setIsEditing(false);
+    }
+
+    async function saveBoardTitle() {
+
+        const newTitle = draftBoardTitle.trim();
+
+        if (!newTitle) {
+            setDraftBoardTitle(board?.title ?? "");
+            setIsEditing(false);
+            return;
+        }
+
+        try {
+            await updateBoardTitle(newTitle);
+            setIsEditing(false);
+        } catch (e) {
+            console.log(e);
+        }
+    }
 
 
     return <div className="flex justify-center items-center 
-                pt-3.5
-                pl-7
-                pr-7">
+                pt-7
+                pl-9
+                pr-9">
         
-        <div className=" flex grow  items-center gap-4 relative">
-            <div className="flex justify-center text-md items-center hover:bg-[#252424] p-1 font-normal rounded-sm"> 
-                {boardData?.title}
-            </div>
+        <div className=" flex grow  items-center gap-2 relative ">
+            
+            { !isEditing ? 
+                
+                (<div onClick={startEditing} className="flex justify-center  cursor-default text-md tracking-wider items-center hover:bg-[#252424] p-1 font-medium rounded-sm"> 
+                    {board?.title }
+                </div>)
+                
+                :
+                
+                (<div onDoubleClick={closeEditing}  className="flex justify-center  cursor-default text-md tracking-wider items-center p-1 font-medium rounded-sm"> 
+                    <input 
+                        
+                        autoFocus 
+                        value={draftBoardTitle} 
+                        onBlur={()=>{closeEditing(); saveBoardTitle()} }
+                        onChange={(e) => setDraftBoardTitle(e.target.value) } 
+                        
+                        onKeyDown={(e) => {
+                        
+                            if (e.key === "Enter") {
+                                saveBoardTitle();
+                            }
+
+                            if (e.key === "Escape") {
+                                setDraftBoardTitle(
+                                    board?.title ?? ""
+                                );
+                                setIsEditing(false);
+                            }
+                        }}  
+                        
+                        className="field-sizing-content min-w-10 outline-none" >
+
+                    </input>
+                </div>)
+            }
+
             <ViewSelectionMenu></ViewSelectionMenu>
         </div>
         
@@ -47,11 +115,13 @@ function BoardHeader(){
         
                 <AccessibilityMenuBtn></AccessibilityMenuBtn>
 
-                <div className="flex justify-center items-center gap-0.5 bg-blue-950  pr-2 text-sm hover:bg-[#252424] p-1 rounded-sm">
-                    <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" color="#ffffff"><path d="M6 12H12M18 12H12M12 12V6M12 12V18" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-                    <div>New List</div>
+                <div >
                 </div>
 
+                <button className="flex justify-center items-center gap-0.5 bg-blue-950  pr-2 text-sm hover:bg-[#252424] p-1 rounded-sm" onClick={()=>{setOpenMenu(()=> openMenu !== "newlistform" ? "newlistform" : "null" ); console.log("list list btn")}}>
+                    <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" color="#ffffff"><path d="M6 12H12M18 12H12M12 12V6M12 12V18" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                    New List
+                </button>
                 <MoreMenuBtn></MoreMenuBtn>
 
             </div>

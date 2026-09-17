@@ -2,12 +2,15 @@ const { Task } = require("../models/Task");
 const mongoose = require("mongoose");
 
 
-exports.createTask = async (columnId, data) => {
+exports.createTask = async (columnId,boardId, data) => {
+
+    console.log("req rec")
 
     const taskData = new Task({
         title: data.title,
         description: data.description,
         priority: data.priority,
+        boardId,
         columnId
     });
 

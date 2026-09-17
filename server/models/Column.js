@@ -1,7 +1,5 @@
 const mongoose = require("mongoose");
 
-const mongoose = require("mongoose");
-
 const ColumnSchema = new mongoose.Schema(
     {
         title: {
@@ -30,9 +28,17 @@ const ColumnSchema = new mongoose.Schema(
 
 ColumnSchema.index(
     { boardId: 1, title: 1 },
-    { unique: true }
+    {
+        unique: true,
+        collation: {
+            locale: "en",
+            strength: 2
+        }
+    }
 );
 
-const Column = mongoose.model("column", ColumnSchema);
+const Column = mongoose.model("Column", ColumnSchema);
+
+// console.log(Column.schema.indexes());
 
 module.exports = { Column };

@@ -22,7 +22,7 @@ exports.createColumn = async (boardId, data) => {
 
     const column = await Column.create({
         title: data.title,
-        order: data.order,
+        // order: data.order,
         boardId
     });
 

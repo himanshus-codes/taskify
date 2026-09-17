@@ -37,7 +37,13 @@ const BoardSchema = new mongoose.Schema({
 
 BoardSchema.index(
     { workspaceId: 1, title: 1 },
-    { unique: true }
+    {
+        unique: true,
+        collation: {
+            locale: "en",
+            strength: 2
+        }
+    }
 );
 
 
