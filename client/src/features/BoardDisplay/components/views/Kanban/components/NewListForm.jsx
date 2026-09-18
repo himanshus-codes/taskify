@@ -41,7 +41,6 @@ export default function NewListForm({ toggleNewListFormMenu, createNewColumn, sh
 
     return (
         <div
-            data-kanban-newListForm
             className="
                 fixed
                 inset-0

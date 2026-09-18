@@ -1,17 +1,17 @@
 import { useState } from "react";
 import { useBoardDisplayContext } from "../../../../hooks/useBoardDisplayContext";
 
-export default function QuickAddTask({ columnId, isAdding, setIsAdding }) {
+export default function QuickAddTask({ columnId, isAdding, toggleQuickAddTask }) {
     const { createNewTask } = useBoardDisplayContext();
 
     const [title, setTitle] = useState("");
 
     function openForm() {
-        setIsAdding(true);
+        toggleQuickAddTask(columnId);
     }
 
     function closeForm() {
-        setIsAdding(false);
+        toggleQuickAddTask(null);
         setTitle("");
     }
 

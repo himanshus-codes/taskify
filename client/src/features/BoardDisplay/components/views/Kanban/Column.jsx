@@ -3,25 +3,38 @@ import QuickAddTask from "./components/QuickAddTask";
 import { useState, useEffect, useRef } from "react";
 import { useBoardDisplayContext } from "../../../hooks/useBoardDisplayContext";
 import ColumnMenu from "./components/ColumnMenu";
+import { useKanbanContext } from "./KanbanContext";
 
-export default function Column({ column, tasks, toggleNewTaskForm, setColumnMetaData, toggleColMoreMenu,  currColumnIdforColMenuOpen, toggleDeleteListPrompt, toggleEmptyListPrompt}) {
+export default function Column({ 
+    column, 
+    tasks
+}) {
 
-    // const tasks = column.tasks ?? [];
+
+    const {
+
+        currColumnIdforColMenuOpen,
+        toggleColMoreMenu,
+
+        toggleDeleteListPrompt,
+        toggleEmptyListPrompt,
+
+        currColumnIdforQuickAddTaskOpen,
+        toggleQuickAddTask,
+
+        setNewTaskFormMetaData,
+        toggleNewTaskFormMenu
+    } = useKanbanContext();
+    const {openMenu,  setOpenMenu ,deleteColumn, deleteAllTasksByColumnId} = useBoardDisplayContext()
     
-
-    // console.log(tasks)
-    // console.log(column)
-
-   const taskArray = tasks.filter(
+    const taskArray = tasks.filter(
         task => task.columnId === column._id
     );
     // console.log(taskArray)
 
     // Add New Task (Quick Add Task Method)
-    const [isAdding, setIsAdding] = useState(false);
-    const {openMenu,  setOpenMenu ,deleteColumn, deleteAllTasksByColumnId} = useBoardDisplayContext()
-
-
+    const isAdding = (openMenu === "quickaddtask") && (currColumnIdforQuickAddTaskOpen === column._id)
+    console.log(isAdding)
     const kanbanScrollRef = useRef(null);
     const previousTaskCount = useRef(taskArray.length);
     const isInitialRender = useRef(true);
@@ -128,7 +141,7 @@ export default function Column({ column, tasks, toggleNewTaskForm, setColumnMeta
 
                     {/* Add task */}
                     <button
-                        onClick={() =>{ setColumnMetaData(column._id, column.title);toggleNewTaskForm()} }
+                        onClick={() =>{ setNewTaskFormMetaData(column._id, column.title);toggleNewTaskFormMenu()} }
                         className="
                             hover:bg-[#222121]
                             rounded-sm
@@ -190,9 +203,8 @@ export default function Column({ column, tasks, toggleNewTaskForm, setColumnMeta
                     />
                 ))}
                 
-                {
-                    isAdding && <QuickAddTask
-                        columnId={column._id} isAdding={isAdding} setIsAdding={setIsAdding}
+                {isAdding && <QuickAddTask
+                        columnId={column._id} isAdding={isAdding} toggleQuickAddTask={toggleQuickAddTask}
                     />
                 }
 
@@ -208,7 +220,7 @@ export default function Column({ column, tasks, toggleNewTaskForm, setColumnMeta
 
             {
                 !isAdding && <QuickAddTask
-                    columnId={column._id} isAdding={isAdding} setIsAdding={setIsAdding}
+                    columnId={column._id} isAdding={isAdding} toggleQuickAddTask={toggleQuickAddTask}
                 />
             }
 

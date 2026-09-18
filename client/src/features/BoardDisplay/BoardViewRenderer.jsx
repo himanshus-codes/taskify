@@ -1,5 +1,6 @@
 import { useBoardDisplayContext } from "./hooks/useBoardDisplayContext";
 import Kanban from "./components/views/Kanban/Kanban"
+import { KanbanProvider } from "./components/views/Kanban/KanbanContext";
 
 
 export default function BoardViewSelector() {
@@ -7,10 +8,14 @@ export default function BoardViewSelector() {
 
     switch (viewType) {
         case "kanban":
-            return <Kanban />;
+            return <KanbanProvider>
+                    <Kanban />
+                </KanbanProvider>;
 
         default:
-            return <Kanban />;
+            return <KanbanProvider>
+                <Kanban />
+            </KanbanProvider>;
     }
 }
 

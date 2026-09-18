@@ -1,9 +1,11 @@
 import BoardHeader from "./components/header/BoardHeader";
 import BoardViewRenderer from "./BoardViewRenderer";
-
+import { useAppShellUiContext } from "../../hooks/useAppShellUiContext";
 
 function BoardViewLayout() {
- 
+    
+    const {closeProfileOtpnsTab, closeWorkspaceOtpnsTab} = useAppShellUiContext()
+
     return (
         <div
             className="

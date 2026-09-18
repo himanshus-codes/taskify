@@ -2,277 +2,53 @@
 // bg-[#1e1d1d]
 
 
-import { useState, useRef, useEffect } from "react";
-import { useBoardDisplayContext } from "../../../hooks/useBoardDisplayContext";
 import Column from "./Column";
 import NewTaskForm from "./components/NewTaskForm";
 import NewListForm from "./components/NewListForm";
 import DeleteListPrompt from "./components/prompts/DeleteListPrompt";
 import EmptyListPrompt from "./components/prompts/EmptyListPrompt";
 
+import { useBoardDisplayContext } from "../../../hooks/useBoardDisplayContext";
+import { useKanbanContext } from "./KanbanContext";
+
 
 export default function Kanban() {
 
-    const {viewType, setViewType, openMenu, setOpenMenu, board, tasks, columns, createNewColumn, createNewTask } = useBoardDisplayContext()
-
-    // const columns = dashboardData?.columns ?? [];
-
-    
-    // Conform Delete List & Empty List Actions
-
-    const isDeleteListPromptOpen = openMenu === "deletelistprompt"
-    const isEmptyListPromptOpen = openMenu === "emptylistprompt"
-    
-    const [deleteActionColumn, setDeleteActionColumn] = useState(null)
-
-    function toggleDeleteListPrompt(column){
-        setDeleteActionColumn(column)
-        console.log(`Deleting List`)
-        setOpenMenu(isDeleteListPromptOpen ? null : "deletelistprompt" )
-    }
-
-    function toggleEmptyListPrompt(column){
-        setDeleteActionColumn(column)
-        setOpenMenu(isEmptyListPromptOpen ? null : "emptylistprompt" )
-    }
-
-    function openDeleteListPrompt(column) {
-        setDeleteActionColumn(column);
-        setOpenMenu("deletelistprompt");
-    }
-
-    function closeDeleteListPrompt() {
-        setDeleteActionColumn(null);
-        setOpenMenu(null);
-    }
-
-    // <DeleteListPrompt
-    //     column={deleteActionColumn}
-    //     onCancel={closeDeleteListPrompt}
-    // />
-    // <div onClick={() => openDeleteListPrompt(column)}>
-    //     Delete List
-    // </div>
-
-    // Open Column Menu (...) feature, one col menu at a time
-    const [currColumnIdforColMenuOpen, setColumnIdforMoreMenu ] = useState(null)
-
-    function toggleColMoreMenu(columnId) {
-
-        const isColumnMenuOpen = openMenu === "columnmoreoptions";
-
-        const isSameColumn =
-            currColumnIdforColMenuOpen === columnId;
-
-        // Same column's menu is already open → close it
-        if (isColumnMenuOpen && isSameColumn) {
-            setOpenMenu(null);
-            setColumnIdforMoreMenu(null);
-            return;
-        }
-
-        // Either no column menu is open,
-        // or another column's menu is open
-        setColumnIdforMoreMenu(columnId);
-        setOpenMenu("columnmoreoptions");
-    }
-
-
-    const isOpen = openMenu === "newlistform"
-
-    function toggleNewListFormMenu(){
-        setOpenMenu( isOpen ? null : "newlistform")
-    }
-
-
-    // Add New Task/Card (form method)
-    const [newTaskColumnId, setNewTaskColumnId] = useState(null);
-    const [newTaskColumnTitle, setNewTaskColumnTitle] = useState(null);
-
-    const isOpen2 = openMenu === "newtaskform"
-
-    function toggleNewTaskFormMenu(){
-        setOpenMenu( isOpen2 ? null : "newtaskform")
-    }
-
-    function setNewTaskFormMetaData(columnId, columnTitle) {
-
-        console.log(columnId)
-        console.log(columnTitle)
-        setNewTaskColumnId(columnId);
-        setNewTaskColumnTitle(columnTitle);
-    }
-
-
-    // Scroll after New List/Column Created: Scroll to Rigt most End where new list/column is displayed
-    const kanbanScrollRef = useRef(null);
-    const shouldScrollToEndColumn = useRef(false);
-    
-    useEffect(() => {
-
-        if (!shouldScrollToEndColumn.current) {
-            return;
-        }
-
-        const container = kanbanScrollRef.current;
-
-        if (!container) {
-            return;
-        }
-
-        requestAnimationFrame(() => {
-
-            container.scrollTo({
-                left: container.scrollWidth + container.clientWidth, 
-                behavior: "smooth"
-            });
-
-            shouldScrollToEndColumn.current = false;
-        });
-
-    }, [columns]);
-
-    const isDragging = useRef(false); //is left mouse currently being held?
-    const dragStartX = useRef(0);//where the mouse was when the drag started
-    const scrollStartX = useRef(0);// where the scrollbar was when the drag started
-
-    function handlePointerDown(e) {
-        
-        // no grab and drag if new list form is open
-        if (isOpen || isOpen2  || isDeleteListPromptOpen || isEmptyListPromptOpen) {
-            return;
-        }
-
-        // Only left mouse button
-        if (e.pointerType === "mouse" && e.button !== 0) {
-            return;
-        }
-
-        // Don't activate grab scrolling on interactive elements
-        // if (
-        //     e.target.closest(
-        //         "button, input, textarea, select, a, [contenteditable='true']"
-        //     )
-        // ) {
-        //     return;
-        // }
-
-        // Only the actual Kanban container can start dragging
-        const isInsideColumn =
-            e.target.closest("[data-kanban-column]");
-    
-
-        if (isInsideColumn ) {
-            return;
-        }
-
-        const container = kanbanScrollRef.current;
-
-        if (!container) return;
-
-        isDragging.current = true;
-
-        dragStartX.current = e.clientX;
-        scrollStartX.current = container.scrollLeft;
-
-        // Prevent browser text selection from starting
-        e.preventDefault();
-
-        // Keep receiving pointer events even if mouse leaves container
-        container.setPointerCapture(e.pointerId);
-
-        container.style.cursor = "grabbing";
-        container.style.userSelect = "none";
-    }
-
-    function handlePointerMove(e) {
-
-        // no grab and drag if new list form is open
-        if (isOpen || isOpen2  || isDeleteListPromptOpen || isEmptyListPromptOpen) {
-            return;
-        }
-        const container = kanbanScrollRef.current;
-
-        if (!container) return;
-
-        // Currently dragging
-        if (isDragging.current) {
-
-            e.preventDefault();
-
-            const mouseMovement =
-                e.clientX - dragStartX.current;
-
-            container.scrollLeft =
-                scrollStartX.current - mouseMovement;
-
-            return;
-        }
-
-        // Not dragging.
-        // Show grab only when directly over empty Kanban area.
-       const isInsideColumn = e.target.closest("[data-kanban-column]");
-       
-
-        if (isInsideColumn ) {
-            container.style.cursor = "";
-        } else {
-            container.style.cursor = "grab";
-        }
-    }
-    function handlePointerUp(e) {
-        if (isOpen || isOpen2  || isDeleteListPromptOpen || isEmptyListPromptOpen) {
-            return;
-        }
-
-        const container = kanbanScrollRef.current;
-
-        if (!container) return;
-
-        isDragging.current = false;
-
-        container.style.userSelect = "";
-
-        if (container.hasPointerCapture(e.pointerId)) {
-            container.releasePointerCapture(e.pointerId);
-        }
-
-        // Let pointer movement determine the correct cursor again.
-        container.style.cursor = "";
-    }
-    function handlePointerCancel(e) {
-        if (isOpen || isOpen2  || isDeleteListPromptOpen || isEmptyListPromptOpen) {
-            return;
-        }
-        const container = kanbanScrollRef.current;
-
-        if (!container) return;
-
-        isDragging.current = false;
-
-        container.style.cursor = "";
-        container.style.userSelect = "";
-
-        if (container.hasPointerCapture(e.pointerId)) {
-            container.releasePointerCapture(e.pointerId);
-        }
-    }   
-
-
-    // Grab & Scroll off When New List From or New Task Foom is Open
-    useEffect(() => {
-
-        const container = kanbanScrollRef.current;
-
-        if (!container) return;
-
-        if (isOpen) {
-            isDragging.current = false;
-            container.style.cursor = "";
-            container.style.userSelect = "";
-        }
-
-    }, [isOpen, isOpen2 ]);
+    const {
+        openMenu,
+        columns,
+        tasks,
+        createNewColumn,
+        createNewTask
+    } = useBoardDisplayContext();
+
+
+    const {
+        currColumnIdforColMenuOpen,
+        toggleColMoreMenu,
+
+        currColumnIdforQuickAddTaskOpen,
+        toggleQuickAddTask,
+
+        toggleNewListFormMenu,
+
+        newTaskColumnId,
+        newTaskColumnTitle,
+        toggleNewTaskFormMenu,
+        setNewTaskFormMetaData,
+
+        deleteActionColumn,
+        toggleDeleteListPrompt,
+        toggleEmptyListPrompt,
+
+        kanbanScrollRef,
+        shouldScrollToEndColumn,
+
+        handlePointerDown,
+        handlePointerMove,
+        handlePointerUp,
+        handlePointerCancel
+    } = useKanbanContext();
     
     return (
         <div
@@ -330,22 +106,9 @@ export default function Kanban() {
                         key={column._id}
                         column={column}
                         tasks={tasks}
-                        onAddTask={setNewTaskFormMetaData}
-                        toggleNewTaskForm={toggleNewTaskFormMenu}
-                        setColumnMetaData={setNewTaskFormMetaData}
-                        toggleColMoreMenu={toggleColMoreMenu}
-                        currColumnIdforColMenuOpen={currColumnIdforColMenuOpen}
-                        toggleDeleteListPrompt={toggleDeleteListPrompt}
-                        toggleEmptyListPrompt={toggleEmptyListPrompt}
-
                     />
                 ))}
-
-
             </div>
-
-
-
         </div>
     );
 }
