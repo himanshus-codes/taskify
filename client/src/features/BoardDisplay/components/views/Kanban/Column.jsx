@@ -1,27 +1,33 @@
 import Card from "./Card";
 import QuickAddTask from "./components/QuickAddTask";
 import { useState, useEffect, useRef } from "react";
+import { useBoardDisplayContext } from "../../../hooks/useBoardDisplayContext";
+import ColumnMenu from "./components/ColumnMenu";
 
-
-export default function Column({ column, tasks, onAddTask }) {
+export default function Column({ column, tasks, toggleNewTaskForm, setColumnMetaData, toggleColMoreMenu,  currColumnIdforColMenuOpen, toggleDeleteListPrompt, toggleEmptyListPrompt}) {
 
     // const tasks = column.tasks ?? [];
+    
 
-    console.log(tasks)
-    console.log(column)
+    // console.log(tasks)
+    // console.log(column)
 
    const taskArray = tasks.filter(
         task => task.columnId === column._id
     );
-    console.log(taskArray)
+    // console.log(taskArray)
 
-
+    // Add New Task (Quick Add Task Method)
     const [isAdding, setIsAdding] = useState(false);
-    
+    const {openMenu,  setOpenMenu ,deleteColumn, deleteAllTasksByColumnId} = useBoardDisplayContext()
+
+
     const kanbanScrollRef = useRef(null);
     const previousTaskCount = useRef(taskArray.length);
     const isInitialRender = useRef(true);
 
+
+    // Scroll to Bottom of a Column/List when a task gets added
     useEffect(() => {
 
         // Don't scroll when the column initially loads its tasks
@@ -57,10 +63,12 @@ export default function Column({ column, tasks, onAddTask }) {
 
     }, [taskArray.length]);
 
+    // Scroll to Bottom of a Column/List when the bottom Quick-Add-Card/Task form is openened
 
     useEffect(()=>{
-        if(isAdding){
             
+        if(isAdding){
+            const container = kanbanScrollRef.current;
             requestAnimationFrame(() => {
 
                 container.scrollTo({
@@ -69,8 +77,8 @@ export default function Column({ column, tasks, onAddTask }) {
                 });
 
             });
-        } 
-    },[isAdding])
+        }
+    },[isAdding, taskArray])
     
 
     return (
@@ -91,11 +99,18 @@ export default function Column({ column, tasks, onAddTask }) {
                 gap-2
                 shadow-[#161414]
                 shadow-xl
+                relative
+                
             "
         >
 
             {/* Column header */}
             <div className="flex mx-2 mb-1 ">
+
+                {(openMenu === "columnmoreoptions" && currColumnIdforColMenuOpen === column._id) && 
+                    <ColumnMenu toggleColMoreMenu={toggleColMoreMenu} toggleDeleteListPrompt={toggleDeleteListPrompt}
+                        toggleEmptyListPrompt={toggleEmptyListPrompt} column={column}></ColumnMenu>
+                }
 
                 <div className="flex grow  items-center  text-sm font-medium gap-2">
                     <div>
@@ -113,7 +128,7 @@ export default function Column({ column, tasks, onAddTask }) {
 
                     {/* Add task */}
                     <button
-                        onClick={() => onAddTask(column._id, column.title)}
+                        onClick={() =>{ setColumnMetaData(column._id, column.title);toggleNewTaskForm()} }
                         className="
                             hover:bg-[#222121]
                             rounded-sm
@@ -129,6 +144,7 @@ export default function Column({ column, tasks, onAddTask }) {
 
                     {/* More */}
                     <button
+                        onClick={() => toggleColMoreMenu(column._id)}
                         className="
                             hover:bg-[#222121]
                             rounded-sm

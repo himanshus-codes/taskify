@@ -72,7 +72,7 @@ function QuickAddTaskButton({ openForm }) {
 
 function QuickAddTaskForm({ title, setTitle, closeForm, handleKeyDown, handleSubmit }) {
     return (
-        <div className="flex flex-col gap-2 pr-1 ">
+        <div className="flex flex-col gap-2 pr-1 mb-1">
             <input
                 autoFocus
                 type="text"

@@ -33,8 +33,8 @@ export async function getTasks(token, columnId) {
 }
 
 
-// DELETE /columns/:id/tasks
-export async function deleteAllTasks(token, columnId) {
+// DELETE /columns/:id/tasks by column Id
+export async function deleteAllTasksByColumnId(token, columnId) {
 
     let res;
 
@@ -69,13 +69,14 @@ export async function deleteAllTasks(token, columnId) {
 
 
 // POST /columns/:id/task
-export async function createTask(token, columnId, taskData) {
+export async function createTask(token, boardId, columnId, taskData) {
 
     let res;
 
     try {
         res = await fetch(
-            `http://localhost:3000/columns/${columnId}/task`,
+
+            `http://localhost:3000/boards/${boardId}/columns/${columnId}/task`,
             {
                 method: "POST",
 
@@ -92,7 +93,10 @@ export async function createTask(token, columnId, taskData) {
             }
         );
 
+        console.log(res)
+
     } catch (e) {
+        console.log(e)
         const err = new Error("Unable to connect to server.");
         err.code = "NETWORK_ERROR";
         throw err;
@@ -105,6 +109,7 @@ export async function createTask(token, columnId, taskData) {
         err.code = data.code;
         throw err;
     }
+
 
     return data;
 }

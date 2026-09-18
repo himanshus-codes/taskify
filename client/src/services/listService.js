@@ -51,7 +51,7 @@ export const createColumn = async (token, boardId, columnData) => {
 
                 body: JSON.stringify({
                     title: columnData.title,
-                    order:columnData.order
+                    // order:columnData.order
                 })
             }
         );

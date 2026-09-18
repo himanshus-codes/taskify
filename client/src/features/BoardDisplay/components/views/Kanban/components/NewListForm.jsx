@@ -1,24 +1,14 @@
-// import { createColumn } from "../../../../../services/listService"
-import { useParams } from "react-router-dom";
-
 import { useState } from "react";
-import { useAuth } from "../../../../../../hooks/useAuth"
 import { useBoardDisplayContext } from "../../../../hooks/useBoardDisplayContext";
 
-export default function NewListForm({ toggleMenu, createNewColumn, shouldScrollToEndColumn }) {
-    const { boardId } = useParams();
-    // console.log(boardId)
-    const { token } = useAuth();
-    const {board} = useBoardDisplayContext()
+export default function NewListForm({ toggleNewListFormMenu, createNewColumn, shouldScrollToEndColumn }) {
+   const { board } = useBoardDisplayContext();
 
     const [title, setTitle] = useState("");
-
     const [isCreating, setIsCreating] = useState(false);
     const [error, setError] = useState("");
 
     async function handleCreateNewColumn(e) {
-        
-        shouldScrollToEndColumn.current = true;
         e.preventDefault();
 
         setError("");
@@ -33,12 +23,13 @@ export default function NewListForm({ toggleMenu, createNewColumn, shouldScrollT
         try {
             setIsCreating(true);
 
-            await createNewColumn({
-                    title: trimmedTitle,
-                })
+            shouldScrollToEndColumn.current = true;
 
-            // Close the form
-            toggleMenu(null);
+            await createNewColumn({
+                title: trimmedTitle,
+            });
+
+            toggleNewListFormMenu();
 
         } catch (e) {
             setError(e.message || "Unable to create list.");
@@ -52,38 +43,31 @@ export default function NewListForm({ toggleMenu, createNewColumn, shouldScrollT
         <div
             data-kanban-newListForm
             className="
-                
-                absolute
+                fixed
                 inset-0
-                flex
-                
-                justify-center
                 z-70
-                pointer-events-none
-                rounded-lg
-                top-20  
-                h-full       
-                bg-blue-500/2 
+                flex
+                items-center
+                justify-center
+                bg-black/40
             "
         >
             <div
                 className="
                     relative
-                    min-h-20
-                    top-15
                     h-fit
                     w-140
-                    rounded-lg
-                    flex
-                    flex-col
-                    gap-5
-                    p-6
-                    pointer-events-auto
+                    max-w-[calc(100%-2rem)]
+                    rounded-md
                     border
                     border-[#3b3939]
                     bg-[#292828]
                     shadow-xl
-                    group 
+                    flex
+                    flex-col
+                    gap-2
+                    p-6
+                    group
                 "
             >
 
@@ -96,12 +80,12 @@ export default function NewListForm({ toggleMenu, createNewColumn, shouldScrollT
                         right-1
                         top-1
                         p-1
-                        rounded-sm
+                        rounded-md
                         hover:bg-white/5
                         group-hover:block hidden
                     "
-                    onClick={() => toggleMenu(null)}
-                >
+                    onClick={() => toggleNewListFormMenu()}
+                >   
                     <svg
                         width="20px"
                         height="20px"
@@ -157,7 +141,7 @@ export default function NewListForm({ toggleMenu, createNewColumn, shouldScrollT
                             disabled={isCreating}
                             className="
                                 w-full
-                                rounded-md
+                                rounded-sm
                                 border
                                 border-[#464343]
                                 bg-[#202020]
@@ -197,7 +181,7 @@ export default function NewListForm({ toggleMenu, createNewColumn, shouldScrollT
                             className="
                                 w-full
                                 resize-none
-                                rounded-md
+                                rounded-sm
                                 border
                                 border-[#464343]
                                 bg-[#202020]
@@ -214,11 +198,15 @@ export default function NewListForm({ toggleMenu, createNewColumn, shouldScrollT
                     </div> */}
 
                     {/* Error */}
-                    {error && (
+                    {/* {error && (
                         <div className="text-sm text-red-400">
                             {error}
                         </div>
-                    )}
+                    )} */}
+                    {/* Error */}
+                    <div className="min-h-5 text-sm text-red-400">
+                        {error}
+                    </div>
 
 
                     {/* Actions */}
@@ -227,9 +215,9 @@ export default function NewListForm({ toggleMenu, createNewColumn, shouldScrollT
                         <button
                             type="button"
                             disabled={isCreating}
-                            onClick={() => toggleMenu(null)}
+                            onClick={() => toggleNewListFormMenu(null)}
                             className="
-                                rounded-md
+                                rounded-sm
                                 px-4
                                 py-2
                                 text-sm
@@ -241,12 +229,14 @@ export default function NewListForm({ toggleMenu, createNewColumn, shouldScrollT
                         >
                             Cancel
                         </button>
+                        
 
                         <button
                             type="submit"
                             disabled={isCreating || !title.trim()}
                             className="
-                                rounded-md
+                                 min-w-24
+                                rounded-sm
                                 bg-[#243b78]
                                 px-4
                                 py-2
@@ -254,10 +244,29 @@ export default function NewListForm({ toggleMenu, createNewColumn, shouldScrollT
                                 text-white
                                 hover:bg-[#2d498f]
                                 disabled:cursor-not-allowed
-                                disabled:opacity-50
+                                disabled:opacity-70
+                                flex
+                                items-center
+                                justify-center
                             "
-                        >
-                            {isCreating ? "Creating..." : "Create List"}
+                        >   
+                            
+                            
+                            {isCreating ? (
+                                <span
+                                    className="
+                                        h-4
+                                        w-4
+                                        animate-spin
+                                        rounded-full
+                                        border-2
+                                        border-white/30
+                                        border-t-white
+                                    "
+                                />
+                            ) : (
+                                "Create List"
+                            )}
                         </button>
 
                     </div>

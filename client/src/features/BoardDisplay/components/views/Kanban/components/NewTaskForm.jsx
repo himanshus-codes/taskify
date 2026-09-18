@@ -3,12 +3,10 @@ import { useState } from "react";
 export default function NewTaskForm({
     columnId,
     columnTitle,
-    closeForm,
-    openForm,
-    createNewTask
+    createNewTask,
+    toggleNewTaskForm
 }) {
 
-    console.log(columnTitle)
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [priority, setPriority] = useState("medium");
@@ -45,7 +43,7 @@ export default function NewTaskForm({
                 priority
             });
 
-            closeForm();
+            toggleNewTaskForm();
 
         } catch (e) {
 
@@ -65,28 +63,28 @@ export default function NewTaskForm({
     return (
         <div
             className="
-                absolute
+                fixed
                 inset-0
                 z-70
                 flex
+                items-center
                 justify-center
-                pointer-events-none
-                bg-black/20
+                bg-black/40
             "
         >
 
+            {/* Form card */}
             <div
                 className="
                     relative
                     h-fit
                     w-160
                     max-w-[calc(100%-2rem)]
-                    rounded-lg
+                    rounded-md
                     border
                     border-[#3b3939]
                     bg-[#292828]
                     shadow-xl
-                    pointer-events-auto
                     flex
                     flex-col
                     gap-2
@@ -97,7 +95,8 @@ export default function NewTaskForm({
                 {/* Close */}
                 <button
                     type="button"
-                    onClick={()=>{closeForm()}}
+                    disabled={isCreating}
+                    onClick={toggleNewTaskForm}
                     className="
                         absolute
                         right-3
@@ -107,17 +106,23 @@ export default function NewTaskForm({
                         text-[#aaa5a5]
                         hover:bg-white/5
                         hover:text-white
+                        disabled:cursor-not-allowed
                         disabled:opacity-50
                     "
                 >
                     <svg
-                        width="20"
-                        height="20"
+                        width="20px"
+                        height="20px"
                         viewBox="0 0 24 24"
                         fill="none"
                     >
                         <path
-                            d="M6.758 17.243L12 12M17.243 6.757L12 12M12 12L6.758 6.757M12 12L17.243 17.243"
+                            d="
+                                M6.758 17.243L12 12
+                                M17.243 6.757L12 12
+                                M12 12L6.758 6.757
+                                M12 12L17.243 17.243
+                            "
                             stroke="currentColor"
                             strokeWidth="1.2"
                             strokeLinecap="round"
@@ -145,6 +150,7 @@ export default function NewTaskForm({
                 </div>
 
 
+                {/* Form */}
                 <form
                     onSubmit={handleCreateTask}
                     className="flex flex-col gap-4"
@@ -170,7 +176,7 @@ export default function NewTaskForm({
                             disabled={isCreating}
                             className="
                                 w-full
-                                rounded-md
+                                rounded-sm
                                 border
                                 border-[#464343]
                                 bg-[#202020]
@@ -203,11 +209,11 @@ export default function NewTaskForm({
                             onChange={(e) => setDescription(e.target.value)}
                             placeholder="Describe this task"
                             disabled={isCreating}
-                            rows={5}
+                            rows={3}
                             className="
                                 w-full
                                 resize-none
-                                rounded-md
+                                rounded-sm
                                 border
                                 border-[#464343]
                                 bg-[#202020]
@@ -241,7 +247,7 @@ export default function NewTaskForm({
                             disabled={isCreating}
                             className="
                                 w-full
-                                rounded-md
+                                rounded-sm
                                 border
                                 border-[#464343]
                                 bg-[#202020]
@@ -271,11 +277,16 @@ export default function NewTaskForm({
 
 
                     {/* Error */}
-                    {error && (
+                    {/* {error && (
                         <div className="text-sm text-red-400">
                             {error}
                         </div>
-                    )}
+                    )} */}
+
+                    {/* Error */}
+                    <div className="min-h-5 text-sm text-red-400">
+                        {error}
+                    </div>
 
 
                     {/* Actions */}
@@ -288,21 +299,23 @@ export default function NewTaskForm({
 
                         <button
                             type="button"
-                            onClick={closeForm}
+                            onClick={toggleNewTaskForm}
                             disabled={isCreating}
                             className="
-                                rounded-md
+                                rounded-sm
                                 px-4
                                 py-2
                                 text-sm
                                 text-[#d2cbcb]
                                 hover:bg-[#353333]
                                 hover:text-[#ede9e9]
+                                disabled:cursor-not-allowed
                                 disabled:opacity-50
                             "
                         >
                             Cancel
                         </button>
+
 
                         <button
                             type="submit"
@@ -312,7 +325,8 @@ export default function NewTaskForm({
                                 !description.trim()
                             }
                             className="
-                                rounded-md
+                                min-w-24
+                                rounded-sm
                                 bg-[#243b78]
                                 px-4
                                 py-2
@@ -320,13 +334,29 @@ export default function NewTaskForm({
                                 text-white
                                 hover:bg-[#2d498f]
                                 disabled:cursor-not-allowed
-                                disabled:opacity-50
+                                disabled:opacity-70
+                                flex
+                                items-center
+                                justify-center
                             "
                         >
-                            {isCreating
-                                ? "Creating..."
-                                : "Create card"
-                            }
+
+                            {isCreating ? (
+                                <span
+                                    className="
+                                        h-4
+                                        w-4
+                                        animate-spin
+                                        rounded-full
+                                        border-2
+                                        border-white/30
+                                        border-t-white
+                                    "
+                                />
+                            ) : (
+                                "Create card"
+                            )}
+
                         </button>
 
                     </div>

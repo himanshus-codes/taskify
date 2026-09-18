@@ -12,6 +12,8 @@ const taskController = require("../controllers/task.js")
 
 // create task by user
 router.get('/columns/:id/tasks', userMiddleware, taskController.getAllTasks)
+
+// Delete All Tasks by Column
 router.delete('/columns/:id/tasks', userMiddleware, taskController.deleteAllTasks)
 
 // router.post('/columns/:id/tasks', userMiddleware, taskController.createColumns)

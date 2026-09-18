@@ -1,5 +1,6 @@
 const { createTaskSchema, updateTaskSchema } = require("../validations/task");
 const taskService = require("../services/task");
+const mongoose = require("mongoose")
 
 // Task CRUD Routes
 
@@ -239,10 +240,18 @@ exports.deleteTask = async (req, res) => {
 };
 
 
-// Delete All Tasks
+// Delete All Tasks by Column
 exports.deleteAllTasks = async (req, res) => {
 
     const columnId = req.params.id;
+
+    if (!mongoose.isValidObjectId(columnId)) {
+        return res.status(400).json({
+            success: false,
+            code: "INVALID_COLUMN_ID",
+            message: "Invalid column ID."
+        });
+    }
 
     try {
 

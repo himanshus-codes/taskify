@@ -1,15 +1,9 @@
-
-import { useAppShellUiContext } from "../../hooks/useAppShellUiContext";
 import BoardHeader from "./components/header/BoardHeader";
-import BoardViewSelector from "./BoardViewRenderer";
+import BoardViewRenderer from "./BoardViewRenderer";
+
 
 function BoardViewLayout() {
-    const {
-        closeProfileOtpnsTab,
-        closeWorkspaceOtpnsTab
-    } = useAppShellUiContext();
-
-
+ 
     return (
         <div
             className="
@@ -41,7 +35,9 @@ function BoardViewLayout() {
                 border-[#1c1b1b]
             " />
 
-        <BoardViewSelector/> {/* Throws in Kanban Component */}
+                <BoardViewRenderer/> {/* Throws in Kanban Component */}
+
+
         </div>
     );
 }

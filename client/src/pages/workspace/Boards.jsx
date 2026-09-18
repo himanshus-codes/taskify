@@ -155,6 +155,7 @@ export default function Boards(){
                             
                             <div className="flex flex-row w-full h-8 text-base bg-[#16232e] text-center items-center rounded-md rounded-bl-2xl gap-2 justify-end pr-2 ">
                                 
+                                {/* Notication/Alerts Summary: when this img btn is clicked a card opens giving summary of due-over, due-soon, mentions, activities, etc */}
                                 <div>
                                     <svg width="16px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" color="#ffffff"><path d="M19 8C20.6569 8 22 6.65685 22 5C22 3.34315 20.6569 2 19 2C17.3431 2 16 3.34315 16 5C16 6.65685 17.3431 8 19 8Z" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M21 12V15C21 18.3137 18.3137 21 15 21H9C5.68629 21 3 18.3137 3 15V9C3 5.68629 5.68629 3 9 3H12" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
                                 </div>
@@ -185,7 +186,7 @@ export default function Boards(){
             
 
             {
-                boards.length==0 &&
+                boards.length == 0 &&
                 <div className=" h-88 flex flex-col justify-center items-center">
                     <div className="flex flex-col gap-4 w-100  text-center items-center  min-h-50 min-w-50  ">
 
@@ -262,7 +263,8 @@ function NewBoardForm({ toggleMenu, onBoardCreated }) {
             );
 
             // Tell Boards.jsx that creation succeeded
-            onBoardCreated?.(data);
+            // data?.boardId ? onBoardCreated?.() : console.log("No action: Board ID missing, Server returned success for creation, but didnt send requried board object");
+            onBoardCreated?.()
 
             // Close the form
             toggleMenu(null);
@@ -280,7 +282,7 @@ function NewBoardForm({ toggleMenu, onBoardCreated }) {
                 absolute
                 inset-0
                 flex
-                items-center
+                
                 justify-center
                 z-70
                 pointer-events-none
@@ -293,6 +295,9 @@ function NewBoardForm({ toggleMenu, onBoardCreated }) {
             <div
                 className="
                     relative
+                    min-h-20
+                    top-15
+                    h-fit
                     w-140
                     rounded-lg
                     flex
@@ -422,11 +427,12 @@ function NewBoardForm({ toggleMenu, onBoardCreated }) {
                                 border
                                 border-[#464343]
                                 bg-[#202020]
-                                px-3
-                                py-2
+                                px-4
+                                py-3
                                 text-sm
                                 text-[#eeeeee]
                                 outline-none
+                                kanban-scrollbar
                                 placeholder:text-[#686464]
                                 focus:border-[#6662a8]
                             "
@@ -455,6 +461,7 @@ function NewBoardForm({ toggleMenu, onBoardCreated }) {
                                 text-sm
                                 text-[#d2cbcb]
                                 hover:bg-[#353333]
+                                hover:text-[#ede9e9]
                                 disabled:opacity-50
                             "
                         >

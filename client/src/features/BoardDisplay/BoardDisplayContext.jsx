@@ -4,6 +4,9 @@ import { useAuth } from "../../context/AuthContext";
 import { getBoard, getFullDashboardBoard, updateBoard } from "../../services/boardService";
 import { createColumn } from "../../services/listService";
 import { createTask } from "../../services/taskService";
+import {deleteColumn as deleteColumnApi} from "../../services/listService";
+import {deleteAllTasksByColumnId as deleteAllTasksByColumnIdApi} from "../../services/taskService";
+
 export const BoardDisplayContext = createContext()
 
 
@@ -17,7 +20,7 @@ function BoardDisplayProvider({ children }) {
 
     const {token} = useAuth()
     const {boardId} = useParams()
-    console.log(boardId)
+    //console.log(boardId)
 
     
     // const [dashboardData, setDashboardData] = useState(null);
@@ -36,12 +39,12 @@ function BoardDisplayProvider({ children }) {
 
                 const res = await getFullDashboardBoard(token, boardId);
 
-                console.log(res.data);
+                //console.log(res.data);
 
                 const dashboardData = res.data;
 
                 // Board metadata
-                console.log(dashboardData.board)
+                //console.log(dashboardData.board)
                 setBoard(dashboardData.board);
 
                 // Columns without their nested tasks
@@ -56,19 +59,19 @@ function BoardDisplayProvider({ children }) {
                 // );
                 
 
-                console.log(columnsData)
+                //console.log(columnsData)
                 setColumns(columnsData);
 
                 // Extract all tasks from all columns into one array
                 const tasksData = dashboardData.columns.flatMap( //flatten one level: for each column.tasks = array [task1, task2] but with flat map, each task object is returned basically making tasksData as array [t1, t2, t3] instead of [[t1,t2], [t3]] where [t1,t2], [t3] would belong to say col1 & col2
                     column => column.tasks
                 );
-                console.log(tasksData)
+                //console.log(tasksData)
                 setTasks(tasksData);
 
             } catch (e) {
 
-                console.log(e);
+                //console.log(e);
                 setError("Some issue occurred");
 
             }
@@ -83,10 +86,10 @@ function BoardDisplayProvider({ children }) {
     //     async function fetchBoard(){
     //         try{
     //             const res = await getBoard(token, boardId)
-    //             console.log(res.data)
+    //             //console.log(res.data)
     //             setBoard(res.data)
     //         } catch (e){
-    //             console.log(e)
+    //             //console.log(e)
     //             setError("Some issue occurred")
     //         }
     //     }
@@ -109,10 +112,10 @@ function BoardDisplayProvider({ children }) {
     //     try{
     //         const res = await getFullDashboardBoard(token, boardId)
 
-    //         console.log(res.data)
+    //         //console.log(res.data)
     //         setDashboardData(res.data)
     //     } catch (e){
-    //         console.log(e)
+    //         //console.log(e)
     //         setError("Some issue occurred")
     //     }
     // }
@@ -135,9 +138,9 @@ function BoardDisplayProvider({ children }) {
         //     board: {...prev.board, title:updatedBoard.title}
         // }));
 
-        console.log("updated board")
-        console.log(board)
-        // console.log(dashboardData)
+        //console.log("updated board")
+        //console.log(board)
+        // //console.log(dashboardData)
 
         return updatedBoard;
     }
@@ -152,7 +155,7 @@ function BoardDisplayProvider({ children }) {
 
         const newColumnData = res.data;
             
-        console.log(newColumnData)
+        //console.log(newColumnData)
 
         setColumns(prev => ([
             ...prev,
@@ -171,11 +174,11 @@ function BoardDisplayProvider({ children }) {
             data
         );
 
-        console.log(res)
+        //console.log(res)
 
         const newTaskData = res.data;
             
-        console.log(newTaskData)
+        //console.log(newTaskData)
 
         setTasks(prev => ([
             ...prev,
@@ -184,7 +187,38 @@ function BoardDisplayProvider({ children }) {
 
         return newTaskData;
     }
+    async function deleteColumn(columnId) {
+        
+        const res = await deleteColumnApi(token, columnId)
 
+        console.log(res)
+
+        setColumns(columns => columns.filter((column)=> column._id !== columnId));
+        setTasks(prev =>
+            prev.filter(task => task.columnId !== columnId)
+        );
+
+        return res;
+    }
+
+    async function deleteAllTasksByColumnId(columnId) {
+        
+        const res = await deleteAllTasksByColumnIdApi(token, columnId)
+        console.log(res)
+        //console.log(newTaskData)
+
+        setTasks(tasks => tasks.filter((task)=> task.columnId !== columnId));
+
+        return res;
+    }
+
+
+//     400 invalid ID
+// 401 unauthenticated
+// 403 unauthorized
+// 404 resource not found
+// 409 conflict
+// 500 unexpected server failure
 
 
 
@@ -205,7 +239,9 @@ function BoardDisplayProvider({ children }) {
                 // resetFullDashboardBoard,
                 updateBoardTitle,
                 createNewColumn,
-                createNewTask
+                createNewTask,
+                deleteColumn,
+                deleteAllTasksByColumnId
 
                 // searchQuery,
                 // setSearchQuery,

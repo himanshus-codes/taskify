@@ -33,7 +33,7 @@ exports.getAllTasks = async (columnId) => {
     return tasks;
 };
 
-
+// delete all tasks belonging to a column
 exports.deleteAllTasks = async (columnId) => {
 
     const result = await Task.deleteMany({

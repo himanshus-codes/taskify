@@ -1,6 +1,6 @@
 const { Column } = require("../models/Column.js");
 const mongoose = require("mongoose");
-
+const {Task} = require("../models/Task.js")
 
 exports.getColumns = async (boardId) => {
 
@@ -92,14 +92,34 @@ exports.updateColumn = async (columnId, updates) => {
     return column;
 };
 
-
+// delete column and it's tasks
 exports.deleteColumn = async (columnId) => {
 
-    const column = await Column.findByIdAndDelete(columnId);
-
+     // 1. Check if the column exists first
+    const column = await Column.findById(columnId);
+    
     if (!column) {
         throw new Error("NOT_FOUND");
     }
+
+    // 2. Delete the column and all associated tasks simultaneously in parallel using promise.all
+    await Promise.all([
+        Column.findByIdAndDelete(columnId),
+        Task.deleteMany({ columnId })
+    ]);
+
+
+    // old code
+
+    // const column = await Column.findByIdAndDelete(columnId);
+    
+    // await Task.deleteMany({
+    //     columnId
+    // });
+    
+    // if (!column) {
+    //     throw new Error("NOT_FOUND");
+    // }
 
     return column;
 };
