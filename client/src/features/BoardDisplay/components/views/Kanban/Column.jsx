@@ -23,18 +23,26 @@ export default function Column({
         toggleQuickAddTask,
 
         setNewTaskFormMetaData,
-        toggleNewTaskFormMenu
+        toggleNewTaskFormMenu,
+
+        currColBeingEdited,
+        toggleColEditing
     } = useKanbanContext();
-    const {openMenu,  setOpenMenu ,deleteColumn, deleteAllTasksByColumnId} = useBoardDisplayContext()
+    const {openMenu,  setOpenMenu ,deleteColumn, deleteAllTasksByColumnId, updateColumnTitle} = useBoardDisplayContext()
     
     const taskArray = tasks.filter(
         task => task.columnId === column._id
     );
     // console.log(taskArray)
 
+
+    // Colum More (...) Menu Open
+
+    const isColMenuOpen = (openMenu === "columnmoreoptions") && (currColumnIdforColMenuOpen === column._id)
+
     // Add New Task (Quick Add Task Method)
-    const isAdding = (openMenu === "quickaddtask") && (currColumnIdforQuickAddTaskOpen === column._id)
-    console.log(isAdding)
+    const isQuickAddTaskOn = (openMenu === "quickaddtask") && (currColumnIdforQuickAddTaskOpen === column._id)
+    console.log(isQuickAddTaskOn)
     const kanbanScrollRef = useRef(null);
     const previousTaskCount = useRef(taskArray.length);
     const isInitialRender = useRef(true);
@@ -80,7 +88,7 @@ export default function Column({
 
     useEffect(()=>{
             
-        if(isAdding){
+        if(isQuickAddTaskOn){
             const container = kanbanScrollRef.current;
             requestAnimationFrame(() => {
 
@@ -91,8 +99,62 @@ export default function Column({
 
             });
         }
-    },[isAdding, taskArray])
+    },[isQuickAddTaskOn, taskArray])
+
+
+    // Update Column Title
+
+    const titleInputRef = useRef(null);
+    const [draftColTitle, setDraftColTitle] = useState(column.title)
     
+    const isEditingTitle = (openMenu === "coltitleediting") && (column._id == currColBeingEdited)
+
+    async function handleColTitleEditing(e){
+        if(e.key == "Enter"){
+            console.log("Enter")
+
+            if(column.title === draftColTitle){
+                toggleColEditing(null)
+                return
+            }
+
+            try {
+                await updateColumnTitle(column._id, draftColTitle)
+            } catch(e){
+                console.log(e)
+            } finally {
+                toggleColEditing(null)
+                setDraftColTitle(column.title)
+            }
+        }
+
+        if(e.key == "Escape"){
+            console.log("Escape")
+            toggleColEditing(null)
+        }
+    }
+
+    useEffect(() => {
+        if (!isEditingTitle || !titleInputRef.current) {
+            return;
+        }
+
+        const textarea = titleInputRef.current;
+
+
+        // Setting the cursor after the last character
+        //      Both start and end positions are the same:
+        //      setSelectionRange(end, end)
+
+        textarea.setSelectionRange(
+            textarea.value.length,
+            textarea.value.length
+        );
+
+
+        textarea.style.height = "auto";
+        textarea.style.height = `${textarea.scrollHeight}px`;
+    }, [isEditingTitle]);
 
     return (
         <div
@@ -118,29 +180,89 @@ export default function Column({
         >
 
             {/* Column header */}
-            <div className="flex mx-2 mb-1 ">
+            <div className="flex mx-2 mb-1 items-start gap-5">
 
-                {(openMenu === "columnmoreoptions" && currColumnIdforColMenuOpen === column._id) && 
+                {isColMenuOpen && 
                     <ColumnMenu toggleColMoreMenu={toggleColMoreMenu} toggleDeleteListPrompt={toggleDeleteListPrompt}
                         toggleEmptyListPrompt={toggleEmptyListPrompt} column={column}></ColumnMenu>
                 }
 
-                <div className="flex grow  items-center  text-sm font-medium gap-2">
-                    <div>
-                        {column.title}
-                    </div>
-                    <div className="text-sm  text-gray-500 ">
+                <div className="flex grow min-w-0 items-center text-sm font-medium gap-2">
+
+                    {!isEditingTitle && (
+                        <div
+                            onClick={() => toggleColEditing(column._id)}
+                            className="
+                                min-w-0
+                                flex-1
+                                wrap-break-word
+                            "
+                        >
+                            {column.title}
+                        </div>
+                    )}
+
+                    {isEditingTitle && (
+                        <textarea
+                            ref={titleInputRef}
+                            onBlur={() => toggleColEditing(null)}
+                            className="
+                                
+                                min-w-0
+                                flex-1
+                                resize-none
+                                overflow-hidden
+                                outline-none
+                                bg-[#1e1d1d]
+                                text-sm
+                                font-medium
+                                leading-6
+                            "
+                            onKeyDown={handleColTitleEditing}
+                            autoFocus
+                            rows={1}
+                            value={draftColTitle}
+                            onChange={(e) => {
+                                setDraftColTitle(e.target.value);
+                                e.target.style.height = "auto";
+                                e.target.style.height = `${e.target.scrollHeight}px`;
+                            }}
+                        />
+                        // <input
+                        //     onBlur={() => toggleColEditing(null)}
+                        //     className="
+                                
+                        //         min-w-0
+                        //         flex-1
+                        //         outline-none
+                        //         bg-[#1e1d1d]
+                        //     "
+                        //     onKeyDown={handleColTitleEditing}
+                        //     autoFocus
+                        //     type="text"
+                        //     value={draftColTitle}
+                        //     onChange={(e) => setDraftColTitle(e.target.value)}
+                        // />
+                    )}
+
+                    {/* <div className="shrink-0 text-sm text-gray-500">
+                        <span>
+                            ({taskArray?.length})
+                        </span>
+                    </div> */}
+
+                </div>
+
+                <div className="flex items-center gap-1.5">
+
+                    <div className="text-sm text-gray-500">
                         <span>
                             ({taskArray?.length})
                         </span>
                     </div>
-                </div>
-                
-
-                <div className="flex items-center gap-1">
 
                     {/* Add task */}
-                    <button
+                    {/* <button
                         onClick={() =>{ setNewTaskFormMetaData(column._id, column.title);toggleNewTaskFormMenu()} }
                         className="
                             hover:bg-[#222121]
@@ -153,7 +275,7 @@ export default function Column({
                             <path d="M6 12H12M18 12H12M12 12V6M12 12V18" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path>
                         </svg>
 
-                    </button>
+                    </button> */}
 
                     {/* More */}
                     <button
@@ -203,8 +325,8 @@ export default function Column({
                     />
                 ))}
                 
-                {isAdding && <QuickAddTask
-                        columnId={column._id} isAdding={isAdding} toggleQuickAddTask={toggleQuickAddTask}
+                {isQuickAddTaskOn && <QuickAddTask
+                        columnId={column._id} isAdding={isQuickAddTaskOn} toggleQuickAddTask={toggleQuickAddTask}
                     />
                 }
 
@@ -219,8 +341,8 @@ export default function Column({
             } */}
 
             {
-                !isAdding && <QuickAddTask
-                    columnId={column._id} isAdding={isAdding} toggleQuickAddTask={toggleQuickAddTask}
+                !isQuickAddTaskOn && <QuickAddTask
+                    columnId={column._id} isAdding={isQuickAddTaskOn} toggleQuickAddTask={toggleQuickAddTask}
                 />
             }
 

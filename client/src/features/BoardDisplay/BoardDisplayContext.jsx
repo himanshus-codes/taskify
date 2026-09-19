@@ -6,7 +6,7 @@ import { createColumn } from "../../services/listService";
 import { createTask } from "../../services/taskService";
 import {deleteColumn as deleteColumnApi} from "../../services/listService";
 import {deleteAllTasksByColumnId as deleteAllTasksByColumnIdApi} from "../../services/taskService";
-
+import { updateColumn as updateColumnApi } from "../../services/listService";
 export const BoardDisplayContext = createContext()
 
 
@@ -213,7 +213,30 @@ function BoardDisplayProvider({ children }) {
     }
 
 
-//     400 invalid ID
+    async function updateColumnTitle(columnId, newTitle ) {
+        
+        const res = await updateColumnApi(token, columnId, {
+            title: newTitle
+        });
+
+
+        setColumns((prevs) => prevs.map((prev)=>{
+                
+                if(prev._id === columnId){
+                    prev.title = newTitle
+                    return prev
+                } else{
+                    return prev
+                }
+            })
+        );
+
+        return res;
+    }
+    
+
+
+// 400 invalid ID
 // 401 unauthenticated
 // 403 unauthorized
 // 404 resource not found
@@ -241,7 +264,8 @@ function BoardDisplayProvider({ children }) {
                 createNewColumn,
                 createNewTask,
                 deleteColumn,
-                deleteAllTasksByColumnId
+                deleteAllTasksByColumnId,
+                updateColumnTitle
 
                 // searchQuery,
                 // setSearchQuery,

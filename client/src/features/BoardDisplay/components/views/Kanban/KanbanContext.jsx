@@ -21,6 +21,29 @@ export function KanbanProvider({ children }) {
     } = useBoardDisplayContext();
 
 
+
+
+    // =========================================================
+    // Column Title Editing
+    // =========================================================
+
+
+    const [currColBeingEdited, setCurrColBeingEdited ] = useState(null)
+
+    function toggleColEditing(columnId){
+        const isColEditingOn = openMenu === "coltitleediting"
+        const isSameColumn = currColBeingEdited === columnId
+
+        if(isColEditingOn && isSameColumn){
+            setCurrColBeingEdited(null)
+            setOpenMenu(null)
+        }
+
+        setCurrColBeingEdited(columnId)
+        setOpenMenu("coltitleediting")
+    }
+
+
     // =========================================================
     // Column More Menu
     // =========================================================
@@ -473,6 +496,12 @@ export function KanbanProvider({ children }) {
 
                 // Board Display coordination
                 openMenu,
+
+
+                //Column Title Editing
+
+                currColBeingEdited,
+                toggleColEditing,
 
                 // Column menu
                 currColumnIdforColMenuOpen,
