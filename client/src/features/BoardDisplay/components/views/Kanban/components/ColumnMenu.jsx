@@ -1,6 +1,6 @@
 
 
-export default function ColumnMenu({column, toggleColMoreMenu, toggleDeleteListPrompt, toggleEmptyListPrompt}){
+export default function ColumnMenu({column, toggleColMoreMenu, toggleDeleteListPrompt, toggleEmptyListPrompt,setNewTaskFormMetaData, toggleNewTaskFormMenu}){
 
     console.log(`Hiiii Open Col Menu "${column.title}"`)
 
@@ -82,6 +82,21 @@ export default function ColumnMenu({column, toggleColMoreMenu, toggleDeleteListP
                     text-[#e6dede]
                 "
             >
+                {/* <div onClick={() =>{ setNewTaskFormMetaData(column._id, column.title);toggleNewTaskFormMenu()} } className="p-1.5 px-3  hover:bg-[#3b3737] w-full h-fit cursor-pointer  ">Add New Task</div> */}
+                <button
+                    onClick={() =>{ setNewTaskFormMetaData(column._id, column.title);toggleNewTaskFormMenu()} }
+                    className="
+                        flex gap-1 items-center  p-1.5 px-3  hover:bg-[#3b3737] w-full h-fit
+                        cursor-pointer
+                    "
+                >   
+                    {/* <svg width="14px" height="16px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" color="#ffffff">
+                        <path d="M6 12H12M18 12H12M12 12V6M12 12V18" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg> */}
+                    <span>Add New Task</span>
+
+                </button>                
+                
                 <div onClick={()=>toggleDeleteListPrompt(column)} className=" p-1.5 px-3 hover:bg-[#3b3737] w-full h-fit cursor-pointer ">Delete List</div>
                 <div onClick={()=>toggleEmptyListPrompt(column)} className="p-1.5 px-3  hover:bg-[#3b3737] w-full h-fit cursor-pointer  ">Empty List</div>
             </div>

@@ -175,7 +175,6 @@ export default function Column({
                 shadow-[#161414]
                 shadow-xl
                 relative
-                
             "
         >
 
@@ -184,7 +183,10 @@ export default function Column({
 
                 {isColMenuOpen && 
                     <ColumnMenu toggleColMoreMenu={toggleColMoreMenu} toggleDeleteListPrompt={toggleDeleteListPrompt}
-                        toggleEmptyListPrompt={toggleEmptyListPrompt} column={column}></ColumnMenu>
+                        toggleEmptyListPrompt={toggleEmptyListPrompt} column={column} setNewTaskFormMetaData={setNewTaskFormMetaData} toggleNewTaskFormMenu={toggleNewTaskFormMenu}></ColumnMenu>
+
+                    // <ColumnMenu toggleColMoreMenu={toggleColMoreMenu} toggleDeleteListPrompt={toggleDeleteListPrompt}
+                    //     toggleEmptyListPrompt={toggleEmptyListPrompt} column={column}></ColumnMenu>
                 }
 
                 <div className="flex grow min-w-0 items-center text-sm font-medium gap-2">
