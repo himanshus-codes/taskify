@@ -1,12 +1,13 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { getBoard, getFullDashboardBoard, updateBoard } from "../../services/boardService";
 import { createColumn } from "../../services/listService";
-import { createTask } from "../../services/taskService";
+import { createTask as createTaskApi, updateTask as updateTaskApi } from "../../services/taskService";
 import {deleteColumn as deleteColumnApi} from "../../services/listService";
 import {deleteAllTasksByColumnId as deleteAllTasksByColumnIdApi} from "../../services/taskService";
 import { updateColumn as updateColumnApi } from "../../services/listService";
+
 export const BoardDisplayContext = createContext()
 
 
@@ -45,6 +46,7 @@ function BoardDisplayProvider({ children }) {
 
                 // Board metadata
                 //console.log(dashboardData.board)
+                console.log(dashboardData)
                 setBoard(dashboardData.board);
 
                 // Columns without their nested tasks
@@ -165,20 +167,71 @@ function BoardDisplayProvider({ children }) {
         return newColumnData;
     }
 
+    console.log(columns)
+    console.log(tasks)
+
+    // Arrays of Tasks by their parent colum Ids and arraged in ascending value of order property (task {order:"val"})
+    const tasksByColumnId = useMemo(() => {
+        return columns.reduce((acc, column) => {
+            const columnTasks = tasks.filter(
+                task => task.columnId === column._id
+            );
+
+            acc[column._id] = columnTasks.sort(
+                (a, b) => a.order - b.order
+            );
+
+            return acc;
+        }, {});
+    }, [columns, tasks]);
+
+
+    // const tasksByColumnId={}
+    // const colIds = []
+    // for(let col of columns){
+    //     colIds.push(col._id)
+    // }
+    // console.log(colIds)
+    
+    // for(let colId of colIds){
+    //     tasksByColumnId[colId] = []
+    //     for(let task of tasks){
+    //         // console.log(task)
+    //         if(task.columnId == colId){
+    //             tasksByColumnId[colId].push(task)
+    //         }
+    //     }
+    // }
+    // console.log(tasksByColumnId)
+
+
     async function createNewTask(columnId, data) {
-        
-        const res = await createTask(
+
+        let newTaskOrder;
+
+        if(tasksByColumnId[columnId].length==0){
+            newTaskOrder=100
+        } else {
+            const columnTasksArr = tasksByColumnId[columnId];
+            const lastTask = columnTasksArr.at(-1);
+                
+            const highestTaskOrder = lastTask.order
+
+            newTaskOrder = highestTaskOrder + 1000
+        }
+
+        const res = await createTaskApi(
             token, 
             boardId, 
             columnId, 
-            data
+            {...data, order: newTaskOrder}
         );
 
         //console.log(res)
 
         const newTaskData = res.data;
             
-        //console.log(newTaskData)
+        console.log(newTaskData)
 
         setTasks(prev => ([
             ...prev,
@@ -187,6 +240,32 @@ function BoardDisplayProvider({ children }) {
 
         return newTaskData;
     }
+
+    async function updateTaskOrder(task, taskId, newOrder){
+
+        console.log("--------------------------------------------------")
+        console.log("update TASK oRDER REQUEST CAME")
+
+        const res = await updateTaskApi(token, taskId, {order: newOrder})
+        console.log(tasks)
+
+        let otherTasks = tasks.filter(t => t._id != taskId);
+        console.log(task)
+         console.log(otherTasks)
+        console.log([...otherTasks, {...task, order : newOrder}])
+
+        setTasks(prev =>
+            prev.map(t =>
+                t._id === taskId
+                    ? { ...t, order: newOrder }
+                    : t
+            )
+        );       
+
+        return res
+    }
+
+
     async function deleteColumn(columnId) {
         
         const res = await deleteColumnApi(token, columnId)
@@ -251,6 +330,7 @@ function BoardDisplayProvider({ children }) {
                 board,
                 columns,
                 tasks,
+                tasksByColumnId, 
 
                 viewType,
                 setViewType,
@@ -265,7 +345,8 @@ function BoardDisplayProvider({ children }) {
                 createNewTask,
                 deleteColumn,
                 deleteAllTasksByColumnId,
-                updateColumnTitle
+                updateColumnTitle,
+                updateTaskOrder
 
                 // searchQuery,
                 // setSearchQuery,
@@ -324,7 +405,7 @@ export default BoardDisplayProvider
 // updateColumn()
 // deleteColumn()
 
-// createTask()
+// createTaskApi()
 // updateTask()
 // deleteTask()
 // moveTask()

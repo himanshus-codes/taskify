@@ -88,7 +88,8 @@ export async function createTask(token, boardId, columnId, taskData) {
                 body: JSON.stringify({
                     title: taskData.title,
                     description: taskData.description,
-                    priority: taskData.priority
+                    priority: taskData.priority,
+                    order:taskData.order
                 })
             }
         );
@@ -169,7 +170,8 @@ export async function updateTask(token, taskId, taskData) {
                 body: JSON.stringify({
                     title: taskData.title,
                     description: taskData.description,
-                    priority: taskData.priority
+                    priority: taskData.priority,
+                    order: taskData.order
                 })
             }
         );

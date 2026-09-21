@@ -10,6 +10,7 @@ exports.createTask = async (columnId,boardId, data) => {
         title: data.title,
         description: data.description,
         priority: data.priority,
+        order:data.order,
         boardId,
         columnId
     });

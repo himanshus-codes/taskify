@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-
 const TaskSchema = new mongoose.Schema({
     title: {
         type: String,
@@ -26,14 +25,13 @@ const TaskSchema = new mongoose.Schema({
         ref: "Column",
         required: true,
         index: true
-    }
+    },
 
-        // order via drag/drop within same column
-        //   order: {
-        //     type: Number,
-        //     default: 0
-        // },
-
+    order: {
+        type: Number,
+        required:true,
+    },
+    
         // status: {
         //     type: String,
         //     enum: ["pending", "in-progress", "completed", "under-review"],
@@ -46,10 +44,9 @@ const TaskSchema = new mongoose.Schema({
         //     ref: "User",
         //     required: true,
         //     index: true
-            
         // },
-
        
+
     },
     
     {
@@ -69,8 +66,15 @@ TaskSchema.index(
         }
     }
 );
+TaskSchema.index(
+    { columnId: 1, order: 1 },
+    {
+        unique: true,
+    }
+);
 
 const Task = mongoose.model('Task', TaskSchema);
+console.log(Task.schema.indexes());
 
 module.exports = {
     Task

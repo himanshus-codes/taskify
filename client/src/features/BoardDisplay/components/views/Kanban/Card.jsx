@@ -1,7 +1,12 @@
-export default function Card({ task }) {
+export default function Card({ task, onPointerDown, onPointerMove,  onPointerUp }) {
 
     return (
         <div
+            draggable
+            onPointerDown={(e) => onPointerDown(e, task)}
+            // onPointerMove={onPointerMove}
+            // onPointerUp={ onPointerUp}
+            data-task-id={task._id}
             className="
                 bg-[#242323]
                 rounded-md

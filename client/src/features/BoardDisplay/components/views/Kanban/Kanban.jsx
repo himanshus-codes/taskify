@@ -18,6 +18,7 @@ export default function Kanban() {
         openMenu,
         columns,
         tasks,
+        tasksByColumnId,
         createNewColumn,
         createNewTask
     } = useBoardDisplayContext();
@@ -105,7 +106,8 @@ export default function Kanban() {
                     <Column
                         key={column._id}
                         column={column}
-                        tasks={tasks}
+                        // tasks={tasks}
+                        tasks={tasksByColumnId[column._id]}
                     />
                 ))}
             </div>

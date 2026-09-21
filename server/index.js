@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const {Task} = require("./models/Task.js")
 const cors = require('cors')
 const express = require("express");
 const dotenv = require("dotenv");
@@ -39,6 +40,8 @@ app.use('/', workspaceRouter)
 mongoose.connect(process.env.MONGO_URL) 
 .then(() => {
   console.log("DB connected")
+  Task.syncIndexes();
+
   app.listen(port, ()=> console.log(`server is running at http://localhost:${port}`));
 })
 .catch(err => console.log(err));

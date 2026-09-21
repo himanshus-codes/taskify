@@ -26,7 +26,6 @@ exports.createTask = async (req, res) => {
     }
 
     console.log(result.success)
-  
 
     try {
         const task = await taskService.createTask(
@@ -203,7 +202,6 @@ exports.updateTask = async (req, res) => {
         });
     }
 };
-
 
 // Delete Task
 exports.deleteTask = async (req, res) => {
