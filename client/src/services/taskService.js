@@ -171,7 +171,8 @@ export async function updateTask(token, taskId, taskData) {
                     title: taskData.title,
                     description: taskData.description,
                     priority: taskData.priority,
-                    order: taskData.order
+                    order: taskData.order,
+                    columnId: taskData.columnId
                 })
             }
         );
@@ -189,7 +190,7 @@ export async function updateTask(token, taskId, taskData) {
         err.code = data.code;
         throw err;
     }
-
+    // throw new Error("Testing roll back")
     return data;
 }
 

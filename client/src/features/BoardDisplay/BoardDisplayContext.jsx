@@ -167,8 +167,8 @@ function BoardDisplayProvider({ children }) {
         return newColumnData;
     }
 
-    console.log(columns)
-    console.log(tasks)
+    // console.log(columns)
+    // console.log(tasks)
 
     // Arrays of Tasks by their parent colum Ids and arraged in ascending value of order property (task {order:"val"})
     const tasksByColumnId = useMemo(() => {
@@ -185,6 +185,7 @@ function BoardDisplayProvider({ children }) {
         }, {});
     }, [columns, tasks]);
 
+    console.log(tasksByColumnId)
 
     // const tasksByColumnId={}
     // const colIds = []
@@ -241,30 +242,121 @@ function BoardDisplayProvider({ children }) {
         return newTaskData;
     }
 
-    async function updateTaskOrder(task, taskId, newOrder){
+    // async function updateTaskOrder(taskId, newOrder, newColId = null) {
 
-        console.log("--------------------------------------------------")
-        console.log("update TASK oRDER REQUEST CAME")
+    //     const data = {
+    //         order: newOrder
+    //     };
 
-        const res = await updateTaskApi(token, taskId, {order: newOrder})
-        console.log(tasks)
+    //     if (newColId) {
+    //         data.columnId = newColId;
+    //     }
 
-        let otherTasks = tasks.filter(t => t._id != taskId);
-        console.log(task)
-         console.log(otherTasks)
-        console.log([...otherTasks, {...task, order : newOrder}])
+    //     const res = await updateTaskApi(
+    //         token,
+    //         taskId,
+    //         data
+    //     );
 
-        setTasks(prev =>
-            prev.map(t =>
-                t._id === taskId
-                    ? { ...t, order: newOrder }
-                    : t
-            )
-        );       
+    //     setTasks(prev =>
+    //         prev.map(task =>
+    //             task._id === taskId
+    //                 ? {
+    //                     ...task,
+    //                     order: newOrder,
+    //                     ...(newColId && {
+    //                         columnId: newColId
+    //                     })
+    //                 }
+    //                 : task
+    //         )
+    //     );
 
-        return res
+    //     return res;
+    // }
+    
+
+    async function updateTaskOrder(
+        taskId,
+        newOrder,
+        newColId = null,
+        previousTasks = null
+    ) {
+
+        console.log("update task order req received")
+        // -----------------------------------------
+        // Keep previous state for rollback
+        // -----------------------------------------
+
+        
+
+
+        // -----------------------------------------
+        // Build updated task
+        // -----------------------------------------
+
+        const updatedTasks = tasks.map(task =>
+            task._id === taskId
+                ? {
+                    ...task,
+                    order: newOrder,
+                    ...(newColId && {
+                        columnId: newColId
+                    })
+                }
+                : task
+        );
+
+
+        // -----------------------------------------
+        // Optimistic UI update
+        // -----------------------------------------
+
+        setTasks(updatedTasks);
+
+
+        // -----------------------------------------
+        // API payload
+        // -----------------------------------------
+
+        const data = {
+            order: newOrder
+        };
+
+        if (newColId) {
+            console.log("yess")
+            data.columnId = newColId;
+        }
+
+        console.log("API DATA", data);
+        try {
+
+            const res = await updateTaskApi(
+                token,
+                taskId,
+                data
+            );
+            console.log("UPDATE TASK API RESPONSE:", res);
+            return res;
+
+        } catch (error) {
+
+            console.log(
+                "UPDATE FAILED — ROLLBACK SNAPSHOT:",
+                previousTasks
+            );
+
+            // -------------------------------------
+            // Rollback
+            // -------------------------------------
+            if (previousTasks) {
+                console.log("ROLLING BACK TASKS");
+                setTasks([...previousTasks]);
+            }
+
+            throw error;
+        }
     }
-
 
     async function deleteColumn(columnId) {
         
@@ -330,6 +422,7 @@ function BoardDisplayProvider({ children }) {
                 board,
                 columns,
                 tasks,
+                setTasks,
                 tasksByColumnId, 
 
                 viewType,

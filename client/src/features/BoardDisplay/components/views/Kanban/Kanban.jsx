@@ -11,6 +11,19 @@ import EmptyListPrompt from "./components/prompts/EmptyListPrompt";
 import { useBoardDisplayContext } from "../../../hooks/useBoardDisplayContext";
 import { useKanbanContext } from "./KanbanContext";
 
+import {
+    DndContext,
+    closestCorners,
+    DragOverlay
+} from "@dnd-kit/core";
+
+import {
+    SortableContext,
+    verticalListSortingStrategy
+} from "@dnd-kit/sortable";
+
+
+import Card from "./Card";
 
 export default function Kanban() {
 
@@ -48,70 +61,197 @@ export default function Kanban() {
         handlePointerDown,
         handlePointerMove,
         handlePointerUp,
-        handlePointerCancel
+        handlePointerCancel,
+
+        activeTaskId,
+        handleDragStart,
+        handleDragOver,
+        handleDragEnd
     } = useKanbanContext();
+
+    const activeTask =
+        tasks.find(
+            task => task._id === activeTaskId
+        );
+
     
-    return (
-        <div
-            ref={kanbanScrollRef}
+return (
+        <DndContext
+            collisionDetection={closestCorners}
+            onDragStart={handleDragStart}
+            onDragOver={handleDragOver}
+            onDragEnd={handleDragEnd}
+        >
 
-            onPointerDown={handlePointerDown}
-            onPointerMove={handlePointerMove}
-            onPointerUp={handlePointerUp}
-            onPointerCancel={handlePointerCancel}
-
-            className="
-                relative
-                pt-7.5
-                pl-9
-                pr-9
-                h-full
-                pb-7
-                kanban-scrollbar
-                flex-1
-                min-h-0
-                min-w-0
-                overflow-x-auto
-                overflow-y-hidden
-            "
-        >   
-                    
-            {(openMenu === "newtaskform") && (
-                <NewTaskForm
-                    columnId={newTaskColumnId}
-                    setColumnMetaData={setNewTaskFormMetaData}
-                    toggleNewTaskForm={toggleNewTaskFormMenu}
-                    createNewTask={createNewTask}
-                    columnTitle={newTaskColumnTitle}
-                />
-            )}
-
-            { (openMenu === "newlistform") && <NewListForm  toggleNewListFormMenu={toggleNewListFormMenu} createNewColumn={createNewColumn} shouldScrollToEndColumn={shouldScrollToEndColumn}></NewListForm>}
-            {/* { openMenu==="newlistform" && <NewListForm  toggleNewListFormMenu={toggleNewListFormMenu} onListCreated={fetchBoardColumns}></NewListForm>} */}
-            {(openMenu === "deletelistprompt") && <DeleteListPrompt toggleDeleteListPrompt={toggleDeleteListPrompt} column={deleteActionColumn}></DeleteListPrompt>}
-            {(openMenu === "emptylistprompt") && <EmptyListPrompt toggleEmptyListPrompt={toggleEmptyListPrompt} column={deleteActionColumn}></EmptyListPrompt>}
             <div
+                ref={kanbanScrollRef}
+
+                onPointerDown={handlePointerDown}
+                onPointerMove={handlePointerMove}
+                onPointerUp={handlePointerUp}
+                onPointerCancel={handlePointerCancel}
+
                 className="
-                    grid
-                    grid-flow-col
-                    auto-cols-73
-                    gap-6
+                    relative
+                    pt-7.5
+                    pl-9
+                    pr-9
                     h-full
-                    items-start
-                    w-max
+                    pb-7
+                    kanban-scrollbar
+                    flex-1
+                    min-h-0
+                    min-w-0
+                    overflow-x-auto
+                    overflow-y-hidden
                 "
             >
 
-               {columns.map((column) => (
-                    <Column
-                        key={column._id}
-                        column={column}
-                        // tasks={tasks}
-                        tasks={tasksByColumnId[column._id]}
+                {/* ------------------------------------
+                    Overlay Forms / Prompts
+                ------------------------------------ */}
+
+                {openMenu === "newtaskform" && (
+
+                    <NewTaskForm
+                        columnId={newTaskColumnId}
+                        setColumnMetaData={
+                            setNewTaskFormMetaData
+                        }
+                        toggleNewTaskForm={
+                            toggleNewTaskFormMenu
+                        }
+                        createNewTask={
+                            createNewTask
+                        }
+                        columnTitle={
+                            newTaskColumnTitle
+                        }
                     />
-                ))}
+
+                )}
+
+
+                {openMenu === "newlistform" && (
+
+                    <NewListForm
+                        toggleNewListFormMenu={
+                            toggleNewListFormMenu
+                        }
+                        createNewColumn={
+                            createNewColumn
+                        }
+                        shouldScrollToEndColumn={
+                            shouldScrollToEndColumn
+                        }
+                    />
+
+                )}
+
+
+                {openMenu === "deletelistprompt" && (
+
+                    <DeleteListPrompt
+                        toggleDeleteListPrompt={
+                            toggleDeleteListPrompt
+                        }
+                        column={
+                            deleteActionColumn
+                        }
+                    />
+
+                )}
+
+
+                {openMenu === "emptylistprompt" && (
+
+                    <EmptyListPrompt
+                        toggleEmptyListPrompt={
+                            toggleEmptyListPrompt
+                        }
+                        column={
+                            deleteActionColumn
+                        }
+                    />
+
+                )}
+
+
+                {/* ------------------------------------
+                    Columns
+                ------------------------------------ */}
+
+                <div
+                    className="
+                        grid
+                        grid-flow-col
+                        auto-cols-73
+                        gap-6
+                        h-full
+                        items-start
+                        w-max
+                    "
+                >
+
+                    {columns.map(column => {
+
+                        const columnTasks =
+                            tasksByColumnId[
+                                column._id
+                            ] ?? [];
+
+
+                        return (
+
+                            <SortableContext
+
+                                key={column._id}
+
+                                items={
+                                    columnTasks.map(
+                                        task =>
+                                            task._id
+                                    )
+                                }
+
+                                strategy={
+                                    verticalListSortingStrategy
+                                }
+                            >
+
+                                <Column
+                                    column={column}
+                                    tasks={columnTasks}
+                                />
+
+                            </SortableContext>
+
+                        );
+                    })}
+
+                </div>
+
             </div>
-        </div>
+
+
+            {/* ----------------------------------------
+                Drag Overlay
+            ---------------------------------------- */}
+
+            <DragOverlay >
+
+                {activeTask ? (
+
+                    <Card
+                        task={activeTask}
+                        isDragOverlay
+                    />
+
+                ) : null}
+
+            </DragOverlay>
+
+        </DndContext>
     );
 }
 

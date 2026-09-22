@@ -1,5 +1,9 @@
 const {z} = require('zod');
 
+const objectIdSchema = z.string().regex(
+    /^[0-9a-fA-F]{24}$/
+);
+
 exports.createTaskSchema = z.object({
     title: z.string().min(3).max(150),
     description: z.string().min(5).max(1500).optional(),
@@ -11,7 +15,8 @@ exports.updateTaskSchema = z.object({
     title: z.string().min(3).max(150).optional(),
     description: z.string().min(5).max(1500).optional(),
     priority: z.enum(["low", "medium", "high"]).optional(),
-    order: z.number().positive().optional()
+    order: z.number().positive().optional(),
+    columnId: z.string().optional()
 }).refine(
     data => Object.keys(data).length > 0,
     {

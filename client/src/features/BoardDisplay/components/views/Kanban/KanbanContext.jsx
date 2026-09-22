@@ -1,4 +1,8 @@
 import {
+    closestCorners
+} from "@dnd-kit/core";
+
+import {
     createContext,
     useContext,
     useEffect,
@@ -17,10 +21,13 @@ export function KanbanProvider({ children }) {
     const {
         openMenu,
         setOpenMenu,
-        columns
+        columns,
+
+        tasks,
+        tasksByColumnId,
+        updateTaskOrder,
+        setTasks
     } = useBoardDisplayContext();
-
-
 
 
     // =========================================================
@@ -489,11 +496,353 @@ export function KanbanProvider({ children }) {
         isEmptyListPromptOpen
     ]);
 
+    // =========================================================
+    // Drag & Drop & Reorder
+    // =========================================================
+
+    const [activeTaskId, setActiveTaskId] = useState(null);
+    const dragStartTaskRef = useRef(null);
+    const dragStartTasksRef = useRef(null);
+
+    function handleDragStart(event) {
+        setOpenMenu(null);
+
+        const { active } = event;
+
+        const task = tasks.find(
+            task => task._id === active.id
+        );
+
+        dragStartTaskRef.current = task;
+        // Snapshot the COMPLETE state before any handleDragOver changes
+        dragStartTasksRef.current = tasks;
+
+        setActiveTaskId(active.id);
+    }
+
+    // inter-column dragging.
+    function handleDragOver(event) {
+
+        const {
+            active,
+            over
+        } = event;
+
+        if (!over) {
+            return;
+        }
+
+
+        const activeTaskId = active.id;
+
+
+        const activeTask = tasks.find(
+            task => task._id === activeTaskId
+        );
+
+        if (!activeTask) {
+            return;
+        }
+
+
+        let destinationColumnId = null;
+
+
+        // Dragging over another task
+        if (
+            over.data.current?.type === "task"
+        ) {
+
+            destinationColumnId =
+                over.data.current.columnId;
+
+        }
+
+
+        // Dragging over an empty column
+        else if (
+            over.data.current?.type === "column"
+        ) {
+
+            destinationColumnId =
+                over.data.current.columnId;
+        }
+
+
+        if (!destinationColumnId) {
+            return;
+        }
+
+
+        // Already belongs to this column
+        if (
+            activeTask.columnId ===
+            destinationColumnId
+        ) {
+            return;
+        }
+
+
+        // Move it into the destination column
+        setTasks(prev =>
+            prev.map(task =>
+                task._id === activeTaskId
+                    ? {
+                        ...task,
+                        columnId: destinationColumnId
+                    }
+                    : task
+            )
+        );
+    }
+
+    async function handleDragEnd(event) {
+
+        const {
+            active,
+            over
+        } = event;
+
+
+        if (!over) {
+            return;
+        }
+
+
+        const activeTaskId = active.id;
+
+
+        const draggedTask = tasks.find(
+            task => task._id === activeTaskId
+        );
+
+        if (!draggedTask) {
+            return;
+        }
+
+
+        // -----------------------------------------
+        // Determine destination column
+        // -----------------------------------------
+
+        let destinationColumnId = null;
+
+
+        if (
+            over.data.current?.type === "task"
+        ) {
+
+            destinationColumnId =
+                over.data.current.columnId;
+
+        }
+
+        else if (
+            over.data.current?.type === "column"
+        ) {
+
+            destinationColumnId =
+                over.data.current.columnId;
+        }
+
+
+        if (!destinationColumnId) {
+            return;
+        }
+
+
+        // -----------------------------------------
+        // Tasks currently in destination column
+        // Remove dragged task because it may
+        // already have been moved there by
+        // handleDragOver.
+        // -----------------------------------------
+
+        const destinationTasks = (
+            tasksByColumnId[destinationColumnId] ?? []
+        ).filter(
+            task => task._id !== activeTaskId
+        );
+
+
+        // -----------------------------------------
+        // Find insertion position
+        // -----------------------------------------
+        let insertionIndex;
+
+        if (over.data.current?.type === "task") {
+
+            const originalTasks =
+                tasksByColumnId[destinationColumnId] ?? [];
+
+            const activeIndex =
+                originalTasks.findIndex(
+                    task => task._id === activeTaskId
+                );
+
+            const overIndex =
+                originalTasks.findIndex(
+                    task => task._id === over.id
+                );
+
+            if (over.id === activeTaskId) {
+
+                insertionIndex =
+                    activeIndex === -1
+                        ? destinationTasks.length
+                        : activeIndex;
+
+            } else if (overIndex === -1) {
+
+                insertionIndex =
+                    destinationTasks.length;
+
+            } else if (activeIndex === -1) {
+
+                // Cross-column case
+                insertionIndex =
+                    destinationTasks.findIndex(
+                        task => task._id === over.id
+                    );
+
+            } else if (activeIndex < overIndex) {
+
+                // Moving downward
+                insertionIndex =
+                    destinationTasks.findIndex(
+                        task => task._id === over.id
+                    ) + 1;
+
+            } else {
+
+                // Moving upward
+                insertionIndex =
+                    destinationTasks.findIndex(
+                        task => task._id === over.id
+                    );
+            }
+
+        } else {
+
+            // Dropped on the column itself
+            insertionIndex =
+                destinationTasks.length;
+        }
+
+        // -----------------------------------------
+        // Calculate new order
+        // -----------------------------------------
+
+        let newOrder;
+
+        // Empty column
+        if (destinationTasks.length === 0) {
+
+            newOrder = 1000;
+
+        }
+
+
+        // Before first task
+        else if (insertionIndex === 0) {
+
+            newOrder =
+                destinationTasks[0].order / 2;
+
+        }
+
+
+        // After last task
+        else if (
+            insertionIndex >= destinationTasks.length
+        ) {
+
+            newOrder =
+                destinationTasks[
+                    destinationTasks.length - 1
+                ].order + 1000;
+
+        }
+
+
+        // Between two tasks
+        else {
+
+            const previousTask =
+                destinationTasks[insertionIndex - 1];
+
+            const nextTask =
+                destinationTasks[insertionIndex];
+
+
+            newOrder =
+                (
+                    previousTask.order +
+                    nextTask.order
+                ) / 2;
+        }
+
+
+        // -----------------------------------------
+        // Did the column actually change?
+        // -----------------------------------------
+
+        const originalColumnId =
+            dragStartTaskRef.current?.columnId; 
+
+        const columnChanged =
+            originalColumnId !==
+            destinationColumnId;
+
+        
+        // -----------------------------------------
+        // Persist
+        // -----------------------------------------
+
+        console.log("DRAG PERSIST DEBUG", {
+            activeTaskId,
+            newOrder,
+            originalColumnId,
+            destinationColumnId,
+            columnChanged,
+            newColId: columnChanged
+                ? destinationColumnId
+                : null
+        });
+
+        try {
+
+            await updateTaskOrder(
+                activeTaskId,
+                newOrder,
+                columnChanged
+                    ? destinationColumnId
+                    : null,
+                dragStartTasksRef.current
+            );
+
+        } catch (error) {
+            setActiveTaskId(null)
+            dragStartTaskRef.current = null
+            console.error(
+                "Failed to update task order:",
+                error
+            );
+        } finally {
+            dragStartTaskRef.current = null;
+            dragStartTasksRef.current = null;
+            setActiveTaskId(null)
+        }
+    }
 
     return (
         <KanbanContext.Provider
             value={{
-
+                // Drag & Drop
+                activeTaskId,
+                handleDragStart,
+                handleDragOver,
+                handleDragEnd,
                 // Board Display coordination
                 openMenu,
 

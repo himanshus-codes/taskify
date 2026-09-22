@@ -1,3 +1,4 @@
+import { useDroppable } from "@dnd-kit/core";
 import Card from "./Card";
 import QuickAddTask from "./components/QuickAddTask";
 import { useState, useEffect, useRef } from "react";
@@ -9,7 +10,6 @@ export default function Column({
     column, 
     tasks
 }) {
-
 
     const {
 
@@ -29,11 +29,12 @@ export default function Column({
         toggleColEditing,
         
     } = useKanbanContext();
+
     const {openMenu,  setOpenMenu ,deleteColumn, deleteAllTasksByColumnId, updateColumnTitle, updateTaskOrder} = useBoardDisplayContext()
     
     const taskArray = tasks
     // console.log(taskArray)
-
+    
 
     // Colum More (...) Menu Open
 
@@ -155,274 +156,23 @@ export default function Column({
         textarea.style.height = `${textarea.scrollHeight}px`;
     }, [isEditingTitle]);
 
-    // =================================================================================================
-    // Handle Drag and Reoder of TASKs position within the Column
 
+ // DND droppable behavior
+    const {
+        setNodeRef,
+        isOver
+    } = useDroppable({
+        id: `column-${column._id}`,
 
-    // ref for currently dragged task id
-    const draggedTaskRef = useRef(null)
-
-    // ref for currently dragged task card dom element
-    const draggedTaskElementRef = useRef(null);
-
-    // ref for currently dragged task's starting midpoint position on Y-axis
-    const dragStartYRef = useRef(null);
-
-    // ref for inserting dragged task before a task  calculated/determined based on dragged current position of midpoint of task
-    const insertBeforeTaskIdRef = useRef(null);
-
-
-    function handlePointerDown(e, task){
-
-    // Push this dragged task before this task (insertBeforeTaskId) whose midpoint position value on y-axis is higher than current midpoint position of dragged task on y-axis
-    // if no tasks midpoint position value if higher than current midpoint position  dragged tasks, than null(before taskId) meaninig that dragged task will go last in the column
-
-        console.log(e.button)
-        e.preventDefault()
-
-        if(!(e.button === 0)){
-            return
+        data: {
+            type: "column",
+            columnId: column._id
         }
-        setOpenMenu(null)
-        draggedTaskElementRef.current = e.currentTarget;
-
-        dragStartYRef.current = e.clientY;
-
-        draggedTaskRef.current = task._id
-
-
-        // Keep receiving pointer events even after
-        // pointer leaves the card.
-        e.currentTarget.setPointerCapture(e.pointerId);
-
-        // Visual indication
-        e.currentTarget.style.zIndex = "10";
-        e.currentTarget.style.position = "relative";
-        e.currentTarget.style.opacity = "0.85";
-        e.currentTarget.style.cursor = "grabbing";
-
-    }
-
-    function handlePointerMove(e) {
-
-        if (!draggedTaskRef.current) {
-            return;
-        }
-
-        e.preventDefault();
-
-        // -----------------------------
-        // Move dragged card visually
-        // -----------------------------
-
-        const deltaY =
-            e.clientY - dragStartYRef.current;
-
-        draggedTaskElementRef.current.style.transform =
-            `translateY(${deltaY}px)`;
-
-
-        // -----------------------------
-        // Dragged task
-        // -----------------------------
-
-        const container = e.currentTarget;
-        const draggedTaskId = draggedTaskRef.current
-        const draggedTaskElement = container.querySelector(
-            `[data-task-id="${draggedTaskId}"]`
-        );
-
-        if (!draggedTaskElement) {
-            return;
-        }
-
-        const draggedRect =
-            draggedTaskElement.getBoundingClientRect();
-
-        const draggedCenterY =
-            draggedRect.top +
-            draggedRect.height / 2;
-
-
-        // -----------------------------
-        // Other task cards
-        // -----------------------------
-
-        const taskElements = [
-            ...container.querySelectorAll("[data-task-id]")
-        ].filter(
-            element =>
-                element.dataset.taskId !== draggedTaskId
-        );
-
-
-        // Push this dragged task before this task (insertBeforeTaskId) whose midpoint position value on y-axis is higher than current midpoint position of dragged task on y-axis
-        // if no tasks midpoint position value if higher than current midpoint position  dragged tasks, than null(insertBeforeTaskId ) meaninig that dragged task will go last
-
-        // -----------------------------
-        // Find task to insert BEFORE
-        // -----------------------------
-
-        let insertBeforeTaskId = null;
-
-        for (const taskElement of taskElements) {
-
-            const taskRect =
-                taskElement.getBoundingClientRect();
-
-            const taskMidpoint =
-                taskRect.top +
-                taskRect.height / 2;
-
-            if (draggedCenterY < taskMidpoint) {
-
-                insertBeforeTaskId =
-                    taskElement.dataset.taskId;
-
-                break;
-            }
-        }
-
-        insertBeforeTaskIdRef.current=insertBeforeTaskId
-        console.log({
-            draggedTaskId,
-            insertBeforeTaskId
-        });
-    }
-
-    
-    async function handlePointerUp(e){
-        e.preventDefault()
-
-        console.log("pointer up happenned")
-        
-        if(draggedTaskRef.current === null){
-            return
-        }
-
-        // if(taskArray.length == 1){
-        //     console.log("only one task")
-        //     return
-        // }
-        
-        console.log(insertBeforeTaskIdRef.current)
-        
-        console.log(taskArray)
-        const draggedTask = taskArray.find((task)=>{return task._id == draggedTaskRef.current })
-        console.log(draggedTask)
-        console.log(draggedTask.order)
-
-        let currentOrders = taskArray.map((task) => task.order)
-        let currentTaskIds = taskArray.map((task) => task._id)
-        console.log(currentOrders)
-        console.log(currentTaskIds)
-
-        let currentTasksWithOrder={};
-        
-        for(let i=0; i<currentTaskIds.length; i++){
-            currentTasksWithOrder[currentTaskIds[i]] = currentOrders[i]
-        }
-
-        console.log(currentTasksWithOrder)
-
-        console.log("pointer turned up")
-
-
-
-        if (insertBeforeTaskIdRef.current === null) {
-            // move to last position or dont move at all
-
-            const currLastTask = taskArray[taskArray.length - 1]
-            console.log(currLastTask.order)
-            
-            // case A. if last task is being dragged downwards inside the itself column then no effective order change or
-            // case B. if a column has only one task and that is being dragged, then no effective change should be there
-                // in case b, obviously insert before task id check will give null as the only present task is being dragged inside the column itself
-                //  and so on pointer up will reach below check, where we handle both Case A and Case B scenerios
-
-
-            if(draggedTask._id === currLastTask._id ){
-                console.log(draggedTask._id === currLastTask._id)
-                console.log("No Effective Order Change")
-            } else{
-
-                let newOrder = currLastTask.order + 1000
-                try{
-                    await updateTaskOrder(draggedTask, draggedTask._id, newOrder)
-                } catch(e){
-                    console.log(e)
-                    console.log(e.message)
-                }
-            }
-        } else {
-            // move before this specific task id
-
-            const insertBeforeTask = taskArray.find((task) => {
-                return task._id == insertBeforeTaskIdRef.current
-            });
-            console.log(insertBeforeTask.order)
-
-            if(currentTaskIds[currentTaskIds.indexOf(draggedTask._id) + 1] == insertBeforeTask._id){
-                console.log("No Effective Order Change")
-            } else{
-                let newOrder;
-                console.log(currentTaskIds)
-                console.log(currentTaskIds.indexOf(insertBeforeTask._id))
-                let insertBeforeOrderVal = insertBeforeTask.order
-
-                if(currentTaskIds.indexOf(insertBeforeTask._id) == 0){
-                    newOrder = insertBeforeOrderVal/2
-                }else{
-                    let insertAfterPositon = currentTaskIds.indexOf(insertBeforeTask._id) - 1
-                    console.log(insertAfterPositon )
-                    let insertAfterTaskId = currentTaskIds[insertAfterPositon]
-                    console.log(insertAfterTaskId)
-                    
-                    let insertAfterOrderVal = currentTasksWithOrder[insertAfterTaskId]
-                    console.log(insertAfterOrderVal)
-                    console.log(insertBeforeOrderVal)
-                    
-                    newOrder = (insertAfterOrderVal + insertBeforeOrderVal)/2
-                }
-
-                try{
-                    await updateTaskOrder(draggedTask, draggedTask._id, newOrder)
-                } catch(e){
-                    console.log(e)
-                    console.log(e.message)
-                }
-            }
-
-        }
-
-
-        const draggedElement =
-        draggedTaskElementRef.current;
-
-        if (draggedElement ) {
-            draggedElement.style.transform = "";
-            draggedElement.style.zIndex = "";
-            draggedElement.style.position = "";
-            draggedElement.style.opacity = "";
-            draggedElement.style.cursor = "";
-        }
-
-        if (
-            draggedElement &&
-            draggedElement.hasPointerCapture(e.pointerId)
-        ) {
-            draggedElement.releasePointerCapture(e.pointerId);
-        }
-
-        draggedTaskRef.current = null;
-        insertBeforeTaskIdRef.current = null;
-        draggedTaskElementRef.current = null;
-        dragStartYRef.current = null;
-
-    }
-
+    });
+   
     return (
         <div
+            ref={setNodeRef}
             data-kanban-column
             className="
                 flex
@@ -570,8 +320,7 @@ export default function Column({
 
             {/* Tasks */}
             <div
-                onPointerMove={handlePointerMove}
-                onPointerUp={handlePointerUp}
+           
                 ref={kanbanScrollRef}
                 className="
                     flex
@@ -591,9 +340,7 @@ export default function Column({
                     <Card
                         key={task._id}
                         task={task}
-                        onPointerDown={handlePointerDown}
-                        // onPointerMove={handlePointerMove}
-                        // onPointerUp={handlePointerUp}
+
                     />
                 ))}
                 
