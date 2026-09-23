@@ -19,9 +19,9 @@ import {
 
 import {
     SortableContext,
-    verticalListSortingStrategy
+    verticalListSortingStrategy,
+    horizontalListSortingStrategy
 } from "@dnd-kit/sortable";
-
 
 import Card from "./Card";
 
@@ -63,6 +63,8 @@ export default function Kanban() {
         handlePointerUp,
         handlePointerCancel,
 
+        activeColumnId,
+
         activeTaskId,
         handleDragStart,
         handleDragOver,
@@ -73,11 +75,38 @@ export default function Kanban() {
         tasks.find(
             task => task._id === activeTaskId
         );
-
     
+    const activeColumn =
+        columns.find(
+            column => column._id === activeColumnId
+        );    
+    
+
+    function collisionDetectionStrategy(args) {
+
+        const activeType =
+            args.active.data.current?.type;
+
+        if (activeType === "column") {
+
+            const columnContainers =
+                args.droppableContainers.filter(
+                    container =>
+                        container.data.current?.type === "column"
+                );
+
+            return closestCorners({
+                ...args,
+                droppableContainers: columnContainers
+            });
+        }
+
+        return closestCorners(args);
+    }    
+
 return (
         <DndContext
-            collisionDetection={closestCorners}
+            collisionDetection={collisionDetectionStrategy}
             onDragStart={handleDragStart}
             onDragOver={handleDragOver}
             onDragEnd={handleDragEnd}
@@ -180,56 +209,60 @@ return (
                 {/* ------------------------------------
                     Columns
                 ------------------------------------ */}
-
-                <div
-                    className="
-                        grid
-                        grid-flow-col
-                        auto-cols-73
-                        gap-6
-                        h-full
-                        items-start
-                        w-max
-                    "
+                <SortableContext
+                    items={columns.map(column => column._id)}
+                    strategy={horizontalListSortingStrategy}
                 >
+                    <div
+                        className="
+                            grid
+                            grid-flow-col
+                            auto-cols-73
+                            gap-6
+                            h-full
+                            items-start
+                            w-max
+                        "
+                    >
 
-                    {columns.map(column => {
+                        {columns.map(column => {
 
-                        const columnTasks =
-                            tasksByColumnId[
-                                column._id
-                            ] ?? [];
+                            const columnTasks =
+                                tasksByColumnId[
+                                    column._id
+                                ] ?? [];
 
 
-                        return (
+                            return (
 
-                            <SortableContext
+                                <SortableContext
 
-                                key={column._id}
+                                    key={column._id}
 
-                                items={
-                                    columnTasks.map(
-                                        task =>
-                                            task._id
-                                    )
-                                }
+                                    items={
+                                        columnTasks.map(
+                                            task =>
+                                                task._id
+                                        )
+                                    }
 
-                                strategy={
-                                    verticalListSortingStrategy
-                                }
-                            >
+                                    strategy={
+                                        verticalListSortingStrategy
+                                    }
+                                >
 
-                                <Column
-                                    column={column}
-                                    tasks={columnTasks}
-                                />
+                                    <Column
+                                        column={column}
+                                        tasks={columnTasks}
+                                    />
 
-                            </SortableContext>
+                                </SortableContext>
 
-                        );
-                    })}
+                            );
+                        })}
 
-                </div>
+                    </div>
+                </SortableContext>
 
             </div>
 
@@ -238,7 +271,7 @@ return (
                 Drag Overlay
             ---------------------------------------- */}
 
-            <DragOverlay >
+            {/* <DragOverlay >
 
                 {activeTask ? (
 
@@ -249,7 +282,30 @@ return (
 
                 ) : null}
 
+            </DragOverlay> */}
+
+            <DragOverlay>
+
+                {activeTask ? (
+                    <Card
+                        task={activeTask}
+                        isDragOverlay
+                    />
+                ) : activeColumn ? (
+                    <Column
+                        column={activeColumn}
+                        tasks={
+                            tasksByColumnId[activeColumn._id] ?? []
+                        }
+                        isDragOverlay
+                    />
+                ) : null}
+
             </DragOverlay>
+
+            {/* However, there's one thing I'd change here: we don't actually need the full interactive Column as the overlay. That can cause unnecessary menus, scroll areas, etc.
+            For now, I would make a tiny ColumnDragOverlay later if needed.
+            Since you're trying to finish this quickly, though, we can initially use the actual Column and disable its sortable behavior when isDragOverlay. */}
 
         </DndContext>
     );

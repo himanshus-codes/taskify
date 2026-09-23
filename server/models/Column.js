@@ -7,11 +7,10 @@ const ColumnSchema = new mongoose.Schema(
             required: true
         },
 
-        // order: {
-        //     type: Number,
-        //     required: true,
-        //     unique:true
-        // },
+        order: {
+            type: Number,
+            required: true,
+        },
 
 
         boardId: {
@@ -35,6 +34,11 @@ ColumnSchema.index(
             strength: 2
         }
     }
+);
+
+ColumnSchema.index(
+    { boardId: 1, order: 1 },
+    { unique: true }
 );
 
 const Column = mongoose.model("Column", ColumnSchema);

@@ -26,6 +26,7 @@ export function KanbanProvider({ children }) {
         tasks,
         tasksByColumnId,
         updateTaskOrder,
+        updateColumnOrder,
         setTasks
     } = useBoardDisplayContext();
 
@@ -500,33 +501,92 @@ export function KanbanProvider({ children }) {
     // Drag & Drop & Reorder
     // =========================================================
 
+   const [ activeColumnId, setActiveColumnId] = useState(null)
+   const dragStartColumnRef = useRef(null);
+    const dragStartColumnsRef = useRef(null);
+
     const [activeTaskId, setActiveTaskId] = useState(null);
     const dragStartTaskRef = useRef(null);
     const dragStartTasksRef = useRef(null);
 
+    // function handleDragStart(event) {
+    //     setOpenMenu(null);
+
+    //     const { active } = event;
+
+    //     const task = tasks.find(
+    //         task => task._id === active.id
+    //     );
+
+    //     dragStartTaskRef.current = task;
+    //     // Snapshot the COMPLETE state before any handleDragOver changes
+    //     dragStartTasksRef.current = tasks;
+
+    //     setActiveTaskId(active.id);
+    // }
+
+
     function handleDragStart(event) {
+
         setOpenMenu(null);
 
         const { active } = event;
 
-        const task = tasks.find(
-            task => task._id === active.id
-        );
+        const type =
+            active.data.current?.type;
 
-        dragStartTaskRef.current = task;
-        // Snapshot the COMPLETE state before any handleDragOver changes
-        dragStartTasksRef.current = tasks;
 
-        setActiveTaskId(active.id);
+        // -------------------------
+        // Column drag
+        // -------------------------
+
+        if (type === "column") {
+
+            const column = columns.find(
+                column => column._id === active.id
+            );
+
+            dragStartColumnRef.current = column;
+            dragStartColumnsRef.current = columns;
+
+            setActiveColumnId(active.id);
+
+            return;
+        }
+
+
+        // -------------------------
+        // Task drag
+        // -------------------------
+
+        if (type === "task") {
+
+            const task = tasks.find(
+                task => task._id === active.id
+            );
+
+            dragStartTaskRef.current = task;
+            dragStartTasksRef.current = tasks;
+
+            setActiveTaskId(active.id);
+        }
     }
 
     // inter-column dragging.
     function handleDragOver(event) {
 
+        const type =
+            event.active.data.current?.type;
+
+        if (type === "column") {
+            return;
+        }
+
         const {
             active,
             over
         } = event;
+        
 
         if (!over) {
             return;
@@ -596,7 +656,189 @@ export function KanbanProvider({ children }) {
         );
     }
 
+    async function handleColumnDragEnd(event) {
+
+        const {
+            active,
+            over
+        } = event;
+
+
+        if (!over) {
+            setActiveColumnId(null);
+            dragStartColumnRef.current = null;
+            dragStartColumnsRef.current = null;
+            return;
+        }
+
+
+        const activeColumnId = active.id;
+
+
+        const originalColumns =
+            dragStartColumnsRef.current ?? columns;
+
+
+        const activeIndex =
+            originalColumns.findIndex(
+                column =>
+                    column._id === activeColumnId
+            );
+
+
+        const overIndex =
+            originalColumns.findIndex(
+                column =>
+                    column._id === over.id
+            );
+
+
+        if (
+            activeIndex === -1 ||
+            overIndex === -1
+        ) {
+            setActiveColumnId(null);
+            return;
+        }
+
+
+        // No actual movement
+        if (activeIndex === overIndex) {
+            setActiveColumnId(null);
+            dragStartColumnRef.current = null;
+            dragStartColumnsRef.current = null;
+            return;
+        }
+
+
+        // Remove active column
+        const remainingColumns =
+            originalColumns.filter(
+                column =>
+                    column._id !== activeColumnId
+            );
+
+
+        let insertionIndex;
+
+
+        if (activeIndex < overIndex) {
+
+            // Moving right
+            insertionIndex =
+                remainingColumns.findIndex(
+                    column =>
+                        column._id === over.id
+                ) + 1;
+
+        } else {
+
+            // Moving left
+            insertionIndex =
+                remainingColumns.findIndex(
+                    column =>
+                        column._id === over.id
+                );
+        }
+
+
+        // -------------------------
+        // Calculate new order
+        // -------------------------
+
+        let newOrder;
+
+
+        if (remainingColumns.length === 0) {
+
+            newOrder = 1000;
+
+        } else if (insertionIndex === 0) {
+
+            newOrder =
+                remainingColumns[0].order / 2;
+
+        } else if (
+            insertionIndex >=
+            remainingColumns.length
+        ) {
+
+            newOrder =
+                remainingColumns[
+                    remainingColumns.length - 1
+                ].order + 1000;
+
+        } else {
+
+            const previousColumn =
+                remainingColumns[
+                    insertionIndex - 1
+                ];
+
+            const nextColumn =
+                remainingColumns[
+                    insertionIndex
+                ];
+
+            newOrder =
+                (
+                    previousColumn.order +
+                    nextColumn.order
+                ) / 2;
+        }
+
+
+        console.log(
+            "COLUMN DRAG PERSIST DEBUG",
+            {
+                activeColumnId,
+                activeIndex,
+                overIndex,
+                insertionIndex,
+                newOrder
+            }
+        );
+
+
+        // -------------------------
+        // Remove overlay immediately
+        // -------------------------
+
+        setActiveColumnId(null);
+
+
+        try {
+
+            await updateColumnOrder(
+                activeColumnId,
+                newOrder,
+                originalColumns
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Failed to update column order:",
+                error
+            );
+
+        } finally {
+
+            dragStartColumnRef.current = null;
+            dragStartColumnsRef.current = null;
+        }
+    }
+
     async function handleDragEnd(event) {
+
+
+        const type =
+            event.active.data.current?.type;
+
+        if (type === "column") {
+            await handleColumnDragEnd(event);
+            return;
+        }
 
         const {
             active,
@@ -839,13 +1081,17 @@ export function KanbanProvider({ children }) {
         <KanbanContext.Provider
             value={{
                 // Drag & Drop
+
+                activeColumnId,
+
                 activeTaskId,
                 handleDragStart,
                 handleDragOver,
                 handleDragEnd,
+
+
                 // Board Display coordination
                 openMenu,
-
 
                 //Column Title Editing
 

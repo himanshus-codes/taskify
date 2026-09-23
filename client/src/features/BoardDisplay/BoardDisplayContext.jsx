@@ -2,11 +2,18 @@ import { createContext, useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { getBoard, getFullDashboardBoard, updateBoard } from "../../services/boardService";
-import { createColumn } from "../../services/listService";
-import { createTask as createTaskApi, updateTask as updateTaskApi } from "../../services/taskService";
-import {deleteColumn as deleteColumnApi} from "../../services/listService";
-import {deleteAllTasksByColumnId as deleteAllTasksByColumnIdApi} from "../../services/taskService";
-import { updateColumn as updateColumnApi } from "../../services/listService";
+
+import { 
+    createColumn as createColumnApi, 
+    updateColumn as updateColumnApi, 
+    deleteColumn as deleteColumnApi 
+} from "../../services/listService";
+
+import { 
+    createTask as createTaskApi, 
+    updateTask as updateTaskApi,
+    deleteAllTasksByColumnId as deleteAllTasksByColumnIdApi 
+} from "../../services/taskService";
 
 export const BoardDisplayContext = createContext()
 
@@ -54,14 +61,14 @@ function BoardDisplayProvider({ children }) {
                     const { tasks, ...columnData } = column; //Take the tasks property out of column, and put all the remaining properties into columnData
 
                     return columnData;
-                });
+                }).sort((a, b) => a.order - b.order);
 
                 // const columnsData = dashboardData.columns.map(
                 //     ({ tasks, ...columnData }) => columnData
                 // );
                 
 
-                //console.log(columnsData)
+                console.log(columnsData)
                 setColumns(columnsData);
 
                 // Extract all tasks from all columns into one array
@@ -146,13 +153,29 @@ function BoardDisplayProvider({ children }) {
 
         return updatedBoard;
     }
+    console.log(columns)
+    console.log(columns.length)
+    console.log(columns.at(-1))
+    console.log(columns[columns.length - 1])
     
     async function createNewColumn(data) {
-        
-        const res = await createColumn(
+        let colOrder;
+
+        if(columns.length === 0){
+            colOrder=1000
+        } else {
+            // const lastCol = columns[columns.length - 1];
+            const lastCol = columns.at(-1);
+                
+            const highestColOrder = lastCol.order
+
+            colOrder = highestColOrder + 1000
+        }
+
+        const res = await createColumnApi(
                 token,
                 boardId,
-                data
+                 {...data, order: colOrder}
             );
 
         const newColumnData = res.data;
@@ -165,6 +188,50 @@ function BoardDisplayProvider({ children }) {
         ]));
 
         return newColumnData;
+    }
+
+
+    async function updateColumnOrder(
+        columnId,
+        newColOrder,
+        previousColumns
+    ) {
+
+        setColumns(prev => {
+
+            const updatedColumns = prev.map(col =>
+                col._id === columnId
+                    ? {
+                        ...col,
+                        order: newColOrder
+                    }
+                    : col
+            );
+
+            return updatedColumns.sort(
+                (a, b) => a.order - b.order
+            );
+        });
+
+        try {
+
+            const res =
+                await updateColumnApi(
+                    token,
+                    columnId,
+                    {
+                        order: newColOrder
+                    }
+                );
+
+            return res;
+
+        } catch (error) {
+
+            setColumns(previousColumns);
+
+            throw error;
+        }
     }
 
     // console.log(columns)
@@ -211,7 +278,7 @@ function BoardDisplayProvider({ children }) {
         let newTaskOrder;
 
         if(tasksByColumnId[columnId].length==0){
-            newTaskOrder=100
+            newTaskOrder=1000
         } else {
             const columnTasksArr = tasksByColumnId[columnId];
             const lastTask = columnTasksArr.at(-1);
@@ -439,7 +506,8 @@ function BoardDisplayProvider({ children }) {
                 deleteColumn,
                 deleteAllTasksByColumnId,
                 updateColumnTitle,
-                updateTaskOrder
+                updateTaskOrder,
+                updateColumnOrder
 
                 // searchQuery,
                 // setSearchQuery,
@@ -494,7 +562,7 @@ export default BoardDisplayProvider
 // updateBoardTitle()
 // updateBoardDescription()
 
-// createColumn()
+// createColumnApi()
 // updateColumn()
 // deleteColumn()
 

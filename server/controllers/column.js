@@ -190,7 +190,6 @@ exports.getColumnDetails = async (req, res) => {
     }
 };
 
-
 exports.updateColumn = async (req, res) => {
 
     const columnId = req.params.id;

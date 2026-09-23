@@ -1,4 +1,8 @@
-import { useDroppable } from "@dnd-kit/core";
+// import { useDroppable } from "@dnd-kit/core";
+
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+
 import Card from "./Card";
 import QuickAddTask from "./components/QuickAddTask";
 import { useState, useEffect, useRef } from "react";
@@ -6,9 +10,15 @@ import { useBoardDisplayContext } from "../../../hooks/useBoardDisplayContext";
 import ColumnMenu from "./components/ColumnMenu";
 import { useKanbanContext } from "./KanbanContext";
 
-export default function Column({ 
-    column, 
-    tasks
+// export default function Column({ 
+//     column, 
+//     tasks
+// }) 
+
+export default function Column({
+    column,
+    tasks,
+    isDragOverlay = false
 }) {
 
     const {
@@ -157,22 +167,51 @@ export default function Column({
     }, [isEditingTitle]);
 
 
- // DND droppable behavior
+//  // DND droppable behavior
+
+
+//     const {
+//         setNodeRef,
+//         isOver
+//     } = useDroppable({
+//         id: `column-${column._id}`,
+
+//         data: {
+//             type: "column",
+//             columnId: column._id
+//         }
+//     });
+
+
     const {
+        attributes,
+        listeners,
         setNodeRef,
-        isOver
-    } = useDroppable({
-        id: `column-${column._id}`,
+        transform,
+        transition,
+        isDragging
+    } = useSortable({
+        id: column._id,
 
         data: {
             type: "column",
             columnId: column._id
-        }
+        },
+
+        disabled: isDragOverlay
     });
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging && !isDragOverlay ? 0 : 1
+    };
+
    
     return (
         <div
             ref={setNodeRef}
+            style={style}
             data-kanban-column
             className="
                 flex
@@ -192,9 +231,61 @@ export default function Column({
                 relative
             "
         >
+            {/* { !isEditingTitle &&
 
+                    <div
+                        {...attributes}
+                        {...listeners}
+                        className="
+                            absolute
+                            left-1/2
+                            -translate-x-1/2
+                            -top-1
+                            hidden
+                            group-hover:flex
+                            shrink-0
+                            cursor-grab
+                            active:cursor-grabbing
+                            text-white/40
+                            hover:text-white/70
+                            text-xs
+                            pt-1
+                            touch-none
+                            w-fit
+                        "
+                    >
+                        ⋮⋮⋮⋮⋮⋮ 
+                    </div> 
+                } */}
             {/* Column header */}
-            <div className="flex mx-2 mb-1 items-start gap-5">
+            <div className="flex mx-2 mb-1 items-start gap-3  group ">
+
+                { !isEditingTitle &&
+
+                    <div
+                        {...attributes}
+                        {...listeners}
+                        className="
+                            absolute
+                            left-1/2
+                            -translate-x-1/2
+                            -top-1
+                            hidden
+                            group-hover:flex
+                            shrink-0
+                            cursor-grab
+                            active:cursor-grabbing
+                            text-white/40
+                            hover:text-white/70
+                            text-xs
+                            pt-1
+                            touch-none
+                            w-fit
+                        "
+                    >
+                        ⋮⋮⋮⋮⋮⋮ 
+                    </div> 
+                }
 
                 {isColMenuOpen && 
                     <ColumnMenu toggleColMoreMenu={toggleColMoreMenu} toggleDeleteListPrompt={toggleDeleteListPrompt}
@@ -208,14 +299,15 @@ export default function Column({
 
                     {!isEditingTitle && (
                         <div
-                            onClick={() => toggleColEditing(column._id)}
                             className="
                                 min-w-0
                                 flex-1
                                 wrap-break-word
                             "
-                        >
-                            {column.title}
+                        >   
+                            <div onClick={() => toggleColEditing(column._id)}  className="w-fit">
+                                {column.title}
+                            </div>
                         </div>
                     )}
 
