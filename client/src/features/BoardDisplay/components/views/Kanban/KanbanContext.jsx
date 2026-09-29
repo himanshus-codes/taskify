@@ -30,6 +30,20 @@ export function KanbanProvider({ children }) {
         setTasks
     } = useBoardDisplayContext();
 
+    // ====================================
+    // Task card actions (...)
+
+    const [cardIdActionsMenu, setCardIdActionsMenu]=useState(null)
+
+    function openCardActionsMenu(Id){
+        setOpenMenu( "cardactionsmenu" )
+        setCardIdActionsMenu( Id)
+    }
+    function closeCardActionsMenu(Id){
+        setOpenMenu( null )
+        setCardIdActionsMenu(null)
+    }
+
 
     // =========================================================
     // Column Title Editing
@@ -324,7 +338,7 @@ export function KanbanProvider({ children }) {
 
         container.style.cursor = "grabbing";
 
-        container.style.userSelect = "none";
+        container.style.userSelect = "";
     }
 
 
@@ -1128,7 +1142,15 @@ export function KanbanProvider({ children }) {
                 handlePointerDown,
                 handlePointerMove,
                 handlePointerUp,
-                handlePointerCancel
+                handlePointerCancel,
+
+
+                // Task card Actions Menu
+
+                cardIdActionsMenu, 
+                setCardIdActionsMenu,
+                openCardActionsMenu,
+                closeCardActionsMenu
             }}
         >
             {children}

@@ -6,7 +6,13 @@ export const AppShellUiStateContext = createContext()
 function AppShellUiProvider({children}){
 
     //App level Ui State
-    const [isSidebarOpen, setSidebarState ] = useState(true)
+    const [isSidebarOpen, setSidebarState ]  = useState(() => {
+        const saved = localStorage.getItem("sidebarOpen");
+        
+        return saved === null
+            ? true
+            : saved === "true";
+    });
     
     const [isWorkspaceOptnsTabOpen, setWorkspaceOptnsTabState] = useState(false)
     const [isProfileOptnsTabOpen, setProfileOptnsTabState] = useState(false)
@@ -25,6 +31,12 @@ function AppShellUiProvider({children}){
         setProfileOptnsTabState(false)
     }
 
+    useEffect(() => {
+        localStorage.setItem(
+            "sidebarOpen",
+            String(isSidebarOpen)
+        );
+    }, [isSidebarOpen]);
 
 
 return <AppShellUiStateContext.Provider value={{

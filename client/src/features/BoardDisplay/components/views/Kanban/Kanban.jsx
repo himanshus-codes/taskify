@@ -33,7 +33,8 @@ export default function Kanban() {
         tasks,
         tasksByColumnId,
         createNewColumn,
-        createNewTask
+        createNewTask,
+        isQuickCardPreviewOpen
     } = useBoardDisplayContext();
 
 
@@ -111,7 +112,6 @@ return (
             onDragOver={handleDragOver}
             onDragEnd={handleDragEnd}
         >
-
             <div
                 ref={kanbanScrollRef}
 
@@ -120,20 +120,23 @@ return (
                 onPointerUp={handlePointerUp}
                 onPointerCancel={handlePointerCancel}
 
-                className="
-                    relative
-                    pt-7.5
-                    pl-9
-                    pr-9
-                    h-full
-                    pb-7
-                    kanban-scrollbar
-                    flex-1
-                    min-h-0
-                    min-w-0
-                    overflow-x-auto
-                    overflow-y-hidden
-                "
+                className ={ 
+                       ` relative
+                        pt-7.5
+                        pl-9
+                        pr-9
+                        h-full
+                        pb-7
+                        kanban-scrollbar
+                        flex-1
+                        min-h-0
+                        min-w-0
+                        overflow-x-auto
+                        overflow-y-hidden
+                        ${(openMenu === "quickcardpreview")
+                            ? "mr-103"  
+                            : "" }
+                    `}
             >
 
                 {/* ------------------------------------
@@ -265,7 +268,6 @@ return (
                 </SortableContext>
 
             </div>
-
 
             {/* ----------------------------------------
                 Drag Overlay

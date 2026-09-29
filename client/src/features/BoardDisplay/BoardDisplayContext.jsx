@@ -117,6 +117,24 @@ function BoardDisplayProvider({ children }) {
 
     const [openMenu, setOpenMenu] = useState(null); // view, sort, filter, more, accessibility, newList, share
     
+
+    // Quick Card Preview
+
+    const [isQuickCardPreviewOpen, setQuickCardPreview] = useState(false)
+    const [quickPreviewTaskId, setQuickPreviewTaskId ] = useState(null)
+
+    function openQuickCardPreview(taskId){
+        setQuickPreviewTaskId(taskId)
+        // setQuickCardPreview(true)
+        setOpenMenu("quickcardpreview");
+    }
+    
+    function closeQuickCardPreview(){
+        setQuickPreviewTaskId(null)
+        // setQuickCardPreview(false)
+        setOpenMenu(null)
+    }
+
     // const resetFullDashboardBoard = async (token, boardId) => {
     //     try{
     //         const res = await getFullDashboardBoard(token, boardId)
@@ -507,13 +525,20 @@ function BoardDisplayProvider({ children }) {
                 deleteAllTasksByColumnId,
                 updateColumnTitle,
                 updateTaskOrder,
-                updateColumnOrder
+                updateColumnOrder,
 
                 // searchQuery,
                 // setSearchQuery,
 
                 // filter,
                 // setFilter,
+
+                // Quick Card Preview
+                isQuickCardPreviewOpen,
+                quickPreviewTaskId, 
+                setQuickPreviewTaskId, 
+                closeQuickCardPreview,
+                openQuickCardPreview
             }}
         >
             {children}

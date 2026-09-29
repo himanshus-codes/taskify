@@ -210,6 +210,7 @@ export default function Column({
    
     return (
         <div
+            onContextMenu={(e) => e.preventDefault()}
             ref={setNodeRef}
             style={style}
             data-kanban-column
