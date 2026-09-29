@@ -1,14 +1,14 @@
-import { useBoardDisplayContext } from "../../../hooks/useBoardDisplayContext";
+import { useBoardDisplayContext } from "../../hooks/useBoardDisplayContext";
 
 
-export function MoreMenuBtn() {
+export function AccessibilityMenuBtn() {
 
     const { openMenu, setOpenMenu } = useBoardDisplayContext();
 
-    const isOpen = openMenu === "more";
+    const isOpen = openMenu === "accessibility";
 
     function toggleMenu() {
-        setOpenMenu(isOpen ? null : "more");
+        setOpenMenu(isOpen ? null : "accessibility");
     }
 
     return (
@@ -25,36 +25,38 @@ export function MoreMenuBtn() {
         >
             <div>
                 <svg
-                    width="18px"
-                    height="18px"
+                    width="17px" height="16px"
                     viewBox="0 0 24 24"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
                     color="#ffffff"
                 >
                     <path
-                        d="M20 12.5C20.2761 12.5 20.5 12.2761 20.5 12C20.5 11.7239 20.2761 11.5 20 11.5C19.7239 11.5 19.5 11.7239 19.5 12C19.5 12.2761 19.7239 12.5 20 12.5Z"
-                        fill="#ffffff"
+                        d="M1 20V19C1 15.134 4.13401 12 8 12V12C11.866 12 15 15.134 15 19V20"
                         stroke="#ffffff"
-                        strokeWidth="1.7"
+                        strokeWidth="1.2"
+                        strokeLinecap="round"
+                    />
+
+                    <path
+                        d="M13 14V14C13 11.2386 15.2386 9 18 9V9C20.7614 9 23 11.2386 23 14V14.5"
+                        stroke="#ffffff"
+                        strokeWidth="1.2"
+                        strokeLinecap="round"
+                    />
+
+                    <path
+                        d="M8 12C10.2091 12 12 10.2091 12 8C12 5.79086 10.2091 4 8 4C5.79086 4 4 5.79086 4 8C4 10.2091 5.79086 12 8 12Z"
+                        stroke="#ffffff"
+                        strokeWidth="1.2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                     />
 
                     <path
-                        d="M12 12.5C12.2761 12.5 12.5 12.2761 12.5 12C12.5 11.7239 12.2761 11.5 12 11.5C11.7239 11.5 11.5 11.7239 11.5 12C11.5 12.2761 11.7239 12.5 12 12.5Z"
-                        fill="#ffffff"
+                        d="M18 9C19.6569 9 21 7.65685 21 6C21 4.34315 19.6569 3 18 3C16.3431 3 15 4.34315 15 6C15 7.65685 16.3431 9 18 9Z"
                         stroke="#ffffff"
-                        strokeWidth="1.7"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                    />
-
-                    <path
-                        d="M4 12.5C4.27614 12.5 4.5 12.2761 4.5 12C4.5 11.7239 4.27614 11.5 4 11.5C3.72386 11.5 3.5 11.7239 3.5 12C3.5 12.2761 3.72386 12.5 4 12.5Z"
-                        fill="#ffffff"
-                        stroke="#ffffff"
-                        strokeWidth="1.7"
+                        strokeWidth="1.2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                     />
@@ -65,7 +67,7 @@ export function MoreMenuBtn() {
 }
 
 
-export function MoreMenu() {
+export function AccessibilityMenu() {
 
     const { setOpenMenu } = useBoardDisplayContext();
 
@@ -130,7 +132,7 @@ export function MoreMenu() {
                     text-[#8f8b8b]
                 "
             >
-                More Settings
+                Select Accessibility Option
             </div>
 
 

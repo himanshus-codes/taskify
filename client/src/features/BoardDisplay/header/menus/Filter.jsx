@@ -1,14 +1,14 @@
-import { useBoardDisplayContext } from "../../../hooks/useBoardDisplayContext";
+import { useBoardDisplayContext } from "../../hooks/useBoardDisplayContext";
 
 
-export function AccessibilityMenuBtn() {
+export function FilterMenuBtn() {
 
     const { openMenu, setOpenMenu } = useBoardDisplayContext();
 
-    const isOpen = openMenu === "accessibility";
+    const isOpen = openMenu === "filter";
 
     function toggleMenu() {
-        setOpenMenu(isOpen ? null : "accessibility");
+        setOpenMenu(isOpen ? null : "filter");
     }
 
     return (
@@ -23,38 +23,17 @@ export function AccessibilityMenuBtn() {
                 rounded-sm
             "
         >
+
             <div>
                 <svg
-                    width="17px" height="16px"
+                    width="16px" height="16px"
                     viewBox="0 0 24 24"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
                     color="#ffffff"
                 >
                     <path
-                        d="M1 20V19C1 15.134 4.13401 12 8 12V12C11.866 12 15 15.134 15 19V20"
-                        stroke="#ffffff"
-                        strokeWidth="1.2"
-                        strokeLinecap="round"
-                    />
-
-                    <path
-                        d="M13 14V14C13 11.2386 15.2386 9 18 9V9C20.7614 9 23 11.2386 23 14V14.5"
-                        stroke="#ffffff"
-                        strokeWidth="1.2"
-                        strokeLinecap="round"
-                    />
-
-                    <path
-                        d="M8 12C10.2091 12 12 10.2091 12 8C12 5.79086 10.2091 4 8 4C5.79086 4 4 5.79086 4 8C4 10.2091 5.79086 12 8 12Z"
-                        stroke="#ffffff"
-                        strokeWidth="1.2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                    />
-
-                    <path
-                        d="M18 9C19.6569 9 21 7.65685 21 6C21 4.34315 19.6569 3 18 3C16.3431 3 15 4.34315 15 6C15 7.65685 16.3431 9 18 9Z"
+                        d="M3.99961 3H19.9997C20.552 3 20.9997 3.44764 20.9997 3.99987L20.9999 5.58569C21 5.85097 20.8946 6.10538 20.707 6.29295L14.2925 12.7071C14.105 12.8946 13.9996 13.149 13.9996 13.4142L13.9996 19.7192C13.9996 20.3698 13.3882 20.8472 12.7571 20.6894L10.7571 20.1894C10.3119 20.0781 9.99961 19.6781 9.99961 19.2192L9.99961 13.4142C9.99961 13.149 9.89425 12.8946 9.70672 12.7071L3.2925 6.29289C3.10496 6.10536 2.99961 5.851 2.99961 5.58579V4C2.99961 3.44772 3.44732 3 3.99961 3Z"
                         stroke="#ffffff"
                         strokeWidth="1.2"
                         strokeLinecap="round"
@@ -62,12 +41,13 @@ export function AccessibilityMenuBtn() {
                     />
                 </svg>
             </div>
+
         </button>
     );
 }
 
 
-export function AccessibilityMenu() {
+export function FilterMenu() {
 
     const { setOpenMenu } = useBoardDisplayContext();
 
@@ -132,7 +112,7 @@ export function AccessibilityMenu() {
                     text-[#8f8b8b]
                 "
             >
-                Select Accessibility Option
+                Select Filter
             </div>
 
 

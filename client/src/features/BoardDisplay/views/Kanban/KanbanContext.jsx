@@ -10,7 +10,7 @@ import {
     useState
 } from "react";
 
-import { useBoardDisplayContext } from "../../../hooks/useBoardDisplayContext";
+import { useBoardDisplayContext } from "../../hooks/useBoardDisplayContext";
 
 
 const KanbanContext = createContext(null);

@@ -1,5 +1,5 @@
 import ConfirmActionModal from "../ConfirmActionModal";
-import { useBoardDisplayContext } from "../../../../../hooks/useBoardDisplayContext";
+import { useBoardDisplayContext } from "../../../../hooks/useBoardDisplayContext";
 import { useState } from "react";
 export default function EmptyListPrompt({
     column,

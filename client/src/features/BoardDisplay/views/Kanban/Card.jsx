@@ -1,6 +1,6 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { useBoardDisplayContext } from "../../../hooks/useBoardDisplayContext";
+import { useBoardDisplayContext } from "../../hooks/useBoardDisplayContext";
 import { useKanbanContext } from "./KanbanContext";
 import { useState } from "react";
 

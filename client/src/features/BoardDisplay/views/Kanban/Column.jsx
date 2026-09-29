@@ -6,7 +6,7 @@ import { CSS } from "@dnd-kit/utilities";
 import Card from "./Card";
 import QuickAddTask from "./components/QuickAddTask";
 import { useState, useEffect, useRef } from "react";
-import { useBoardDisplayContext } from "../../../hooks/useBoardDisplayContext";
+import { useBoardDisplayContext } from "../../hooks/useBoardDisplayContext";
 import ColumnMenu from "./components/ColumnMenu";
 import { useKanbanContext } from "./KanbanContext";
 

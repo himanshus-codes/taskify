@@ -1,4 +1,4 @@
-import { useBoardDisplayContext } from "../hooks/useBoardDisplayContext"
+import { useBoardDisplayContext } from "../../hooks/useBoardDisplayContext"
 import { useRef, useEffect } from "react";
 export default function QuickCardPreview(){
 

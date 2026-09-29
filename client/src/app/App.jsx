@@ -10,7 +10,7 @@ import AppLayout from "../components/AppShell/AppLayout";
 import AuthProvider from '../context/AuthContext';
 import ProtectedRoute from './ProtectedRoute';
 import AppContextProvider from '../context/AppContext';
-import AppShellUiContext from '../context/Ui/AppShellUiContext';
+import AppShellUiContext from '../context/AppShellUiContext';
 
 import Boards from '../pages/workspace/Boards'
 import Templates from '../pages/workspace/Templates'

@@ -5,7 +5,7 @@ import { useState } from "react"
 
 export default function AppLayout(){
 
-    return <div className="p-3 bg-[#1e1d1d]  overflow-hidden h-dvh box-border flex ">
+    return <div className="p-2 bg-[#1e1d1d]  overflow-hidden h-dvh box-border flex ">
         
             <Sidebar/>
             <Outlet/>

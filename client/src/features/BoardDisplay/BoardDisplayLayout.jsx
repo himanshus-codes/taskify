@@ -1,4 +1,4 @@
-import BoardHeader from "./components/header/BoardHeader";
+import BoardHeader from "./header/BoardHeader";
 import BoardViewRenderer from "./BoardViewRenderer";
 import { useAppShellUiContext } from "../../hooks/useAppShellUiContext";
 
@@ -13,13 +13,13 @@ function BoardViewLayout() {
                 flex
                 flex-col
                 text-[#d2cbcb]
-               
+                
                 grow
                 min-h-0
                 rounded-lg
                 overflow-hidden
                 border-[0.1px]
-                border-[#2f2d2d]
+                border-[#242323]
             "
             onClick={() => {
                 closeProfileOtpnsTab();

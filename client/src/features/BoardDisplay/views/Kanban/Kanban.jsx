@@ -8,7 +8,7 @@ import NewListForm from "./components/NewListForm";
 import DeleteListPrompt from "./components/prompts/DeleteListPrompt";
 import EmptyListPrompt from "./components/prompts/EmptyListPrompt";
 
-import { useBoardDisplayContext } from "../../../hooks/useBoardDisplayContext";
+import { useBoardDisplayContext } from "../../hooks/useBoardDisplayContext";
 import { useKanbanContext } from "./KanbanContext";
 
 import {

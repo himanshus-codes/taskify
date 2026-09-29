@@ -1,7 +1,7 @@
 import { useBoardDisplayContext } from "./hooks/useBoardDisplayContext";
-import Kanban from "./components/views/Kanban/Kanban"
-import { KanbanProvider } from "./components/views/Kanban/KanbanContext";
-import QuickCardPreview from "./components/QuickCardPreview";
+import Kanban from "./views/Kanban/Kanban"
+import { KanbanProvider } from "./views/Kanban/KanbanContext"
+import QuickCardPreview from "./views/Kanban/QuickCardPreview";
 
 export default function BoardViewSelector() {
     

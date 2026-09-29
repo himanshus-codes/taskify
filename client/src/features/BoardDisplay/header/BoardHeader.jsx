@@ -1,5 +1,5 @@
 import ViewSelectionMenu from "./menus/ViewSelectionMenu";
-import { useBoardDisplayContext } from "../../hooks/useBoardDisplayContext";
+import { useBoardDisplayContext } from "../hooks/useBoardDisplayContext";
 import { FilterMenu, FilterMenuBtn } from "./menus/Filter";
 import {SortMenu, SortMenuBtn} from "./menus/Sort";
 import { AccessibilityMenu, AccessibilityMenuBtn} from "./menus/AccessibilityMenu";

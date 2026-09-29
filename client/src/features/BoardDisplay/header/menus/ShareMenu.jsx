@@ -1,14 +1,14 @@
-import { useBoardDisplayContext } from "../../../hooks/useBoardDisplayContext";
+import { useBoardDisplayContext } from "../../hooks/useBoardDisplayContext";
 
 
-export function FilterMenuBtn() {
+export function ShareMenuBtn() {
 
     const { openMenu, setOpenMenu } = useBoardDisplayContext();
 
-    const isOpen = openMenu === "filter";
+    const isOpen = openMenu === "share";
 
     function toggleMenu() {
-        setOpenMenu(isOpen ? null : "filter");
+        setOpenMenu(isOpen ? null : "share");
     }
 
     return (
@@ -23,17 +23,24 @@ export function FilterMenuBtn() {
                 rounded-sm
             "
         >
-
             <div>
                 <svg
-                    width="16px" height="16px"
+                   width="16px" height="16px"
                     viewBox="0 0 24 24"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
                     color="#ffffff"
                 >
                     <path
-                        d="M3.99961 3H19.9997C20.552 3 20.9997 3.44764 20.9997 3.99987L20.9999 5.58569C21 5.85097 20.8946 6.10538 20.707 6.29295L14.2925 12.7071C14.105 12.8946 13.9996 13.149 13.9996 13.4142L13.9996 19.7192C13.9996 20.3698 13.3882 20.8472 12.7571 20.6894L10.7571 20.1894C10.3119 20.0781 9.99961 19.6781 9.99961 19.2192L9.99961 13.4142C9.99961 13.149 9.89425 12.8946 9.70672 12.7071L3.2925 6.29289C3.10496 6.10536 2.99961 5.851 2.99961 5.58579V4C2.99961 3.44772 3.44732 3 3.99961 3Z"
+                        d="M20 13V19C20 20.1046 19.1046 21 18 21H6C4.89543 21 4 20.1046 4 19V13"
+                        stroke="#ffffff"
+                        strokeWidth="1.2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                    />
+
+                    <path
+                        d="M12 15V3M12 3L8.5 6.5M12 3L15.5 6.5"
                         stroke="#ffffff"
                         strokeWidth="1.2"
                         strokeLinecap="round"
@@ -41,13 +48,12 @@ export function FilterMenuBtn() {
                     />
                 </svg>
             </div>
-
         </button>
     );
 }
 
 
-export function FilterMenu() {
+export function ShareMenu() {
 
     const { setOpenMenu } = useBoardDisplayContext();
 
@@ -112,7 +118,7 @@ export function FilterMenu() {
                     text-[#8f8b8b]
                 "
             >
-                Select Filter
+                Share Link
             </div>
 
 

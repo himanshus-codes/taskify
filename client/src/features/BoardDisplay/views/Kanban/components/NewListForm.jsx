@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useBoardDisplayContext } from "../../../../hooks/useBoardDisplayContext";
+import { useBoardDisplayContext } from "../../../hooks/useBoardDisplayContext";
 
 export default function NewListForm({ toggleNewListFormMenu, createNewColumn, shouldScrollToEndColumn }) {
    const { board } = useBoardDisplayContext();
