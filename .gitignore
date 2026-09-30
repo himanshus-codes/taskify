@@ -21,7 +21,7 @@ client/.env
 
 /client/my_doc_client_plans.md
 /server/my_doc_server_plans.md
-
+/client/src/features/TaskPage/components/sidebar/oldSidebar
 # =============================
 # Logs
 # =============================

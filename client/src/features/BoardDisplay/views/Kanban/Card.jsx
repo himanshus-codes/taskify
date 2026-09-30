@@ -3,11 +3,18 @@ import { CSS } from "@dnd-kit/utilities";
 import { useBoardDisplayContext } from "../../hooks/useBoardDisplayContext";
 import { useKanbanContext } from "./KanbanContext";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAppData } from "../../../../hooks/useAppData";
+
+// sensor fiiting for accidental drag
 
 export default function Card({
     task,
     isDragOverlay = false
 }) {
+
+    const navigate = useNavigate(); 
+
     const {
         attributes,
         listeners,
@@ -36,24 +43,25 @@ export default function Card({
                 : "visible"
     };
 
-    const {
-        cardIdActionsMenu, 
-        setCardIdActionsMenu,
-        openCardActionsMenu,
-        closeCardActionsMenu
-    } = useKanbanContext()
-        
     
     const {
+        board,
         openMenu,
-        setOpenMenu,     
-        viewType, 
-        isQuickCardPreviewOpen,
-        closeQuickCardPreview,
         openQuickCardPreview 
     }=useBoardDisplayContext()
     
     const isCardActionsMenuOpen = openMenu === "cardactionsmenu"
+    
+
+    const {currentWorksapceId} = useAppData()
+    
+    const redirectToTaskPage = (e) => {
+        e.stopPropagation()
+       
+        console.log('redirecting...')
+        
+        navigate(`/workspaces/${currentWorksapceId}/boards/${board._id}/tasks/${task._id}`); // 3. Navigate programmatically
+  };
 
 
     return (
@@ -65,6 +73,7 @@ export default function Card({
             {...(!isDragOverlay ? listeners : {})}
 
             data-task-id={task._id}
+
             onContextMenu={(e) => {
                 e.stopPropagation()
                 e.preventDefault();
@@ -124,6 +133,9 @@ export default function Card({
 
                     {/* Edit */}
                     <div
+                        onPointerDown={(e) => e.stopPropagation()}
+                        onClick={redirectToTaskPage }
+
                         className="
                             hover:bg-[#222121]
                             rounded-sm
@@ -280,7 +292,7 @@ export default function Card({
 //     ├── comments
 //     └── activity
 
-
+// Task labels: custom labels like id/task number (t-1: task-1)
 
 // Task {
 //     title,

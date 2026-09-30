@@ -20,6 +20,7 @@ import MainPageLayout from '../components/AppShell/MainPageLayout';
 
 import BoardDisplayPage from '../pages/workspace/BoardDisplayPage';
 // import Boards from '../pages/workspace/Boards'
+import TaskPage from "../features/TaskPage/TaskPage";
 
 function App() {
 
@@ -82,6 +83,13 @@ function App() {
                 path="/workspaces/:workspaceId/boards/:boardId"
                 element={<BoardDisplayPage />}
               />
+
+              {/* Task Page Shell */}
+              <Route
+                path="/workspaces/:workspaceId/boards/:boardId/tasks/:taskId"
+                element={<TaskPage />}
+              />
+
             </Route>
 
           </Route>    
