@@ -1,59 +1,76 @@
-const mongoose = require('mongoose');
-const TaskSchema = new mongoose.Schema({
-    title: {
-        type: String,
-        required: [true, "  Task Title is required"]
-    },
-    description: {
-        type: String,
-    },
-    priority: {
-        type: String,
-        enum: ["low", "medium", "high", "normal"],
-        required: true
-    },
+const mongoose = require("mongoose");
 
-    boardId: {
-        type:mongoose.Schema.Types.ObjectId,
-        ref: "Board",
-        required: true,
-        index: true
-    },
 
-    columnId:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref: "Column",
-        required: true,
-        index: true
-    },
-
-    order: {
-        type: Number,
-        required:true,
-    },
-    
-        // status: {
-        //     type: String,
-        //     enum: ["pending", "in-progress", "completed", "under-review"],
-        //     default: "pending"
-        // },
-        // if multi users/collabas
-        // userId: {
-        //     // type: String,
-        //     type:  mongoose.Schema.Types.ObjectId,
-        //     ref: "User",
-        //     required: true,
-        //     index: true
-        // },
-       
-
-    },
-    
+const TaskSchema = new mongoose.Schema(
     {
-        timestamps : true,
-    }
+        title: {
+            type: String,
+            required: [true, "Task Title is required"],
+            trim: true,
+        },
 
-   
+        description: {
+            type: String,
+        },
+
+        priority: {
+            type: String,
+            enum: ["low", "medium", "high", "normal"],
+            default: "normal",
+            required: true,
+        },
+
+        status: {
+            type: String,
+            enum: [
+                "pending",
+                "in-progress",
+                "completed",
+                "under-review",
+            ],
+            default: "pending",
+        },
+
+        // References reusable labels belonging to the board
+        labels: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Label",
+            }
+        ],
+
+        startDate: {
+            type: Date,
+            default: null,
+        },
+
+        targetDate: {
+            type: Date,
+            default: null,
+        },
+
+        boardId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Board",
+            required: true,
+            index: true,
+        },
+
+        columnId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Column",
+            required: true,
+            index: true,
+        },
+
+        order: {
+            type: Number,
+            required: true,
+        },
+    },
+    {
+        timestamps: true,
+    }
 );
 
 TaskSchema.index(
@@ -62,10 +79,12 @@ TaskSchema.index(
         unique: true,
         collation: {
             locale: "en",
-            strength: 2
-        }
+            strength: 2,
+        },
     }
 );
+
+
 TaskSchema.index(
     { columnId: 1, order: 1 },
     {
@@ -73,9 +92,9 @@ TaskSchema.index(
     }
 );
 
-const Task = mongoose.model('Task', TaskSchema);
-console.log(Task.schema.indexes());
+
+const Task = mongoose.model("Task", TaskSchema);
 
 module.exports = {
-    Task
-}
+    Task,
+};
