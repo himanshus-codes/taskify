@@ -10,6 +10,7 @@ const taskRouter = require('./routes/task.js');
 const boardRouter = require('./routes/board.js')
 const columnRouter = require('./routes/column.js')
 const workspaceRouter = require('./routes/workspace.js')
+const labelRouter = require("./routes/label.js");
 
 const app = express();
 const port = process.env.PORT;
@@ -29,7 +30,8 @@ app.use('/', userRouter);
 app.use('/', taskRouter);
 app.use('/', boardRouter);
 app.use('/', columnRouter);
-app.use('/', workspaceRouter)
+app.use('/', workspaceRouter);
+app.use("/", labelRouter);
 
 // better (standard express pattern)
 // app.use("/users", userRouter);
