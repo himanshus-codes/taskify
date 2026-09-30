@@ -104,6 +104,14 @@ exports.getTaskDetails = async (req, res) => {
 
     const taskId = req.params.id;
 
+     if (!mongoose.isValidObjectId(taskId)) {
+        return res.status(400).json({
+            success: false,
+            code: "INVALID_TASK_ID",
+            message: "Invalid task ID."
+        });
+    }
+
     try {
 
         const task = await taskService.getTaskDetails(taskId);
@@ -139,6 +147,14 @@ exports.getTaskDetails = async (req, res) => {
 exports.updateTask = async (req, res) => {
 
     const taskId = req.params.id;
+
+    if (!mongoose.isValidObjectId(taskId)) {
+        return res.status(400).json({
+            success: false,
+            code: "INVALID_TASK_ID",
+            message: "Invalid task ID."
+        });
+    }
 
     const result = updateTaskSchema.safeParse(req.body);
 
@@ -207,6 +223,14 @@ exports.updateTask = async (req, res) => {
 exports.deleteTask = async (req, res) => {
 
     const taskId = req.params.id;
+
+    if (!mongoose.isValidObjectId(taskId)) {
+        return res.status(400).json({
+            success: false,
+            code: "INVALID_TASK_ID",
+            message: "Invalid task ID."
+        });
+    }
 
     try {
 

@@ -2,16 +2,54 @@ const { Task } = require("../models/Task");
 const mongoose = require("mongoose");
 
 
-exports.createTask = async (columnId,boardId, data) => {
+// exports.createTask = async (columnId,boardId, data) => {
 
-    console.log("req rec")
+//     console.log("req rec")
+
+//     const taskData = new Task({
+//         title: data.title,
+//         description: data.description,
+//         priority: data.priority,
+//         order:data.order,
+//         boardId,
+//         columnId
+//     });
+
+//     const newTask = await taskData.save();
+
+//     console.log(newTask);
+
+//     console.log(newTask);
+
+//     return newTask;
+// };
+
+
+
+exports.createTask = async (columnId, boardId, data) => {
+
+    console.log("req rec");
 
     const taskData = new Task({
+
         title: data.title,
+
         description: data.description,
+
         priority: data.priority,
-        order:data.order,
+
+        status: data.status,
+
+        labels: data.labels,
+
+        startDate: data.startDate,
+
+        targetDate: data.targetDate,
+
+        order: data.order,
+
         boardId,
+
         columnId
     });
 
@@ -19,11 +57,8 @@ exports.createTask = async (columnId,boardId, data) => {
 
     console.log(newTask);
 
-    console.log(newTask);
-
     return newTask;
 };
-
 
 exports.getAllTasks = async (columnId) => {
 
