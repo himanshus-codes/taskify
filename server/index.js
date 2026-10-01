@@ -11,6 +11,8 @@ const boardRouter = require('./routes/board.js')
 const columnRouter = require('./routes/column.js')
 const workspaceRouter = require('./routes/workspace.js')
 const labelRouter = require("./routes/label.js");
+const checklistRouter = require("./routes/checklist.js");
+
 
 const app = express();
 const port = process.env.PORT;
@@ -32,6 +34,8 @@ app.use('/', boardRouter);
 app.use('/', columnRouter);
 app.use('/', workspaceRouter);
 app.use("/", labelRouter);
+app.use("/", checklistRouter);
+
 
 // better (standard express pattern)
 // app.use("/users", userRouter);
@@ -43,6 +47,9 @@ mongoose.connect(process.env.MONGO_URL)
 .then(() => {
   console.log("DB connected")
   Task.syncIndexes();
+  // Label.syncIndexes();
+  // Checklist.syncIndexes();
+
 
   app.listen(port, ()=> console.log(`server is running at http://localhost:${port}`));
 })
