@@ -16,6 +16,10 @@ const ChecklistSchema = new mongoose.Schema(
             trim: true,
         },
 
+        completed: {
+            type: Boolean,
+            default: false,
+        },
 
         // order of checklists // but this can be managed by sorting based on createdAt date
         // order: {

@@ -6,7 +6,7 @@ const mongoose = require("mongoose")
 
 // Create Task
 exports.createTask = async (req, res) => {
-
+    const userId = req.userData._id
     console.log("hiiiiiiiii")
     const columnId = req.params.columnId;
     const boardId = req.params.boardId;
@@ -31,7 +31,8 @@ exports.createTask = async (req, res) => {
         const task = await taskService.createTask(
             columnId,
             boardId,
-            result.data
+            result.data,
+            userId
         );
 
         return res.status(201).json({
@@ -147,6 +148,7 @@ exports.getTaskDetails = async (req, res) => {
 exports.updateTask = async (req, res) => {
 
     const taskId = req.params.id;
+     const userId = req.userData._id;
 
     if (!mongoose.isValidObjectId(taskId)) {
         return res.status(400).json({
@@ -172,7 +174,8 @@ exports.updateTask = async (req, res) => {
 
         const task = await taskService.updateTask(
             taskId,
-            result.data
+            result.data,
+            userId
         );
 
         return res.status(200).json({

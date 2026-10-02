@@ -5,7 +5,7 @@ const {
     updateChecklistItemSchema
 } = require("../validations/checklist");
 
-const checklistService = require("../services/checklist");
+const checklistService = require("../services/checklist.js");
 
 const mongoose = require("mongoose");
 
@@ -15,6 +15,7 @@ const mongoose = require("mongoose");
 exports.createChecklist = async (req, res) => {
 
     const taskId = req.params.taskId;
+    const userId = req.userData._id;
 
     if (!mongoose.isValidObjectId(taskId)) {
 
@@ -46,7 +47,8 @@ exports.createChecklist = async (req, res) => {
         const checklist =
             await checklistService.createChecklist(
                 taskId,
-                result.data
+                result.data,
+                userId
             );
 
         return res.status(201).json({
@@ -174,6 +176,7 @@ exports.getChecklistDetails = async (req, res) => {
 exports.updateChecklist = async (req, res) => {
 
     const checklistId = req.params.id;
+    const userId = req.userData._id;
 
     if (!mongoose.isValidObjectId(checklistId)) {
 
@@ -205,7 +208,8 @@ exports.updateChecklist = async (req, res) => {
         const checklist =
             await checklistService.updateChecklist(
                 checklistId,
-                result.data
+                result.data,
+                userId
             );
 
         return res.status(200).json({
@@ -288,6 +292,7 @@ exports.deleteChecklist = async (req, res) => {
 exports.createChecklistItem = async (req, res) => {
 
     const checklistId = req.params.checklistId;
+    const userId = req.userData._id;
 
     if (!mongoose.isValidObjectId(checklistId)) {
 
@@ -319,7 +324,8 @@ exports.createChecklistItem = async (req, res) => {
         const checklist =
             await checklistService.createChecklistItem(
                 checklistId,
-                result.data
+                result.data,
+                userId
             );
 
         return res.status(201).json({
@@ -355,6 +361,7 @@ exports.updateChecklistItem = async (req, res) => {
 
     const checklistId = req.params.checklistId;
     const itemId = req.params.itemId;
+    const userId = req.userData._id;
 
     if (
         !mongoose.isValidObjectId(checklistId) ||
@@ -390,7 +397,8 @@ exports.updateChecklistItem = async (req, res) => {
             await checklistService.updateChecklistItem(
                 checklistId,
                 itemId,
-                result.data
+                result.data,
+                userId
             );
 
         return res.status(200).json({
@@ -426,6 +434,7 @@ exports.deleteChecklistItem = async (req, res) => {
 
     const checklistId = req.params.checklistId;
     const itemId = req.params.itemId;
+    const userId = req.userData._id;
 
     if (
         !mongoose.isValidObjectId(checklistId) ||
@@ -445,7 +454,8 @@ exports.deleteChecklistItem = async (req, res) => {
         const checklist =
             await checklistService.deleteChecklistItem(
                 checklistId,
-                itemId
+                itemId,
+                userId
             );
 
         return res.status(200).json({

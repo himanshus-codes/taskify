@@ -4,7 +4,7 @@ const router = Router();
 
 const { userMiddleware } = require("../middleware/user");
 
-const checklistController = require("../controllers/checklist");
+const checklistController = require("../controllers/checklist.js");
 
 
 // Checklist CRUD

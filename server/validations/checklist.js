@@ -29,6 +29,8 @@ exports.updateChecklistSchema = z.object({
         .min(1)
         .max(100)
         .optional(),
+    
+    completed: z.boolean().optional()    
 
 }).refine(
 

@@ -38,7 +38,6 @@ try{
         let id = jwt.verify(req.headers.token, JWT_SECRET_USER) 
 
         let userData = await User.findOne({_id : id})
-        console.log(userData)
 
         if(!userData){
             // throw("user data not found")
@@ -50,6 +49,7 @@ try{
             });
         }
         req.userData  = userData;
+        // console.log("------------------------------------",req.userData)
         console.log("before next()")
     
         next()
