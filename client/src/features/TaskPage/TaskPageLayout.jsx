@@ -10,9 +10,20 @@ import TaskSidebar from "./components/TaskSidebar";
 export default function TaskPageLayout() {
 
     const {
+        isTaskLoading,
+        task,
         isSidebarOpen,
         toggleSidebar
     } = useTaskPageContext();
+
+
+    if (isTaskLoading || !task) {
+        return (
+            <div className="flex h-full w-full items-center justify-center text-sm text-[#777171]">
+                Loading task...
+            </div>
+        );
+    }
 
     return (
         <div

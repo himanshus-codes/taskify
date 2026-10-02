@@ -1,82 +1,11 @@
-// GET /columns/:id/tasks
-export async function getTasks(token, columnId) {
+// POST /boards/:boardId/labels
+export async function createLabel(token, boardId, labelData) {
 
     let res;
 
     try {
         res = await fetch(
-            `http://localhost:3000/columns/${columnId}/tasks`,
-            {
-                method: "GET",
-
-                headers: {
-                    token
-                }
-            }
-        );
-
-    } catch (e) {
-        const err = new Error("Unable to connect to server.");
-        err.code = "NETWORK_ERROR";
-        throw err;
-    }
-
-    const data = await res.json();
-
-    if (!res.ok) {
-        const err = new Error(data.message);
-        err.code = data.code;
-        throw err;
-    }
-
-    return data;
-}
-
-
-// DELETE /columns/:id/tasks by column Id
-export async function deleteAllTasksByColumnId(token, columnId) {
-
-    let res;
-
-    try {
-        res = await fetch(
-            `http://localhost:3000/columns/${columnId}/tasks`,
-            {
-                method: "DELETE",
-
-                headers: {
-                    token
-                }
-            }
-        );
-
-    } catch (e) {
-        const err = new Error("Unable to connect to server.");
-        err.code = "NETWORK_ERROR";
-        throw err;
-    }
-
-    const data = await res.json();
-
-    if (!res.ok) {
-        const err = new Error(data.message);
-        err.code = data.code;
-        throw err;
-    }
-
-    return data;
-}
-
-
-// POST /columns/:id/task
-export async function createTask(token, boardId, columnId, taskData) {
-
-    let res;
-
-    try {
-        res = await fetch(
-
-            `http://localhost:3000/boards/${boardId}/columns/${columnId}/task`,
+            `http://localhost:3000/boards/${boardId}/labels`,
             {
                 method: "POST",
 
@@ -86,18 +15,13 @@ export async function createTask(token, boardId, columnId, taskData) {
                 },
 
                 body: JSON.stringify({
-                    title: taskData.title,
-                    description: taskData.description,
-                    priority: taskData.priority,
-                    order:taskData.order
+                    name: labelData.name,
+                    color: labelData.color
                 })
             }
         );
 
-        console.log(res)
-
     } catch (e) {
-        console.log(e)
         const err = new Error("Unable to connect to server.");
         err.code = "NETWORK_ERROR";
         throw err;
@@ -111,19 +35,18 @@ export async function createTask(token, boardId, columnId, taskData) {
         throw err;
     }
 
-
     return data;
 }
 
 
-// GET /tasks/:id
-export async function getTaskDetails(token, taskId) {
+// GET /boards/:boardId/labels
+export async function getLabels(token, boardId) {
 
     let res;
 
     try {
         res = await fetch(
-            `http://localhost:3000/tasks/${taskId}`,
+            `http://localhost:3000/boards/${boardId}/labels`,
             {
                 method: "GET",
 
@@ -151,14 +74,49 @@ export async function getTaskDetails(token, taskId) {
 }
 
 
-// PATCH /tasks/:id
-export async function updateTask(token, taskId, taskData) {
+// GET /labels/:id
+export async function getLabelDetails(token, labelId) {
 
     let res;
 
     try {
         res = await fetch(
-            `http://localhost:3000/tasks/${taskId}`,
+            `http://localhost:3000/labels/${labelId}`,
+            {
+                method: "GET",
+
+                headers: {
+                    token
+                }
+            }
+        );
+
+    } catch (e) {
+        const err = new Error("Unable to connect to server.");
+        err.code = "NETWORK_ERROR";
+        throw err;
+    }
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        const err = new Error(data.message);
+        err.code = data.code;
+        throw err;
+    }
+
+    return data;
+}
+
+
+// PATCH /labels/:id
+export async function updateLabel(token, labelId, labelData) {
+
+    let res;
+
+    try {
+        res = await fetch(
+            `http://localhost:3000/labels/${labelId}`,
             {
                 method: "PATCH",
 
@@ -168,15 +126,8 @@ export async function updateTask(token, taskId, taskData) {
                 },
 
                 body: JSON.stringify({
-                    title: taskData.title,
-                    description: taskData.description,
-                    priority: taskData.priority,
-                    status: taskData.status,
-                    labels: taskData.labels,
-                    startDate: taskData.startDate,
-                    targetDate: taskData.targetDate,
-                    order: taskData.order,
-                    columnId: taskData.columnId
+                    name: labelData.name,
+                    color: labelData.color
                 })
             }
         );
@@ -194,19 +145,19 @@ export async function updateTask(token, taskId, taskData) {
         err.code = data.code;
         throw err;
     }
-    // throw new Error("Testing roll back")
+
     return data;
 }
 
 
-// DELETE /tasks/:id
-export async function deleteTask(token, taskId) {
+// DELETE /labels/:id
+export async function deleteLabel(token, labelId) {
 
     let res;
 
     try {
         res = await fetch(
-            `http://localhost:3000/tasks/${taskId}`,
+            `http://localhost:3000/labels/${labelId}`,
             {
                 method: "DELETE",
 

@@ -1,5 +1,5 @@
 const { Label } = require("../models/Label");
-
+const { Task } = require("../models/Task");
 
 // Create Label
 
@@ -77,6 +77,31 @@ exports.deleteLabel = async (labelId) => {
     if (!label) {
         throw new Error("NOT_FOUND");
     }
+
+
+    // Remove this label reference from
+    // every task that currently uses it.
+
+    await Task.updateMany(
+        {
+            labels: labelId
+        },
+        {
+            $pull: {
+                labels: labelId
+            }
+        }
+    );
+
+
+    // Note:2 transactions
+
+    // delete Label (delete label from labels collection)
+    //  ↓
+    // $pull labelId from Tasks (delete labelid of the label being deleted from each task which was using it)
+
+    // If the first succeeds and the second fails, you can still end up inconsistent
+    // so better approach is mongoose session based transactions
 
     return label;
 };
