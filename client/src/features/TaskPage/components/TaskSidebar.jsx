@@ -1,6 +1,6 @@
 import SidebarTabNav from "./sidebar/SidebarTabNav";
 import PropertiesPanel from "./sidebar/PropertiesPanel";
-import ChecklistPanel from "./sidebar/ChecklistPanel";
+import ChecklistPanel from "./sidebar/checklistPanel/ChecklistPanel";
 import ResourcesPanel from "./sidebar/ResoucesPanel";
 import ActivityPanel from "./sidebar/ActivityPanel";
 

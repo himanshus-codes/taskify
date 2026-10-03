@@ -1,16 +1,24 @@
 import { useParams, Link } from "react-router-dom";
 import { useTaskPageContext } from "../TaskPageContext";
+import { useEffect } from "react";
 
 export default function TaskHeader() {
 
     const { boardId } = useParams();
-
+    console.log(boardId)
     const {
+        isTaskLoading,
         task,
         isSidebarOpen,
         toggleSidebar,
     } = useTaskPageContext();
-
+    
+    console.log(task)
+    // useEffect(()=>{
+    //     if(isTaskLoading){
+    //         return
+    //     }
+    // }, [isTaskLoading])
     return (
         <header
             className="
