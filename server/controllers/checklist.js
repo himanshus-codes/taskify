@@ -321,7 +321,7 @@ exports.createChecklistItem = async (req, res) => {
 
     try {
 
-        const checklist =
+        const createdItem =
             await checklistService.createChecklistItem(
                 checklistId,
                 result.data,
@@ -332,7 +332,7 @@ exports.createChecklistItem = async (req, res) => {
             success: true,
             code: "CREATED",
             message: "Checklist item successfully created.",
-            data: checklist
+            data: createdItem
         });
 
     } catch (err) {

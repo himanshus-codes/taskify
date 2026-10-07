@@ -106,8 +106,13 @@ export function useChecklistManagement({
             // Rollback
             // -----------------------------------------
 
-            setChecklists(
-                previousChecklists
+          setChecklists(
+                previousChecklists =>
+                    previousChecklists.filter(
+                        checklist =>
+                            String(checklist._id) !==
+                            String(temporaryId)
+                    )
             );
 
             throw error;
@@ -160,17 +165,35 @@ export function useChecklistManagement({
         checklistId,
         updates
     ) {
+        const currentChecklist =
+            checklists.find(
+                checklist =>
+                    String(checklist._id) ===
+                    String(checklistId)
+            );
+
+
+        if (!currentChecklist) {
+            return;
+        }
+
 
         // -----------------------------------------
-        // Keep previous state for rollback
+        // Capture ONLY fields being changed
         // -----------------------------------------
 
-        const previousChecklists =
-            checklists;
+        const previousValues = {};
+
+        Object.keys(updates).forEach(
+            key => {
+                previousValues[key] =
+                    currentChecklist[key];
+            }
+        );
 
 
         // -----------------------------------------
-        // Optimistic checklist update
+        // Optimistic update
         // -----------------------------------------
 
         setChecklists(
@@ -184,7 +207,6 @@ export function useChecklistManagement({
                         ) {
                             return checklist;
                         }
-
 
                         return {
                             ...checklist,
@@ -205,26 +227,9 @@ export function useChecklistManagement({
                 );
 
 
-            const updatedChecklist =
-                response.data;
-
-
-            // -----------------------------------------
-            // Sync with server response
-            // -----------------------------------------
-
-            setChecklists(
-                previousChecklists =>
-                    previousChecklists.map(
-                        checklist =>
-                            String(checklist._id) ===
-                            String(checklistId)
-
-                                ? updatedChecklist
-
-                                : checklist
-                    )
-            );
+            // IMPORTANT:
+            // Do NOT replace the optimistic entity
+            // with response.data.
 
 
             return response;
@@ -232,17 +237,33 @@ export function useChecklistManagement({
         } catch (error) {
 
             // -----------------------------------------
-            // Rollback
+            // Roll back ONLY our changed fields
             // -----------------------------------------
 
             setChecklists(
-                previousChecklists
+                previousChecklists =>
+                    previousChecklists.map(
+                        checklist => {
+
+                            if (
+                                String(checklist._id) !==
+                                String(checklistId)
+                            ) {
+                                return checklist;
+                            }
+
+                            return {
+                                ...checklist,
+                                ...previousValues
+                            };
+                        }
+                    )
             );
+
 
             throw error;
         }
     }
-
 
     // =========================================================
     // DELETE CHECKLIST
@@ -252,16 +273,21 @@ export function useChecklistManagement({
         checklistId
     ) {
 
-        // -----------------------------------------
-        // Keep previous state for rollback
-        // -----------------------------------------
+        const deletedIndex =
+            checklists.findIndex(
+                checklist =>
+                    String(checklist._id) ===
+                    String(checklistId)
+            );
 
-        const previousChecklists =
-            checklists;
+        const deletedChecklist =
+            deletedIndex !== -1
+                ? checklists[deletedIndex]
+                : null;
 
 
         // -----------------------------------------
-        // Optimistic checklist removal
+        // Optimistic removal
         // -----------------------------------------
 
         setChecklists(
@@ -288,12 +314,44 @@ export function useChecklistManagement({
         } catch (error) {
 
             // -----------------------------------------
-            // Rollback
+            // Restore only deleted checklist
             // -----------------------------------------
 
-            setChecklists(
-                previousChecklists
-            );
+            if (deletedChecklist) {
+
+                setChecklists(
+                    previousChecklists => {
+
+                        // Avoid restoring it twice.
+                        const alreadyExists =
+                            previousChecklists.some(
+                                checklist =>
+                                    String(checklist._id) ===
+                                    String(checklistId)
+                            );
+
+                        if (alreadyExists) {
+                            return previousChecklists;
+                        }
+
+
+                        const restored =
+                            [...previousChecklists];
+
+                        restored.splice(
+                            Math.min(
+                                deletedIndex,
+                                restored.length
+                            ),
+                            0,
+                            deletedChecklist
+                        );
+
+                        return restored;
+                    }
+                );
+            }
+
 
             throw error;
         }
@@ -303,27 +361,12 @@ export function useChecklistManagement({
     // =========================================================
     // CREATE CHECKLIST ITEM
     // =========================================================
-
     async function createChecklistItem(
         checklistId,
         itemData
     ) {
-
-        // -----------------------------------------
-        // Keep previous state for rollback
-        // -----------------------------------------
-
-        const previousChecklists =
-            checklists;
-
-
-        // -----------------------------------------
-        // Create temporary item
-        // -----------------------------------------
-
         const temporaryId =
-            `temp-item-${Date.now()}`;
-
+            `temp-item-${crypto.randomUUID()}`;
 
         const temporaryItem = {
             _id: temporaryId,
@@ -334,12 +377,14 @@ export function useChecklistManagement({
                 itemData.checked ?? false,
 
             order:
-                itemData.order
+                itemData.order,
+
+            isTemporary: true
         };
 
 
         // -----------------------------------------
-        // Optimistic item creation
+        // Optimistic creation
         // -----------------------------------------
 
         setChecklists(
@@ -353,7 +398,6 @@ export function useChecklistManagement({
                         ) {
                             return checklist;
                         }
-
 
                         return {
                             ...checklist,
@@ -383,8 +427,7 @@ export function useChecklistManagement({
 
 
             // -----------------------------------------
-            // Replace temporary item with
-            // server-created item
+            // Replace ONLY our temporary entity
             // -----------------------------------------
 
             setChecklists(
@@ -398,7 +441,6 @@ export function useChecklistManagement({
                             ) {
                                 return checklist;
                             }
-
 
                             return {
                                 ...checklist,
@@ -425,38 +467,91 @@ export function useChecklistManagement({
         } catch (error) {
 
             // -----------------------------------------
-            // Rollback
+            // Remove ONLY our failed temp entity
             // -----------------------------------------
 
             setChecklists(
-                previousChecklists
+                previousChecklists =>
+                    previousChecklists.map(
+                        checklist => {
+
+                            if (
+                                String(checklist._id) !==
+                                String(checklistId)
+                            ) {
+                                return checklist;
+                            }
+
+                            return {
+                                ...checklist,
+
+                                items:
+                                    (checklist.items || [])
+                                        .filter(
+                                            item =>
+                                                String(item._id) !==
+                                                String(temporaryId)
+                                        )
+                            };
+                        }
+                    )
             );
+
 
             throw error;
         }
     }
 
-
     // =========================================================
     // UPDATE CHECKLIST ITEM
     // =========================================================
-
     async function updateChecklistItem(
         checklistId,
         itemId,
         updates
     ) {
+        const currentChecklist =
+            checklists.find(
+                checklist =>
+                    String(checklist._id) ===
+                    String(checklistId)
+            );
+
+
+        if (!currentChecklist) {
+            return;
+        }
+
+
+        const currentItem =
+            (currentChecklist.items || []).find(
+                item =>
+                    String(item._id) ===
+                    String(itemId)
+            );
+
+
+        if (!currentItem) {
+            return;
+        }
+
 
         // -----------------------------------------
-        // Keep previous state for rollback
+        // Capture ONLY changed fields
         // -----------------------------------------
 
-        const previousChecklists =
-            checklists;
+        const previousValues = {};
+
+        Object.keys(updates).forEach(
+            key => {
+                previousValues[key] =
+                    currentItem[key];
+            }
+        );
 
 
         // -----------------------------------------
-        // Optimistic item update
+        // Optimistic update
         // -----------------------------------------
 
         setChecklists(
@@ -470,7 +565,6 @@ export function useChecklistManagement({
                         ) {
                             return checklist;
                         }
-
 
                         return {
                             ...checklist,
@@ -486,7 +580,6 @@ export function useChecklistManagement({
                                             ) {
                                                 return item;
                                             }
-
 
                                             return {
                                                 ...item,
@@ -511,12 +604,17 @@ export function useChecklistManagement({
                 );
 
 
-            const updatedItem =
-                response.data;
+            // IMPORTANT:
+            // Keep optimistic state.
+            // Do not replace with response.data.
 
+
+            return response;
+
+        } catch (error) {
 
             // -----------------------------------------
-            // Sync with server response
+            // Roll back ONLY changed fields
             // -----------------------------------------
 
             setChecklists(
@@ -531,20 +629,26 @@ export function useChecklistManagement({
                                 return checklist;
                             }
 
-
                             return {
                                 ...checklist,
 
                                 items:
                                     (checklist.items || [])
                                         .map(
-                                            item =>
-                                                String(item._id) ===
-                                                String(itemId)
+                                            item => {
 
-                                                    ? updatedItem
+                                                if (
+                                                    String(item._id) !==
+                                                    String(itemId)
+                                                ) {
+                                                    return item;
+                                                }
 
-                                                    : item
+                                                return {
+                                                    ...item,
+                                                    ...previousValues
+                                                };
+                                            }
                                         )
                             };
                         }
@@ -552,42 +656,48 @@ export function useChecklistManagement({
             );
 
 
-            return response;
-
-        } catch (error) {
-
-            // -----------------------------------------
-            // Rollback
-            // -----------------------------------------
-
-            setChecklists(
-                previousChecklists
-            );
-
             throw error;
         }
     }
-
 
     // =========================================================
     // DELETE CHECKLIST ITEM
     // =========================================================
 
-    async function deleteChecklistItem(
+   async function deleteChecklistItem(
         checklistId,
         itemId
     ) {
 
-        // -----------------------------------------
-        // Keep previous state for rollback
-        // -----------------------------------------
+        const checklist =
+            checklists.find(
+                checklist =>
+                    String(checklist._id) ===
+                    String(checklistId)
+            );
 
-        const previousChecklists =
-            checklists;
+
+        if (!checklist) {
+            return;
+        }
+
+
+        const deletedIndex =
+            (checklist.items || []).findIndex(
+                item =>
+                    String(item._id) ===
+                    String(itemId)
+            );
+
+
+        const deletedItem =
+            deletedIndex !== -1
+                ? checklist.items[deletedIndex]
+                : null;
 
 
         // -----------------------------------------
-        // Optimistic item removal
+        // Optimistic removal
         // -----------------------------------------
 
         setChecklists(
@@ -634,12 +744,63 @@ export function useChecklistManagement({
         } catch (error) {
 
             // -----------------------------------------
-            // Rollback
+            // Restore only deleted item
             // -----------------------------------------
 
-            setChecklists(
-                previousChecklists
-            );
+            if (deletedItem) {
+
+                setChecklists(
+                    previousChecklists =>
+                        previousChecklists.map(
+                            checklist => {
+
+                                if (
+                                    String(checklist._id) !==
+                                    String(checklistId)
+                                ) {
+                                    return checklist;
+                                }
+
+
+                                const alreadyExists =
+                                    (checklist.items || [])
+                                        .some(
+                                            item =>
+                                                String(item._id) ===
+                                                String(itemId)
+                                        );
+
+
+                                if (alreadyExists) {
+                                    return checklist;
+                                }
+
+
+                                const restoredItems =
+                                    [
+                                        ...(checklist.items || [])
+                                    ];
+
+
+                                restoredItems.splice(
+                                    Math.min(
+                                        deletedIndex,
+                                        restoredItems.length
+                                    ),
+                                    0,
+                                    deletedItem
+                                );
+
+
+                                return {
+                                    ...checklist,
+                                    items: restoredItems
+                                };
+                            }
+                        )
+                );
+            }
+
 
             throw error;
         }

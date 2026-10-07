@@ -245,57 +245,110 @@ exports.deleteChecklist = async (
 // Create Checklist Item
 // --------------------------------------------------
 
-exports.createChecklistItem = async (
-    checklistId,
-    data,
-    userId
-) => {
+    // exports.createChecklistItem = async (
+    //     checklistId,
+    //     data,
+    //     userId
+    // ) => {
 
-    const checklist =
-        await Checklist.findById(
-            checklistId
+    //     const checklist =
+    //         await Checklist.findById(
+    //             checklistId
+    //         );
+
+
+    //     if (!checklist) {
+    //         throw new Error("NOT_FOUND");
+    //     }
+
+
+    //     checklist.items.push({
+
+    //         text: data.text,
+
+    //         checked: data.checked,
+
+    //         order: data.order
+    //     });
+
+
+    //     await checklist.save();
+
+
+    //     await recordChecklistUpdated({
+
+    //         checklist,
+
+    //         actorId: userId,
+
+    //         metadata: {
+
+    //             change: "item-added",
+
+    //             item: checklist.items[
+    //                 checklist.items.length - 1
+    //             ]
+    //         }
+    //     });
+
+
+    //     return checklist;
+    // };
+
+
+    exports.createChecklistItem = async (
+        checklistId,
+        data,
+        userId
+    ) => {
+
+        const checklist =
+            await Checklist.findById(
+                checklistId
+            );
+
+
+        if (!checklist) {
+            throw new Error("NOT_FOUND");
+        }
+
+
+        const createdItem =
+            checklist.items.create({
+
+                text: data.text,
+
+                checked: data.checked,
+
+                order: data.order
+            });
+
+
+        checklist.items.push(
+            createdItem
         );
 
 
-    if (!checklist) {
-        throw new Error("NOT_FOUND");
-    }
+        await checklist.save();
 
 
-    checklist.items.push({
+        await recordChecklistUpdated({
 
-        text: data.text,
+            checklist,
 
-        checked: data.checked,
+            actorId: userId,
 
-        order: data.order
-    });
+            metadata: {
 
+                change: "item-added",
 
-    await checklist.save();
-
-
-    await recordChecklistUpdated({
-
-        checklist,
-
-        actorId: userId,
-
-        metadata: {
-
-            change: "item-added",
-
-            item: checklist.items[
-                checklist.items.length - 1
-            ]
-        }
-    });
+                item: createdItem
+            }
+        });
 
 
-    return checklist;
-};
-
-
+        return createdItem;
+    };
 // --------------------------------------------------
 // Update Checklist Item
 // --------------------------------------------------

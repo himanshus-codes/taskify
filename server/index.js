@@ -54,3 +54,20 @@ mongoose.connect(process.env.MONGO_URL)
   app.listen(port, ()=> console.log(`server is running at http://localhost:${port}`));
 })
 .catch(err => console.log(err));
+
+
+
+// Finish the app, but intentionally engineer 2–4 parts deeply enough that you can defend them in an interview.
+
+// For Taskify, good candidates are:
+// 1. Authentication + authorization
+// 2. Data modeling / indexes / resource ownership
+// 3. Optimistic checklist/task updates
+// 4. Activity/event system
+// 5. Eventually one real-time or collaboration feature
+
+// You can then say:
+// "Most of Taskify is conventional full-stack application code. I deliberately went deeper on these areas because they expose real engineering problems."
+
+
+

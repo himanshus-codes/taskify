@@ -93,7 +93,7 @@ export const getColumnDetails = async (token, columnId) => {
 
     } catch (e) {
         const err = new Error("Unable to connect to server.");
-        err.code = data.code;
+        err.code = "NETWORK_ERROR";
         throw err;
     }
 
